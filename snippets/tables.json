@@ -1,6 +1,6 @@
 {
-	"Table": {
-		"prefix": "homebrewery-table",
+	"Insert Table": {
+		"prefix": "Homebrewery Table",
 		"body": [
 			"##### Character Advancement",
 			"| Experience Points | Level | Proficiency Bonus |",
@@ -15,8 +15,8 @@
 		],
 		"description": "Default Table"
 	},
-	"Table (Wide)": {
-		"prefix": "homebrewery-table-wide",
+	"Insert Table (Wide)": {
+		"prefix": "Homebrewery Table (Wide)",
 		"body": [
 			"{{wide",
 			"##### Weapons",
@@ -34,8 +34,8 @@
 		],
 		"description": "Wide Table"
 	},
-	"Split Table": {
-		"prefix": "homebrewery-table-split",
+	"Insert Split Table": {
+		"prefix": "Homebrewery Split Table",
 		"body": [
 			"##### Typical Difficulty Classes",
 			"{{column-count:2",
@@ -54,8 +54,8 @@
 		],
 		"description": "Split Table"
 	},
-	"Class Table (Framed)": {
-		"prefix": "homebrewery-table-class-framed",
+	"Insert Class Table (Framed)": {
+		"prefix": "Homebrewery Class Table (Framed)",
 		"body": [
 			"{{classTable,frame,decoration,wide",
 			"##### The Haberdasher",
@@ -86,8 +86,8 @@
 		],
 		"description": "Class Table (Wide) (Framed)"
 	},
-	"Class Table (Unframed)": {
-		"prefix": "homebrewery-table-class",
+	"Insert Class Table (Unframed)": {
+		"prefix": "Homebrewery Class Table (Unframed)",
 		"body": [
 			"{{classTable,wide",
 			"##### The Ackerman",
@@ -118,8 +118,8 @@
 		],
 		"description": "Class Table (Wide) (Unframed)"
 	},
-	"Class Table Half (Framed)": {
-		"prefix": "homebrewery-table-class-half-framed",
+	"Insert Class Table Half (Framed)": {
+		"prefix": "Homebrewery Class Table Half (Framed)",
 		"body": [
 			"{{classTable,decoration,frame",
 			"##### The Weirkeeper",
@@ -149,8 +149,8 @@
 		],
 		"description": "1/2 Class Table (Framed)"
 	},
-	"Class Table Half (Unframed)": {
-		"prefix": "homebrewery-table-class-half",
+	"Insert Class Table Half (Unframed)": {
+		"prefix": "Homebrewery Class Table Half (Unframed)",
 		"body": [
 			"{{classTable",
 			"##### The Berserker-Typist",
@@ -180,8 +180,8 @@
 		],
 		"description": "1/2 Class Table (Unframed)"
 	},
-	"Rune Table (Dwarvish)": {
-		"prefix": "homebrewery-table-rune-dwarvish",
+	"Insert Rune Table (Dwarvish)": {
+		"prefix": "Homebrewery Rune Table (Dwarvish)",
 		"body": [
 			"##### Dwarvish Runes: Sample Alphabet",
 			"{{runeTable,wide,frame,font-family:Davek",
@@ -196,8 +196,8 @@
 		],
 		"description": "Rune Table (Dwarvish)"
 	},
-	"Rune Table (Elvish)": {
-		"prefix": "homebrewery-table-rune-elvish",
+	"Insert Rune Table (Elvish)": {
+		"prefix": "Homebrewery Rune Table (Elvish)",
 		"body": [
 			"##### Elvish Runes: Sample Alphabet",
 			"{{runeTable,wide,frame,font-family:Rellanic",
@@ -212,8 +212,8 @@
 		],
 		"description": "Rune Table (Elvish)"
 	},
-	"Rune Table (Draconic)": {
-		"prefix": "homebrewery-table-rune-draconic",
+	"Insert Rune Table (Draconic)": {
+		"prefix": "Homebrewery Rune Table (Draconic)",
 		"body": [
 			"##### Draconic Runes: Sample Alphabet",
 			"{{runeTable,wide,frame,font-family:Iokharic",

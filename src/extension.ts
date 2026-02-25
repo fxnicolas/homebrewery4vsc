@@ -2,6 +2,7 @@
 import * as vscode from 'vscode';
 import Preview from './preview';
 import { generateFile } from './generate-html';
+import { iconFontsProvider } from './iconfonts-completions';
 
 export function activate(context: vscode.ExtensionContext) {
 	let preview = new Preview(context);
@@ -34,6 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
 	let previewZoomReset = vscode.commands.registerCommand('homebrewery4vsc.previewZoomReset', () => {
 		preview.previewZoomReset();
 	});
+
 	// push to subscriptions list so that they are disposed automatically
 	context.subscriptions.push(disposableSidePreview);
 	context.subscriptions.push(disposableStandalonePreview);
@@ -44,6 +46,8 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(previewZoomIn);
 	context.subscriptions.push(previewZoomOut);
 	context.subscriptions.push(previewZoomReset);
+	// Icon fonts completion provider
+	context.subscriptions.push(iconFontsProvider);
 }
 
 // This method is called when your extension is deactivated

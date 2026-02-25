@@ -1,7 +1,7 @@
 {
-    "Spell": {
+    "Insert Spell Block": {
         "prefix": [
-            "homebrewery-spell"
+            "Homebrewery Spell"
         ],
         "body": [
             "#### Create Nervousness v2",
@@ -18,9 +18,9 @@
         ],
         "description": "Spell block with description"
     },
-    "Spell List": {
+    "Insert Spell List": {
         "prefix": [
-            "homebrewery-spell-list"
+            "Homebrewery Spell List"
         ],
         "body": [
             "{{spellList,wide",
@@ -115,9 +115,9 @@
             "}}"
         ],
         "description": "Spell List (Wide)"
-    },
-    "Quote": {
-        "prefix": "homebrewery-quote",
+     },
+    "Insert Quote": {
+        "prefix": "Homebrewery Quote",
         "body": [
             "{{quote",
             "The druid communed with the spirits of nature, his mind merging with the trees, the animals, and the very earth itself. He knew that his power came with a great responsibility, and he was determined to use it for the greater good.",
@@ -125,9 +125,9 @@
             "}}"
         ],
         "description": "Quote"
-    },
-    "Note": {
-        "prefix": "homebrewery-note",
+     },
+    "Insert Note": {
+        "prefix": "Homebrewery Note",
         "body": [
             "{{note",
             "##### Time to Drop Knowledge",
@@ -137,9 +137,9 @@
             "}}"
         ],
         "description": "Note"
-    },
-    "Descriptive Text": {
-        "prefix": "homebrewery-descriptive-text",
+     },
+    "Insert Descriptive Text": {
+        "prefix": "Homebrewery Descriptive Text",
         "body": [
             "{{descriptive",
             "##### Time to Drop Knowledge",
@@ -149,9 +149,9 @@
             "}}"
         ],
         "description": "Descriptive Text Box"
-    },
-    "Class Features": {
-        "prefix": "homebrewery-class-features",
+     },
+    "Insert Class Features": {
+        "prefix": "Homebrewery Class Features",
         "body": [
             "## Class Features",
             "",
@@ -184,9 +184,9 @@
             "- a cherished lost sock"
         ],
         "description": "Class Features"
-    },
-    "Monster Stat Block (Unframed)": {
-        "prefix": "homebrewery-monster-stat-block",
+     },
+    "Insert Monster Stats Block (Unframed)": {
+        "prefix": "Homebrewery Monster Stats Block",
         "body": [
             "{{monster",
             "## Snail of the North",
@@ -225,10 +225,10 @@
             "}}",
             ""
         ],
-        "description": "Monster Stat Block (Unframed)"
-    },
-    "Monster Stat Block (Framed)": {
-        "prefix": "homebrewery-monster-stat-block-framed",
+        "description": "Monster Stats Block (Unframed)"
+     },
+    "Insert Monster Stat Block (Framed)": {
+        "prefix": "Homebrewery Monster Stats Block (Framed)",
         "body": [
             "{{monster,frame",
             "## Mechanical Sloth of the Past",
@@ -265,9 +265,9 @@
             "}}"
         ],
         "description": "Monster Stat Block (Framed)"
-    },
-    "Monster Stat Block (Wide)": {
-        "prefix": "homebrewery-monster-stat-block-wide",
+     },
+    "Insert Monster Stat Block (Wide)": {
+        "prefix": "Homebrewery Monster Stats Block (Wide)",
         "body": [
             "{{monster,frame,wide",
             "## Snail of the North",
@@ -313,9 +313,9 @@
             ""
         ],
         "description": "Monster Stat Block (Wide) (Framed)"
-    },
-    "Cover Page": {
-        "prefix": "homebrewery-cover-page",
+     },
+    "Insert Cover Page": {
+        "prefix": "Homebrewery Cover Page",
         "body": [
             "<style>",
             ".page#p1{ text-align:center; counter-increment: none; }",
@@ -339,9 +339,9 @@
             "}}"
         ],
         "description": "Cover Page"
-    },
-    "Magic Item": {
-        "prefix": "homebrewery-magic-item",
+     },
+    "Insert Magic Item": {
+        "prefix": "Homebrewery Magic Item",
         "body": [
             "#### Staff of Endless Confetti",
             "*Weapon, Rare (requires attunement)*",
