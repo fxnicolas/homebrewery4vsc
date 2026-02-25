@@ -1,7 +1,7 @@
 'use strict';
 import * as vscode from 'vscode';
 import Preview from './preview';
-import { generateFile } from './generate-html';
+import { generateFile } from './html-file-generator';
 import { iconFontsProvider } from './iconfonts-completions';
 
 export function activate(context: vscode.ExtensionContext) {
