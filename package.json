@@ -1,0 +1,313 @@
+{
+  "name": "homebrewery4vsc",
+  "displayName": "Homebrewery for VS Code",
+  "description": "Edit your favorite RPG content in your favavorite editor",
+  "version": "0.0.1",
+  "publisher": "fxnicolas",
+  "license": "MIT",
+  "icon": "media/favicons/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fxnicolas/homebrewery4vsc"
+  },
+  "engines": {
+    "vscode": "^1.109.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "dnd",
+    "dungeons",
+    "dragons",
+    "homebrew",
+    "homebrewery",
+    "markdown"
+  ],
+  "activationEvents": [
+    "onLanguage:markdown"
+  ],
+  "main": "./dist/extension.js",
+  "editor.semanticHighlighting.enabled": true,
+  "contributes": {
+    "grammars": [
+      {
+        "path": "./syntaxes/injection.json",
+        "scopeName": "homebrewery.injection",
+        "injectTo": [
+          "text.html.markdown"
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "command": "homebrewery4vsc.generate",
+        "title": "Homebrewery: Generate HTML",
+        "icon": {
+          "light": "./media/icons/preview.svg",
+          "dark": "./media/icons/preview_dark.svg"
+        }
+      },
+      {
+        "command": "homebrewery4vsc.preview",
+        "title": "Homebrewery: Open Preview",
+        "icon": {
+          "light": "./media/icons/preview.svg",
+          "dark": "./media/icons/preview_dark.svg"
+        }
+      },
+      {
+        "command": "homebrewery4vsc.sidePreview",
+        "title": "Homebrewery: Open Preview to the Side",
+        "icon": {
+          "light": "./media/icons/preview-side.svg",
+          "dark": "./media/icons/preview-side_dark.svg"
+        }
+      },
+      {
+        "command": "homebrewery4vsc.previewLayoutSimpleSpread",
+        "title": "Homebrewery: Change Layout to Single Page",
+        "icon": {
+          "light": "./media/icons/single-spread.svg",
+          "dark": "./media/icons/single-spread_dark.svg"
+        }
+      },
+      {
+        "command": "homebrewery4vsc.previewLayoutFacingSpread",
+        "title": "Homebrewery: Change Layout to Two-Pages",
+        "icon": {
+          "light": "./media/icons/facing-spread.svg",
+          "dark": "./media/icons/facing-spread_dark.svg"
+        }
+      },
+      {
+        "command": "homebrewery4vsc.previewLayoutFlowSpread",
+        "title": "Homebrewery: Change Layout to Flowing Pages",
+        "icon": {
+          "light": "./media/icons/flow-spread.svg",
+          "dark": "./media/icons/flow-spread_dark.svg"
+        }
+      },
+      {
+        "command": "homebrewery4vsc.previewZoomIn",
+        "title": "Homebrewery: Zoom In Preview",
+        "icon": "$(zoom-in)"
+      },
+      {
+        "command": "homebrewery4vsc.previewZoomOut",
+        "title": "Homebrewery: Zoom Out Preview",
+        "icon": "$(zoom-out)"
+      },
+      {
+        "command": "homebrewery4vsc.previewZoomReset",
+        "title": "Homebrewery: Reset Preview Zoom",
+        "icon": "$(search)"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "homebrewery4vsc.previewLayoutSimpleSpread",
+          "when": "activeWebviewPanelId == HomebrewPreview && homebrewery.currentLayoutSpread == 'flow'",
+          "group": "navigation"
+        },
+        {
+          "command": "homebrewery4vsc.previewLayoutFacingSpread",
+          "when": "activeWebviewPanelId == HomebrewPreview && homebrewery.currentLayoutSpread == 'simple'",
+          "group": "navigation"
+        },
+        {
+          "command": "homebrewery4vsc.previewLayoutFlowSpread",
+          "when": "activeWebviewPanelId == HomebrewPreview && homebrewery.currentLayoutSpread == 'facing'",
+          "group": "navigation"
+        },
+        {
+          "command": "homebrewery4vsc.sidePreview",
+          "when": "editorLangId == markdown",
+          "group": "navigation"
+        },
+        {
+          "command": "homebrewery4vsc.preview",
+          "when": "editorLangId == markdown",
+          "group": "navigation"
+        },
+        {
+          "command": "homebrewery4vsc.generate",
+          "when": "editorLangId == markdown",
+          "group": "navigation"
+        },
+        {
+          "command": "homebrewery4vsc.previewZoomIn",
+          "when": "activeWebviewPanelId == HomebrewPreview",
+          "group": "navigation"
+        },
+        {
+          "command": "homebrewery4vsc.previewZoomOut",
+          "when": "activeWebviewPanelId == HomebrewPreview",
+          "group": "navigation"
+        },
+        {
+          "command": "homebrewery4vsc.previewZoomReset",
+          "when": "activeWebviewPanelId == HomebrewPreview",
+          "group": "navigation"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "homebrewery4vsc.sidePreview",
+          "when": "editorLangId == markdown",
+          "alt": "homebrewery4vsc.preview",
+          "group": "navigation"
+        },
+        {
+          "command": "homebrewery4vsc.previewLayoutSimpleSpread",
+          "when": "activeWebviewPanelId == HomebrewPreview && homebrewery.currentLayoutSpread == 'flow'",
+          "group": "navigation@4"
+        },
+        {
+          "command": "homebrewery4vsc.previewLayoutFacingSpread",
+          "when": "activeWebviewPanelId == HomebrewPreview && homebrewery.currentLayoutSpread == 'simple'",
+          "group": "navigation@4"
+        },
+        {
+          "command": "homebrewery4vsc.previewLayoutFlowSpread",
+          "when": "activeWebviewPanelId == HomebrewPreview && homebrewery.currentLayoutSpread == 'facing'",
+          "group": "navigation@4"
+        },
+        {
+          "command": "homebrewery4vsc.previewZoomIn",
+          "when": "activeWebviewPanelId == HomebrewPreview",
+          "group": "navigation@3"
+        },
+        {
+          "command": "homebrewery4vsc.previewZoomReset",
+          "when": "activeWebviewPanelId == HomebrewPreview",
+          "group": "navigation@2"
+        },
+        {
+          "command": "homebrewery4vsc.previewZoomOut",
+          "when": "activeWebviewPanelId == HomebrewPreview",
+          "group": "navigation@1"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "homebrewery4vsc.sidePreview",
+        "key": "ctrl+q s",
+        "mac": "cmd+q s",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "homebrewery4vsc.preview",
+        "key": "ctrl+q f",
+        "mac": "cmd+q f",
+        "when": "editorTextFocus"
+      }
+    ],
+    "configuration": {
+      "title": "Homebrewery",
+      "properties": {
+        "homebrewery.customStyleSheets": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string",
+            "pattern": "^.*css$"
+          },
+          "uniqueItems": true,
+          "markdownDescription": "Custom style sheets added to all previews and file generations\n\nRequires either a fully qualified url e.g. `https://www.example.com/custom.css` or a file path relative to the open workspace, e.g. `styles\\custom.css`"
+        },
+        "homebrewery.theme": {
+          "type": "string",
+          "enum": [
+            "5ePHB",
+            "5eDMG",
+            "Journal"
+          ],
+          "markdownEnumDescriptions": [
+            "Use the 5e Player's Handbook theme",
+            "Use the 5e Dungeon Master's Guide theme",
+            "Use a Journal (Notebook) theme"
+          ],
+          "enumItemLabels": [
+            "Player's Handbook",
+            "Dungeon Master's Guide",
+            "Journal"
+          ],
+          "default": "5ePHB",
+          "description": "Theme to use for previews and HTML generated files."
+        },
+        "homebrewery.pageFormat": {
+          "type": "string",
+          "enum": [
+            "A4",
+            "Letter"
+          ],
+          "default": "A4",
+          "description": "Preview and HTML output page format. A4 is the standard international paper size, while Letter is the standard in the US and Canada."
+        },
+        "homebrewery.scrollPreviewWithEditor": {
+          "type": "boolean",
+          "default": true,
+          "description": "Scroll preview window when you scroll Editor"
+        }
+      }
+    },
+    "snippets": [
+      {
+        "language": "markdown",
+        "path": "./snippets/images.json"
+      },
+      {
+        "language": "markdown",
+        "path": "./snippets/phb.json"
+      },
+      {
+        "language": "markdown",
+        "path": "./snippets/tables.json"
+      },
+      {
+        "language": "markdown",
+        "path": "./snippets/text.json"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.109.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "typescript-eslint": "^8.54.0",
+    "eslint": "^9.39.2",
+    "typescript": "^5.9.3",
+    "ts-loader": "^9.5.4",
+    "webpack": "^5.104.1",
+    "webpack-cli": "^6.0.1",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2"
+  },
+  "dependencies": {
+        "lodash": "^4.17.21",
+        "marked": "15.0.12",
+        "marked-alignment-paragraphs": "^1.0.0",
+        "marked-definition-lists": "^1.0.1",
+        "marked-emoji": "^2.0.2",
+        "marked-extended-tables": "^2.0.1",
+        "marked-gfm-heading-id": "^4.1.3",
+        "marked-nonbreaking-spaces": "^1.0.1",
+        "marked-smartypants-lite": "^1.0.3",
+        "marked-subsuper-text": "^1.0.4",
+        "marked-variables": "^1.0.5"
+  }
+}

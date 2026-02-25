@@ -1,0 +1,129 @@
+{
+	"Colunm Break": {
+		"prefix": "homebrewery-column",
+		"body": "\\column",
+		"description": "Column Break"
+	},
+	"Page Break": {
+		"prefix": "homebrewery-page",
+		"body": "\\page",
+		"description": "Page Break"
+	},
+	"Vertical Spacing": {
+		"prefix": "homebrewery-spacing-vertical",
+		"body": "::::",
+		"description": "Vertical Spacing"
+	},
+	"Horizontal Spacing": {
+		"prefix": "homebrewery-spacing-horizontal",
+		"body": "{{width:100px}}",
+		"description": "Horizontal Spacing"
+	},
+	"Wide Text Block": {
+		"prefix": "homebrewery-text-wide",
+		"body": [
+			"{{wide",
+			"Everything in here will be extra wide. Tables, text, everything!",
+			"Beware though, CSS columns can behave a bit weird sometimes. You may have to manually place column breaks with `\\column` to make the",
+			"surrounding text flow with this wide block the way you want.",
+			"}}"
+		],
+		"description": "Wide Text Block"
+	},
+	"QR Code": {
+		"prefix": "homebrewery-qr",
+		"body": "![](https://api.qrserver.com/v1/create-qr-code/?data=https://marketplace.visualstudio.com/items?itemName=SpjakSoftware.homebrewery4vsc&amp;size=100x100) {width:100px;mix-blend-mode:multiply}",
+		"description": "QR Code"
+	},
+	"Page Link": {
+		"prefix": "homebrewery-page-link",
+		"body": "[Click here](#p3) to go to page 3",
+		"description": "Local Page Link"
+	},
+	"Page Number": {
+		"prefix": "homebrewery-page-number",
+		"body": [
+			"{{pageNumber 1}}"
+		],
+		"description": "Custom Page Number and Footnote"
+	},
+	"Page Number (Auto Increment)": {
+		"prefix": "homebrewery-page-auto",
+		"body": [
+			"{{pageNumber,auto}}"
+		],
+		"description": "Auto Incrementing Page Number"
+	},
+	"Page Number (Reset Increment)": {
+		"prefix": "homebrewery-page-auto-reset",
+		"body": [
+			"{{resetCounting}}",
+			"{{pageNumber,auto}}"
+		],
+		"description": "Reset Page Number Increment"
+	},
+	"Page Number (Skip Increment)": {
+		"prefix": "homebrewery-page-auto-skip",
+		"body": [
+			"{{skipCounting}}",
+			"{{pageNumber,auto}}"
+		],
+		"description": "Skip Page Number Increment for this page"
+	},
+	"Table Of Contents": {
+		"prefix": "homebrewery-toc",
+		"body": [
+			"{{toc,wide",
+			"# Table Of Contents",
+			"",
+			"- ### [{{ Homebrewery for VS Code}}{{ 1}}](#p1)",
+			"- [{{ Subheading }}{{ 1}}](#p1)",
+			"- [{{ Another subheading }}{{ 1}}](#p1)",
+			"- #### [{{ Features }}{{ 2}}](#p2)",
+			"- [{{ Preview}}{{ 2}}](#p2)",
+			"- [{{ Generate }}{{ 2}}](#p2)",
+			"}}"
+		],
+		"description": "Table of Contents (Manual edit)"
+	},
+	"Comment": {
+		"prefix": "homebrewery-comment",
+		"body": "<!-- This is a comment. It won't show up in the generated document. -->",
+		"description": "Comment"
+	},
+	"Footer from H1": {
+		"prefix": "homebrewery-footer-h1",
+		"body": "{{footnote H1}}",
+		"description": "Footer from H1"
+	},
+	"Footer from H2": {
+		"prefix": "homebrewery-footer-h2",
+		"body": "{{footnote H2}}",
+		"description": "Footer from H2"
+	},
+	"Footer from H3": {
+		"prefix": "homebrewery-footer-h3",
+		"body": "{{footnote H3}}",
+		"description": "Footer from H3"
+	},
+	"Footer from H4": {
+		"prefix": "homebrewery-footer-h4",
+		"body": "{{footnote H4}}",
+		"description": "Footer from H4"
+	},
+	"Footer from H5": {
+		"prefix": "homebrewery-footer-h5",
+		"body": "{{footnote H5}}",
+		"description": "Footer from H5"
+	},
+	"Footer from H6": {
+		"prefix": "homebrewery-footer-h6",
+		"body": "{{footnote H6}}",
+		"description": "Footer from H6"
+	},
+	"Footer Text": {
+		"prefix": "homebrewery-footer",
+		"body": "{{footnote Footer Text}}",
+		"description": "Footer with free text."
+	}
+}
