@@ -208,7 +208,7 @@
     "configuration": {
       "title": "Homebrewery",
       "properties": {
-        "homebrewery.customStyleSheets": {
+        "homebrewery4vsc.customStyleSheets": {
           "type": "array",
           "default": [],
           "items": {
@@ -218,7 +218,7 @@
           "uniqueItems": true,
           "markdownDescription": "Custom style sheets added to all previews and file generations\n\nRequires either a fully qualified url e.g. `https://www.example.com/custom.css` or a file path relative to the open workspace, e.g. `styles\\custom.css`"
         },
-        "homebrewery.theme": {
+        "homebrewery4vsc.theme": {
           "type": "string",
           "enum": [
             "5ePHB",
@@ -238,7 +238,7 @@
           "default": "5ePHB",
           "description": "Theme to use for previews and HTML generated files."
         },
-        "homebrewery.pageFormat": {
+        "homebrewery4vsc.pageFormat": {
           "type": "string",
           "enum": [
             "A4",
@@ -247,7 +247,7 @@
           "default": "A4",
           "description": "Preview and HTML output page format. A4 is the standard international paper size, while Letter is the standard in the US and Canada."
         },
-        "homebrewery.scrollPreviewWithEditor": {
+        "homebrewery4vsc.scrollPreviewWithEditor": {
           "type": "boolean",
           "default": true,
           "description": "Scroll preview window when you scroll Editor"
