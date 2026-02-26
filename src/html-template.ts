@@ -159,6 +159,29 @@ const scrollEventScript = `
                 }
                     
             });
+
+            const vscode = acquireVsCodeApi();
+
+            // Detect a click and send the corresponding page number to VS Code. The markdown editor scrolls to that page.
+            document.addEventListener('click', (event) => {
+                let el = event.target;
+                while (el && el !== document.body) {
+                    if (el.classList?.contains('page')) {
+                        const id = el.id; // e.g. "page-12"
+
+                        const match = id.match(/\\d+/);
+                        if (match) {
+                            const pageNumber = parseInt(match[0], 10);
+                            vscode.postMessage({
+                                type: 'goToPage',
+                                page: pageNumber
+                            });
+                        }
+                        break;
+                    }
+                    el = el.parentElement;
+                }
+            });
         </script>
         `;
 

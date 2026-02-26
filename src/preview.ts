@@ -64,8 +64,6 @@ export default class Preview {
         this.context = context;
     };
 
-
-
     async handleTextDocumentChange() {
         if (vscode.window.activeTextEditor && this.checkDocumentIsMarkdown(true) && this.panel && this.panel !== undefined) {
             let currentMarkdownText = vscode.window.activeTextEditor.document.getText();
@@ -189,32 +187,52 @@ export default class Preview {
                 }
             });
 
-            this.panel.webview.onDidReceiveMessage(e => {
-                this.onDidScrollPreview(e.body.line);
+            // Process incoming messages from the webview.
+            this.panel.webview.onDidReceiveMessage(message => {
+                // Clicking in the webview sends a message { "goToPage", targetPage }
+                if (message.type === 'goToPage') {
+                    this.scrollEditorToPage(message.page);
+                }
             });
 
             this.panel.onDidDispose(() => {
                 this.dispose();
             }, null, this.disposables);
         }
-    }
+    };
 
-    private onDidScrollPreview(line: number) {
-        // FIXME: Synchronize Editor scroll with preview.
-        this.line = line;
+    private scrollEditorToPage(targetPage: number) {
+        // Synchronize Editor scroll with preview.
+        // The preview sends a message the page number, and we find it counting the \page instances.
+
+        // Loop on text editors
         for (const editor of vscode.window.visibleTextEditors) {
             if (!this.isPreviewOf(editor.document.uri)) {
+                // Ignore all but the one attached to the preview.
                 continue;
             }
-            const sourceLine = Math.floor(line);
-            const fraction = line - sourceLine;
-            const text = editor.document.lineAt(sourceLine).text;
-            const start = Math.floor(fraction * text.length);
-            editor.revealRange(
-                new vscode.Range(sourceLine, start, sourceLine + 1, 0),
-                vscode.TextEditorRevealType.AtTop);
+            const doc = editor.document;
+            targetPage --;
+            let targetLine = 0;
+            if (targetPage > 0) {
+                let count = 0;
+                for (let i = 0; i < doc.lineCount; i++) {
+                    const lineText = doc.lineAt(i).text.trim();
+                    if (lineText.startsWith('\\page')) {
+                        count++;
+                        if (count === targetPage) {
+                            targetLine = i;
+                            break;
+                        }
+                    }
+                }
+            }
+            targetLine ++;
+            const pos = new vscode.Position(targetLine, 0);
+            const range = new vscode.Range(pos, pos);
+            editor.revealRange(range, vscode.TextEditorRevealType.AtTop);
         }
-    }
+    };
 
     public togglePreviewLayoutSpread() {
         switch (this.currentLayoutSpread) {
