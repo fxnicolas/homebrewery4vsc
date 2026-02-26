@@ -14,11 +14,9 @@ const TEMPLATE_HTML = `
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <meta name="color-scheme" content="light">
         <link href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css" />
-        <!--
-        <link href='https://homebrewery.naturalcrit.com/homebrew/bundle.css' rel='stylesheet' />
-        -->
         {{ bundle_styles }}
         <base target="_blank">
     </head>
@@ -26,72 +24,15 @@ const TEMPLATE_HTML = `
         <div>
             <div class="frame-content">
                 <div class="brewRenderer">
-                    <!-- 
-                    <link href="https://homebrewery.naturalcrit.com/themes/V3/Blank/style.css" rel="stylesheet">
-                    <link href="https://homebrewery.naturalcrit.com/themes/V3/5ePHB/style.css" rel="stylesheet">
-                    -->
+                     <style>
+                        /* Prevents VS Code dark theme bleed in Preview */
+                        html, body, blockquote {
+                            all:unset;
+                        }
+                    </style>
                     {{ base_styles }}
                     {{ theme_styles }}
                     {{ page_layout_styles }}
-                    <style>
-                    /* Added for VS Code Preview, to override the default theme */
-                        .page p {
-                            color: black
-                        }
-                        .page span {
-                            color: black
-                        }
-                        .page li {
-                            color: black
-                        }
-                        .page table {
-                            color: black
-                        }
-                        .page h5 {
-                            color: black
-                        }
-                        .page h6 {
-                            color: black
-                        }
-                        .page dl {
-                            color: black
-                        }
-                        .page .monster hr:last-of-type~:is(dl,p) {
-                            color: black
-                        }
-                        .page #example + table td {
-                            border:1px dashed #00000030;
-                        }
-                        .page {
-                            padding-bottom : 1.1cm
-                        }
-                        .page .watermark {
-                            z-index: -500
-                        }
-
-                        .page 
-                    </style>
-                    <style> 
-                        /* Added by FX for PDF and Printing */
-                        .block.note {
-                            -webkit-print-color-adjust:exact;
-                            -webkit-filter:opacity(1);
-                        }
-
-                        .monster.frame {
-                            -webkit-print-color-adjust:exact;
-                            -webkit-filter:opacity(1);
-                        }
-
-                        .descriptive {
-                            -webkit-print-color-adjust:exact;
-                            -webkit-filter:opacity(1);
-                        }
-                        .page ul {
-                        margin-top:0px;
-                        padding-top:0px;
-                        }
-                    </style>
                     {{ custom_styles }}
                     {{ background_handling_styles }}
                     <div class="pages" id="pagesContainer">
@@ -184,36 +125,39 @@ function getPageLayoutStyles(): string {
 
 const scrollEventScript = `
         <script>
-            // Jump to the corresponding page in the preview when a scroll event is received from the extension.
-            function jumpToPage(page) {
-                const anchor = "p" + page;
-                const el = document.getElementById(anchor);
-                if (el) {
-                    el.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            };
-
-            // Listens to scroll events from the extension and jumps to the corresponding page in the preview.
+            // Listens to scroll events from the extension
             window.addEventListener('message', event => {
-            type = event.data.type;
+
+                type = event.data.type;
+
+                // scroll: Jumps to the corresponding page in the preview.
                 if (type === 'scroll') {
                     const { type, page } = event.data;
                     anchor = "p" + page;
+                    const el = document.getElementById(anchor);
+                    if (el) {
+                        el.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
                     jumpToPage(page);
                 }
+                
+                // layout: switches the layout to single page, two-pages or flow.
                 if (type == 'layout') {
                     const { layout } = event.data;
                     const el = document.getElementById('pagesContainer');
                     el.className = 'pages ' + layout
                 }
+                
+                // zoom: changes the preview zoom level. 
                 if (type == 'zoom') {
                     const { zoomLevel } = event.data;
                     const el = document.getElementById('pagesContainer');
                     el.style.zoom= zoomLevel + '%';
                 }
+                    
             });
         </script>
         `;
