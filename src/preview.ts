@@ -212,25 +212,38 @@ export default class Preview {
                 continue;
             }
             const doc = editor.document;
-            targetPage --;
-            let targetLine = 0;
-            if (targetPage > 0) {
-                let count = 0;
+            let targetLine = 1;
+            if (targetPage > 1) {
+                let count = 1;
                 for (let i = 0; i < doc.lineCount; i++) {
                     const lineText = doc.lineAt(i).text.trim();
                     if (lineText.startsWith('\\page')) {
                         count++;
                         if (count === targetPage) {
-                            targetLine = i;
+                            targetLine = i + 1;
                             break;
                         }
                     }
                 }
             }
-            targetLine ++;
+            vscode.window.showInformationMessage(`Jumping from Page ${targetPage}  to Line ${targetLine}`);
             const pos = new vscode.Position(targetLine, 0);
             const range = new vscode.Range(pos, pos);
+            editor.selection = new vscode.Selection(pos, pos);
             editor.revealRange(range, vscode.TextEditorRevealType.AtTop);
+            // Nudge the scroll up to account for sticky lines
+            const firstVisibleLine = editor.visibleRanges[0].start.line;
+            if (firstVisibleLine > 0) {
+                const delta = firstVisibleLine - targetLine;
+                // Scroll by delta lines above
+                editor.revealRange(
+                    new vscode.Range(
+                        new vscode.Position(targetLine - delta, 0),
+                        new vscode.Position(targetLine - delta, 0)
+                    ),
+                    vscode.TextEditorRevealType.AtTop
+                );
+            }
         }
     };
 
