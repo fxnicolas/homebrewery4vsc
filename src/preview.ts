@@ -75,6 +75,7 @@ export default class Preview {
             let currentHTMLContent = renderHTML(currentMarkdownText, this.context, true);
             this._resource = vscode.window.activeTextEditor.document.uri;
             this.panel.webview.html = currentHTMLContent;
+            this.updateZoomLevel();
             if (vscode.window.activeTextEditor.document.languageId === 'markdown' && getConfig().get('scrollPreviewWithEditor')) {
                 this.postMessage({
                     type: 'scroll',
