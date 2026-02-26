@@ -87,31 +87,13 @@ const TEMPLATE_HTML = `
                             -webkit-print-color-adjust:exact;
                             -webkit-filter:opacity(1);
                         }
-
-                        /* Following is used for PDF printing bug on MacOS */
-                        @media print {
-                            .page [class*='imageMaskCorner'] {
-                                display:none;
-                            }
-
-                            .page [class*='imageMask'] {
-                                display:none;
-                            }
-                        }
-                        /* Added for cheap printing */
-                        @media print {
-                        .page {
-                            background-image: none;
-                            background-color: #FFFFFF;
-                            }
-
-                        }
                         .page ul {
                         margin-top:0px;
                         padding-top:0px;
                         }
                     </style>
                     {{ custom_styles }}
+                    {{ background_handling_styles }}
                     <div class="pages" id="pagesContainer">
                         {{ body }}
                     </div>
@@ -137,7 +119,7 @@ function isWebUrl(url: string) {
     return res.protocol === "http:" || res.protocol === "https:";
 }
 
-function addCustomStyles(context: vscode.ExtensionContext, panel?: vscode.WebviewPanel) {
+function getCustomStyles(context: vscode.ExtensionContext, panel?: vscode.WebviewPanel) {
     //FIXME: Inline Custom Styles as Needed
     let styleElements = "";
     let conf = getConfig();
@@ -163,6 +145,78 @@ function addCustomStyles(context: vscode.ExtensionContext, panel?: vscode.Webvie
     }
     return styleElements;
 }
+
+function getBackgroundHandlingStyles(): string {
+    const config = getConfig();
+    const backgroundHandling = config.get<string>('hideBackground') || 'never';
+    let backgroundHandlingStyles = "";
+    backgroundHandlingStyles += (backgroundHandling === "onPrint" || backgroundHandling === "always") ? `
+            @media print {
+                .page {
+                    background-image: none;
+                    background-color: #FFFFFF;
+                    }
+            }` : "";
+    backgroundHandlingStyles += (backgroundHandling === "always") ? `
+            .page {
+                background-image: none;
+                background-color: #FFFFFF;
+            } !important
+            ` : "";
+    return backgroundHandlingStyles;
+
+};
+
+function getPageLayoutStyles(): string {
+    const config = getConfig();
+    const pageFormat = config.get<string>('pageFormat') || 'A4';
+    let pageLayoutStyles = '';
+    if (pageFormat === 'A4') {
+        pageLayoutStyles = `
+            .page {
+                width: 210mm;
+                height: 296.8mm;
+            }
+        `;
+    };
+    return pageLayoutStyles;
+}
+
+const scrollEventScript = `
+        <script>
+            // Jump to the corresponding page in the preview when a scroll event is received from the extension.
+            function jumpToPage(page) {
+                const anchor = "p" + page;
+                const el = document.getElementById(anchor);
+                if (el) {
+                    el.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            };
+
+            // Listens to scroll events from the extension and jumps to the corresponding page in the preview.
+            window.addEventListener('message', event => {
+            type = event.data.type;
+                if (type === 'scroll') {
+                    const { type, page } = event.data;
+                    anchor = "p" + page;
+                    jumpToPage(page);
+                }
+                if (type == 'layout') {
+                    const { layout } = event.data;
+                    const el = document.getElementById('pagesContainer');
+                    el.className = 'pages ' + layout
+                }
+                if (type == 'zoom') {
+                    const { zoomLevel } = event.data;
+                    const el = document.getElementById('pagesContainer');
+                    el.style.zoom= zoomLevel + '%';
+                }
+            });
+        </script>
+        `;
 
 export const htmlTemplate = (context: vscode.ExtensionContext, addScrollEventsScript: boolean) => {
 
@@ -199,58 +253,17 @@ export const htmlTemplate = (context: vscode.ExtensionContext, addScrollEventsSc
     cssContent = fs.readFileSync(cssPath, 'utf8');
     template = template.replace('{{ bundle_styles }}', `<style>\n${cssContent}\n</style>`);
 
-    // Add page layout styles based on page format config.
-    const pageFormat = config.get<string>('pageFormat') || 'A4';
-    let pageLayoutStyles = '';
-    if (pageFormat === 'A4') {
-        pageLayoutStyles = `
-            .page {
-                width: 210mm;
-                height: 296.8mm;
-            }
-        `;
-    };
-    template = template.replace('{{ page_layout_styles }}', `<style>\n${pageLayoutStyles}\n</style>`);
+    // Add page layout styles based on the settings.
+    template = template.replace('{{ page_layout_styles }}', `<style>\n${getPageLayoutStyles()}\n</style>`);
 
-    // Add Scroll Events Script if enabled in config.
-    template = template.replace('{{ scrollEventsScript }}', addScrollEventsScript ? `
-        <script>
-            // Jump to the corresponding page in the preview when a scroll event is received from the extension.
-            function jumpToPage(page) {
-                const anchor = "p" + page;
-                const el = document.getElementById(anchor);
-                if (el) {
-                    el.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            };
+    // Add Background Styles per the settings..
+    template = template.replace('{{ background_handling_styles }}', `<style>\n${getBackgroundHandlingStyles()}\n </style>`);
 
-            // Listens to scroll events from the extension and jumps to the corresponding page in the preview.
-            window.addEventListener('message', event => {
-            type = event.data.type;
-                if (type === 'scroll') {
-                    const { type, page } = event.data;
-                    anchor = "p" + page;
-                    jumpToPage(page);
-                }
-                if (type == 'layout') {
-                    const { layout } = event.data;
-                    const el = document.getElementById('pagesContainer');
-                    el.className = 'pages ' + layout
-                }
-                if (type == 'zoom') {
-                    const { zoomLevel } = event.data;
-                    const el = document.getElementById('pagesContainer');
-                    el.style.zoom= zoomLevel + '%';
-                }
-            });
-        </script>
-        ` : '');
+    // Add Scroll Events Script if enabled in settings.
+    template = template.replace('{{ scrollEventsScript }}', addScrollEventsScript ? scrollEventScript : '');
 
-    // Add Custom styles.
-    template = template.replace('{{ custom_styles }}', addCustomStyles(context));
+    // Add Custom styles configured in the settings
+    template = template.replace('{{ custom_styles }}', getCustomStyles(context));
 
     return template;
 };

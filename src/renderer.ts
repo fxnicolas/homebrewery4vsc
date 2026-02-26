@@ -55,6 +55,7 @@ export function renderHTML(text: string, context: vscode.ExtensionContext, addSc
     for (let i = 0; i < pages.length; i++) {
         htmlBody += renderPage(pages[i], i);
     }
-    let htmlOutput = htmlTemplate(context, addScrollEventsScript).replace('{{ body }}', htmlBody);
+    let template = htmlTemplate(context, addScrollEventsScript);
+    let htmlOutput = template ? template.replace('{{ body }}', htmlBody) : template;
     return htmlOutput;
 }

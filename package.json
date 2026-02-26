@@ -256,6 +256,26 @@
           "type": "boolean",
           "default": true,
           "description": "Enable font icons completion snippets. Disabling this removes them from the completion dropdown."
+        },
+        "homebrewery4vsc.hideBackground": {
+          "type": "string",
+          "enum": [
+            "never",
+            "onPrint",
+            "always"
+          ],
+          "markdownEnumDescriptions": [
+            "Always display the background",
+            "Hide the background when printing",
+            "Always hide the background"
+          ],
+          "enumItemLabels": [
+            "Never",
+            "When Printing",
+            "Always"
+          ],
+          "default": "never",
+          "description": "Hide the background image and color."
         }
       }
     },
