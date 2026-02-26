@@ -132,16 +132,16 @@ const scrollEventScript = `
 
                 // scroll: Jumps to the corresponding page in the preview.
                 if (type === 'scroll') {
-                    const { type, page } = event.data;
+                    const { type, page, mode } = event.data;
                     anchor = "p" + page;
                     const el = document.getElementById(anchor);
                     if (el) {
                         el.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
+                            behavior: mode,
+                            block: 'start',
+                            inline: 'start'
                         });
                     }
-                    jumpToPage(page);
                 }
                 
                 // layout: switches the layout to single page, two-pages or flow.

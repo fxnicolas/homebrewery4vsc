@@ -80,6 +80,7 @@ export default class Preview {
                 this.postMessage({
                     type: 'scroll',
                     page: computePageNumber(vscode.window.activeTextEditor.visibleRanges, vscode.window.activeTextEditor.document),
+                    mode: 'instant'
                 });
             }
         }
@@ -183,6 +184,7 @@ export default class Preview {
                     this.postMessage({
                         type: 'scroll',
                         page: computePageNumber(visibleRanges, textEditor.document),
+                        mode: 'smooth'
                     });
                 }
             });
