@@ -47,15 +47,19 @@ function iconFontProviderItems(iconEnum: any, fontName: string, itemPrefix: stri
     return items;
 }
 
-export const iconFontsProvider = vscode.languages.registerCompletionItemProvider(
-    { language: 'markdown' }, // or whatever language you target
-    {
-        provideCompletionItems() {
-            const items: vscode.CompletionItem[] = [];
-            items.push(...iconFontProviderItems(fontAwesome, 'Font Awesome', "fa._"));
-            items.push(...iconFontProviderItems(elderberryInn, 'Elderberry Inn', "ei_"));
-            items.push(...iconFontProviderItems(diceFont, "Dice Font", "df_"));
-            items.push(...iconFontProviderItems(gameIcons, "Games Icons", "gi_"));
-            return items;
-        }
-    });
+/**
+ * Generates completion items for all available icon fonts.
+ * 
+ * Aggregates completion items from multiple icon font sources including
+ * Font Awesome, Elderberry Inn, Dice Font, and Games Icons.
+ * 
+ * @returns {vscode.CompletionItem[]} Array of completion items for all icon fonts
+ */
+export function allIconFontsCompletionItems() {
+    const items : vscode.CompletionItem[] = [];
+    items.push(...iconFontProviderItems(fontAwesome, 'Font Awesome', "fa._"));
+    items.push(...iconFontProviderItems(elderberryInn, 'Elderberry Inn', "ei_"));
+    items.push(...iconFontProviderItems(diceFont, "Dice Font", "df_"));
+    items.push(...iconFontProviderItems(gameIcons, "Games Icons", "gi_"));
+    return items;
+};

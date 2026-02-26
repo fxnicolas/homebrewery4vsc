@@ -2,7 +2,8 @@
 import * as vscode from 'vscode';
 import Preview from './preview';
 import { generateFile } from './html-file-generator';
-import { iconFontsProvider } from './iconfonts-completions';
+import { allIconFontsCompletionItems } from './iconfonts-completions';
+import { EXTENSION_ID } from './constants';
 
 export function activate(context: vscode.ExtensionContext) {
 	let preview = new Preview(context);
@@ -46,9 +47,41 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(previewZoomIn);
 	context.subscriptions.push(previewZoomOut);
 	context.subscriptions.push(previewZoomReset);
+
 	// Icon fonts completion provider
-	context.subscriptions.push(iconFontsProvider);
+	let iconFontsProvider: vscode.Disposable | undefined;
+
+	// Enable or disable the Font Icon completion provider.
+	const toggleIconFontsProvider = () => {
+		const config = vscode.workspace.getConfiguration(EXTENSION_ID);
+		const enabled = config.get<boolean>('enableFontIconCompletions');
+		if (enabled && !iconFontsProvider) {
+			iconFontsProvider = vscode.languages.registerCompletionItemProvider(
+				{ language: 'markdown' },
+				{
+					provideCompletionItems() {
+						return allIconFontsCompletionItems();
+					}
+				}
+			);
+			context.subscriptions.push(iconFontsProvider);
+		}
+		if (!enabled && iconFontsProvider) {
+			iconFontsProvider.dispose();
+			iconFontsProvider = undefined;
+		}
+	};
+	// Enable/Disable the provider when activating the extension.
+	toggleIconFontsProvider();
+
+	// Enable/Disable the provider on settings changes.
+	vscode.workspace.onDidChangeConfiguration(e => {
+		if (e.affectsConfiguration(`${EXTENSION_ID}.enableFontIconCompletions`)) {
+			toggleIconFontsProvider();
+		}
+	});
+
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
