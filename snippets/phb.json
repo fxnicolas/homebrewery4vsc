@@ -115,7 +115,7 @@
             "}}"
         ],
         "description": "Spell List (Wide)"
-     },
+    },
     "Insert Quote": {
         "prefix": "Homebrewery Quote",
         "body": [
@@ -125,7 +125,7 @@
             "}}"
         ],
         "description": "Quote"
-     },
+    },
     "Insert Note": {
         "prefix": "Homebrewery Note",
         "body": [
@@ -137,7 +137,7 @@
             "}}"
         ],
         "description": "Note"
-     },
+    },
     "Insert Descriptive Text": {
         "prefix": "Homebrewery Descriptive Text",
         "body": [
@@ -149,7 +149,7 @@
             "}}"
         ],
         "description": "Descriptive Text Box"
-     },
+    },
     "Insert Class Features": {
         "prefix": "Homebrewery Class Features",
         "body": [
@@ -184,7 +184,7 @@
             "- a cherished lost sock"
         ],
         "description": "Class Features"
-     },
+    },
     "Insert Monster Stats Block (Unframed)": {
         "prefix": "Homebrewery Monster Stats Block",
         "body": [
@@ -226,7 +226,7 @@
             ""
         ],
         "description": "Monster Stats Block (Unframed)"
-     },
+    },
     "Insert Monster Stat Block (Framed)": {
         "prefix": "Homebrewery Monster Stats Block (Framed)",
         "body": [
@@ -265,7 +265,7 @@
             "}}"
         ],
         "description": "Monster Stat Block (Framed)"
-     },
+    },
     "Insert Monster Stat Block (Wide)": {
         "prefix": "Homebrewery Monster Stats Block (Wide)",
         "body": [
@@ -313,33 +313,7 @@
             ""
         ],
         "description": "Monster Stat Block (Wide) (Framed)"
-     },
-    "Insert Cover Page": {
-        "prefix": "Homebrewery Cover Page",
-        "body": [
-            "<style>",
-            ".page#p1{ text-align:center; counter-increment: none; }",
-            ".page#p1:after{ display:none; }",
-            ".page:nth-child(2n) .pageNumber { left: inherit !important; right: 2px !important; }",
-            ".page:nth-child(2n+1) .pageNumber { right: inherit !important; left: 2px !important; }",
-            ".page:nth-child(2n)::after { transform: scaleX(1); }",
-            ".page:nth-child(2n+1)::after { transform: scaleX(-1); }",
-            ".page:nth-child(2n) .footnote { left: inherit; text-align: right; }",
-            ".page:nth-child(2n+1) .footnote { left: 80px; text-align: left; }",
-            "</style>",
-            "",
-            "{{margin-top:225px}}",
-            "",
-            "# Below the Hungering River",
-            "",
-            "{{margin-top:25px}}",
-            "",
-            "{{wide",
-            "##### In a galaxy of dark magic and horror, in an age of hopelessness, four marines and an outlaw combat evil.",
-            "}}"
-        ],
-        "description": "Cover Page"
-     },
+    },
     "Insert Magic Item": {
         "prefix": "Homebrewery Magic Item",
         "body": [
@@ -352,5 +326,83 @@
             "opening this door."
         ],
         "description": "Magic Item"
+    },
+    "Insert Front Cover Page": {
+        "prefix": "Homebrewery Front Cover Page",
+        "body": [
+            "{{frontCover}}\n",
+            "{{logo ![](/assets/naturalCritLogoRed.svg)}}\n",
+            "# Evil Lake of the Merfolk",
+            "## Darkness Rising",
+            "___",
+            "{{banner HOMEBREW}}\n",
+            "{{footnote",
+            "  In a demon-haunted city, in an age of lies and hate, a physicist tries to find an ancient treasure and battles a mob of aliens.",
+            "}}\n",
+            "![background image](https://i.imgur.com/IwHRrbF.jpg){position:absolute,bottom:0,left:0,height:100%}\n",
+            "\\page"
+        ],
+        "description": "Front Cover Page"
+    },
+    "Insert Inside Cover Page": {
+        "prefix": "Homebrewery Inside Cover Page",
+        "body": [
+            "{{insideCover}}",
+            "",
+            "# Across Gruumsh's Elemental Chaos",
+            "## Dragon's Hoard",
+            "___",
+            "",
+            "{{imageMaskCenter13,--offsetX:0%,--offsetY:0%,--rotation:0",
+            "  ![background image](https://i.imgur.com/IsfUnFR.jpg){position:absolute,bottom:0,left:0,height:100%}",
+            "}}",
+            "",
+            "{{logo ![](/assets/naturalCritLogoRed.svg)}}",
+            "",
+            "\\page"
+        ],
+        "description": "Inside Cover Page"
+    },
+    "Insert Part Cover Page": {
+        "prefix": "Homebrewery Part Cover Page",
+        "body": [
+            "{{partCover}}",
+            "",
+            "# PART X",
+            "## Enchanted Forest",
+            "",
+            "{{imageMaskEdge6,--offset:10cm,--rotation:180",
+            "  ![Background image](https://i.imgur.com/9TU96xY.jpg){position:absolute,bottom:0,left:0,height:100%}",
+            "}}",
+            "",
+            "\\page"
+        ],
+        "description": "Part Cover Page"
+    },
+    "Insert Back Cover Page": {
+        "prefix": "Homebrewery Back Cover Page",
+        "body": [
+            "{{backCover}}",
+            "",
+            "# Tomb of Shadows",
+            "",
+            "Create your own character and enter a realm of endless possibilities, where you can be whoever you want to be. Whether you prefer to fight, sneak, charm, or craft your way through the game, you’ll find a style that suits you. The only limit is your imagination.",
+            ":",
+            "Enter a world of wonder and danger, where you can find allies and enemies among the various races and factions that inhabit it. You can choose to join or oppose any of them, or forge your own path. The game world is alive and responsive to your actions.",
+            ":",
+            "Dive into a world of epic fantasy and adventure, where you can explore ancient civilizations, dark dungeons, and hidden secrets. Along the way, you’ll meet colorful characters, collect powerful items, and learn new skills. The more you play, the more you’ll discover.",
+            "___",
+            "",
+            "For use with any fantasy roleplaying ruleset. Play the best game of your life!",
+            "",
+            "![background image",
+            "](https://i.imgur.com/MJ4YHu7.jpg){position:absolute,bottom:0,left:0,height:100%}",
+            "{{logo",
+            "![](/assets/naturalCritLogoWhite.svg)",
+            "",
+            "Homebrewery.Naturalcrit.com",
+            "}}"
+        ],
+        "description": "Back Cover Page"
     }
 }
