@@ -1,18 +1,44 @@
 {
-    "Insert Artist Credit": {
+	"Insert Artist Credit": {
 		"prefix": "Homebrewery Artist Credit",
-		"body": ["{{artist,bottom:160px,left:100px","##### Homebrew Mug","[naturalcrit](https://homebrew.naturalcrit.com)","}}"],
+		"body": [
+			"{{artist,bottom:160px,left:100px",
+			"##### Homebrew Mug",
+			"[naturalcrit](https://homebrew.naturalcrit.com)",
+			"}}"
+		],
 		"description": "Artist Credit (Use with Image)"
 	},
-	"Insert Waterstain or Splatter": {
-		"prefix": "Homebrewery Waterstain",
+	"Insert Watercolor Splatter": {
+		"prefix": "Homebrewery Watercolor Splatter",
 		"body": "{{watercolor1,top:20px,left:30px,width:300px,background-color:#BBAD82,opacity:80%}}",
-		"description": "Waterstain or Splatter Background Image"
+		"description": "Watercolor Splatter Background Image"
 	},
 	"Insert Image": {
 		"prefix": "Homebrewery Image",
-		"body": ["![cat warrior](https://s-media-cache-ak0.pinimg.com/736x/4a/81/79/4a8179462cfdf39054a418efd4cb743e.jpg) {width:325px,mix-blend-mode:multiply}","","{{artist,position:relative,top:-230px,left:10px,margin-bottom:-30px","##### Cat Warrior","[Kyoung Hwan Kim](https://www.artstation.com/tahra)","}}"],
+		"body": [
+			"![cat warrior](https://s-media-cache-ak0.pinimg.com/736x/4a/81/79/4a8179462cfdf39054a418efd4cb743e.jpg) {width:325px,mix-blend-mode:multiply}",
+			"",
+			"{{artist,position:relative,top:-230px,left:10px,margin-bottom:-30px",
+			"##### Cat Warrior",
+			"[Kyoung Hwan Kim](https://www.artstation.com/tahra)",
+			"}}"
+		],
 		"description": "Image (with Artist Credit)"
+	},
+	"Insert Image (Wrap Left)": {
+		"prefix": "Homebrewery Image (Wrap Left)",
+		"body": [
+			"![homebrewery_mug](http://i.imgur.com/hMna6G0.png) {width:280px,margin-right:-3cm,wrapLeft}"
+		],
+		"description": "Image (Wrap Left)"
+	},
+	"Insert Image (Wrap Right)": {
+		"prefix": "Homebrewery Image (Wrap Right)",
+		"body": [
+			"![homebrewery_mug](http://i.imgur.com/hMna6G0.png) {width:280px,margin-right:-3cm,wrapRight}"
+		],
+		"description": "Image (Wrap Right)"
 	},
 	"Insert Background Image": {
 		"prefix": "Homebrewery Background Image",
@@ -23,5 +49,109 @@
 		"prefix": "Homebrewery Watermark",
 		"body": "{{watermark Homebrewery for VS Code}}",
 		"description": "Watermark Text"
+	},
+	"Insert Watercolor Center": {
+		"prefix": "Homebrewery Watercolor Center",
+		"body": [
+			"{{imageMaskCenter6,--offsetX:0%,--offsetY:0%,--rotation:0",
+			"![](https://i.imgur.com/GZfjDWV.png){height:100%}",
+			"}}",
+			"<!-- Use --offsetX to shift the mask left or right (can use cm instead of %)",
+			"Use --offsetY to shift the mask up or down",
+			"Use --rotation to set rotation angle in degrees. -->"
+		],
+		"description": "Image Watercolor (Center)"
+	},
+	"Insert Watercolor Top": {
+		"prefix": "Homebrewery Watercolor Top",
+		"body": [
+			"{{imageMaskEdge8,--offset:0%,--rotation:180",
+			"![](https://i.imgur.com/GZfjDWV.png){height:100%}",
+			"}}",
+			"<!-- Use --offset to shift the mask away from page center (can use cm instead of %)",
+			"Use --rotation to set rotation angle in degrees. -->"
+		],
+		"description": "Image Watercolor (Top Edge)"
+	},
+	"Insert Watercolor Right": {
+		"prefix": "Homebrewery Watercolor Right",
+		"body": [
+			"{{imageMaskEdge7,--offset:0%,--rotation:270",
+			"![](https://i.imgur.com/GZfjDWV.png){height:100%}",
+			"}}",
+			"<!-- Use --offset to shift the mask away from page center (can use cm instead of %)",
+			"Use --rotation to set rotation angle in degrees. -->"
+		],
+		"description": "Image Watercolor (Right Edge)"
+	},
+	"Insert Watercolor Bottom": {
+		"prefix": "Homebrewery Watercolor Bottom",
+		"body": [
+			"{{imageMaskEdge5,--offset:0%,--rotation:0",
+			"![](https://i.imgur.com/GZfjDWV.png){height:100%}",
+			"}}",
+			"<!-- Use --offset to shift the mask away from page center (can use cm instead of %)",
+			"Use --rotation to set rotation angle in degrees. -->"
+		],
+		"description": "Image Watercolor (Bottom Edge)"
+	},
+	"Insert Watercolor Left": {
+		"prefix": "Homebrewery Watercolor Left",
+		"body": [
+			"{{imageMaskEdge8,--offset:0%,--rotation:90",
+			"![](https://i.imgur.com/GZfjDWV.png){height:100%}",
+			"}}",
+			"<!-- Use --offset to shift the mask away from page center (can use cm instead of %)",
+			"Use --rotation to set rotation angle in degrees. -->"
+		],
+		"description": "Image Watercolor (Left Edge)"
+	},
+	"Insert Watercolor Top-Left": {
+		"prefix": "Homebrewery Watercolor Top-Left",
+		"body": [
+			"{{imageMaskCorner17,--offsetX:-50%,--offsetY:50%,--rotation:0",
+			"![](https://i.imgur.com/GZfjDWV.png){height:100%}",
+			"}}",
+			"<!-- Use --offsetX to shift the mask left or right (can use cm instead of %)",
+			"Use --offsetY to shift the mask up or down",
+			"Use --rotation to set rotation angle in degrees. -->"
+		],
+		"description": "Image Watercolor (Top-Left Corner)"
+	},
+	"Insert Watercolor Top-Right": {
+		"prefix": "Homebrewery Watercolor Top-Right",
+		"body": [
+			"{{imageMaskCorner8,--offsetX:50%,--offsetY:50%,--rotation:0",
+			"![](https://i.imgur.com/GZfjDWV.png){height:100%}",
+			"}}",
+			"<!-- Use --offsetX to shift the mask left or right (can use cm instead of %)",
+			"Use --offsetY to shift the mask up or down",
+			"Use --rotation to set rotation angle in degrees. -->"
+		],
+		"description": "Image Watercolor (Top-Right Corner)"
+	},
+	"Insert Watercolor Bottom-Left": {
+		"prefix": "Homebrewery Watercolor Bottom-Left",
+		"body": [
+			"{{imageMaskCorner8,--offsetX:-50%,--offsetY:-50%,--rotation:0",
+			"![](https://i.imgur.com/GZfjDWV.png){height:100%}",
+			"}}",
+			"<!-- Use --offsetX to shift the mask left or right (can use cm instead of %)",
+			"Use --offsetY to shift the mask up or down",
+			"Use --rotation to set rotation angle in degrees. -->"
+		],
+		"description": "Image Watercolor (Bottom-Left Corner)"
+	},
+	"Insert Watercolor Bottom-Right": {
+		"prefix": "Homebrewery Watercolor Bottom-Right",
+		"body": [
+			"{{imageMaskCorner10,--offsetX:50%,--offsetY:-50%,--rotation:0",
+			"![](https://i.imgur.com/GZfjDWV.png){height:100%}",
+			"}}",
+			"<!-- Use --offsetX to shift the mask left or right (can use cm instead of %)",
+			"Use --offsetY to shift the mask up or down",
+			"Use --rotation to set rotation angle in degrees. -->"
+		],
+		"description": "Image Watercolor (Bottom-Right Corner)"
 	}
 }
