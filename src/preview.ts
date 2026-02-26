@@ -64,7 +64,7 @@ export default class Preview {
         this.context = context;
     };
 
-    async handleTextDocumentChange() {
+    async refresh() {
         if (vscode.window.activeTextEditor && this.checkDocumentIsMarkdown(true) && this.panel && this.panel !== undefined) {
             let currentMarkdownText = vscode.window.activeTextEditor.document.getText();
             const filePaths = vscode.window.activeTextEditor.document.fileName.split('/');
@@ -170,12 +170,12 @@ export default class Preview {
 
             // And set its HTML content
             this.editor = vscode.window.activeTextEditor;
-            await this.handleTextDocumentChange.call(this);
+            await this.refresh.call(this);
 
-            vscode.workspace.onDidChangeTextDocument(await this.handleTextDocumentChange.bind(this));
-            vscode.workspace.onDidChangeConfiguration(await this.handleTextDocumentChange.bind(this));
-            vscode.workspace.onDidSaveTextDocument(await this.handleTextDocumentChange.bind(this));
-            vscode.window.onDidChangeActiveTextEditor(await this.handleTextDocumentChange.bind(this));
+            vscode.workspace.onDidChangeTextDocument(await this.refresh.bind(this));
+            vscode.workspace.onDidChangeConfiguration(await this.refresh.bind(this));
+            vscode.workspace.onDidSaveTextDocument(await this.refresh.bind(this));
+            vscode.window.onDidChangeActiveTextEditor(await this.refresh.bind(this));
 
             vscode.window.onDidChangeTextEditorVisibleRanges(({ textEditor, visibleRanges }) => {
                 if (textEditor.document.languageId === 'markdown' && getConfig().get('scrollPreviewWithEditor')) {
