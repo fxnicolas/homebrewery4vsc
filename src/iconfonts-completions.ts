@@ -52,7 +52,7 @@ export const iconFontsProvider = vscode.languages.registerCompletionItemProvider
     {
         provideCompletionItems() {
             const items: vscode.CompletionItem[] = [];
-            items.push(...iconFontProviderItems(fontAwesome, 'Font Awesome', "fas_"));
+            items.push(...iconFontProviderItems(fontAwesome, 'Font Awesome', "fa._"));
             items.push(...iconFontProviderItems(elderberryInn, 'Elderberry Inn', "ei_"));
             items.push(...iconFontProviderItems(diceFont, "Dice Font", "df_"));
             items.push(...iconFontProviderItems(gameIcons, "Games Icons", "gi_"));
