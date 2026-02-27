@@ -4,6 +4,7 @@
   "description": "Edit your favorite RPG content in your favavorite editor",
   "version": "0.0.1",
   "publisher": "fxnicolas",
+  "author": { "name": "FX Nicolas", "url": "https://github.com/fxnicolas"},
   "license": "MIT",
   "icon": "media/favicons/favicon_circled.png",
   "repository": {
