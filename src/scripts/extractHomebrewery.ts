@@ -20,7 +20,15 @@ const HOMEBREWERY_FILES_AND_FOLDER = [
     "/build/assets/",
     "/build/fonts/",
     "/shared/markdown.js",
-    { from: "/build/homebrew/bundle.css", to: "/build/themes/homebrewery/bundle.css" }
+    { from: "/build/homebrew/bundle.css", to: "/build/themes/homebrewery/bundle.css" },
+];
+
+const MARKDOWN_AND_ICONFONTS = [
+    { from: "/shared/markdown.js", to: "/src/homebrewery/renderer/markdown.js"},
+    { from: "/build/fonts/iconFonts/diceFont.js", to: "/src/homebrewery/themes/fonts/iconFonts/diceFont.js"},
+    { from: "/build/fonts/iconFonts/elderberryInn.js", to: "/src/homebrewery/themes/fonts/iconFonts/elderberryInn.js" },
+    { from: "/build/fonts/iconFonts/fontAwesome.js", to: "/src/homebrewery/themes/fonts/iconFonts/fontAwesome.js" },
+    { from: "/build/fonts/iconFonts/gameIcons.js", to: "/src/homebrewery/themes/fonts/iconFonts/gameIcons.js" }
 ];
 
 const TMP_DIR = path.resolve(".tmp");
@@ -61,7 +69,7 @@ function findRepositoryRoot(): string {
     return path.join(EXTRACT_DIR, entries[0]);
 }
 
-function copyFilesAndFolders(repoRoot: string, fileList: CopyEntry[], workDir: string) {
+function copyFilesAndFolders(sourceDir: string, fileList: CopyEntry[], targetDir: string) {
     for (const entry of fileList) {
         let relativeSource: string;
         let relativeTarget: string;
@@ -77,8 +85,8 @@ function copyFilesAndFolders(repoRoot: string, fileList: CopyEntry[], workDir: s
         relativeSource = relativeSource.replace(/^\/+/, "");
         relativeTarget = relativeTarget.replace(/^\/+/, "");
 
-        const sourcePath = path.join(repoRoot, relativeSource);
-        const targetPath = path.join(workDir, relativeTarget);
+        const sourcePath = path.join(sourceDir, relativeSource);
+        const targetPath = path.join(targetDir, relativeTarget);
 
         if (!fs.existsSync(sourcePath)) {
             console.log(`.. ⚠️ Source not found: ${sourcePath}`);
@@ -227,6 +235,9 @@ async function build() {
         inlineCssFilesInDir(SOURCE_CSS_FOLDER, SOURCE_CSS_FOLDER, TARGET_CSS_FOLDER);
         console.log('Theme build complete.');
         // TODO: Add copy for markdown.js and icon fonts.
+        console.log(`Copying Markdown and IconFont js to ${WORKSPACE_ROOT}...`);
+        copyFilesAndFolders(repositoryRoot, MARKDOWN_AND_ICONFONTS, WORKSPACE_ROOT);
+        // console.log('Cleaning up temporary folder.');
         // cleanUp();
     }
 }

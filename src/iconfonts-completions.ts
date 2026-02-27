@@ -1,8 +1,8 @@
 'use strict';
-import diceFont from './homebrewery/fonts/iconFonts/diceFont.js';
-import elderberryInn from './homebrewery/fonts/iconFonts/elderberryInn.js';
-import fontAwesome from './homebrewery/fonts/iconFonts/fontAwesome.js';
-import gameIcons from './homebrewery/fonts/iconFonts/gameIcons.js';
+import diceFont from './homebrewery/themes/fonts/iconFonts/diceFont.js';
+import elderberryInn from './homebrewery/themes/fonts/iconFonts/elderberryInn.js';
+import fontAwesome from './homebrewery/themes/fonts/iconFonts/fontAwesome.js';
+import gameIcons from './homebrewery/themes/fonts/iconFonts/gameIcons.js';
 
 import * as vscode from 'vscode';
 

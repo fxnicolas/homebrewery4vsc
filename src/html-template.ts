@@ -215,7 +215,6 @@ export const htmlTemplate = (context: vscode.ExtensionContext, addScrollEventsSc
     template = template.replace('{{ theme_styles }}', `<style>\n${cssContent}\n</style>`);
 
     // Add Bundle styles. 
-    //FIXME: Added Bundle.css temporarily by copying it from the Homebrewery website. Assets inlining is not done yet.
     cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/', 'bundle.css');
     cssContent = fs.readFileSync(cssPath, 'utf8');
     template = template.replace('{{ bundle_styles }}', `<style>\n${cssContent}\n</style>`);

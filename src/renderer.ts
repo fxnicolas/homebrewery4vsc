@@ -1,6 +1,6 @@
 'use strict';
 import * as vscode from 'vscode';
-import Markdown from './homebrewery/markdown.js';
+import Markdown from './homebrewery/renderer/markdown.js';
 import { htmlTemplate } from './html-template';
 
 // @ts-ignore
