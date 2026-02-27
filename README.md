@@ -1,73 +1,74 @@
 # Homebrewery for VS Code
 
-Edit your favorite RPG content in your favavorite editor.
+Edit your favorite RPG content in your favorite editor.
 
-//TODO: Complete README.md
+This VS Code extension provides an editor for the [Homebrewery](https://homebrewery.naturalcrit.com/) content with completion snippets and a built-in live preview.
+
+Inspired by some [related projects](#related-projects) which do not support the new elements and is no longer updated.
+
+## Installation
+
+Requires [Visual Studio Code](https://code.visualstudio.com/download). Once VSCode is installed, search for the extension or install it from [here](https://marketplace.visualstudio.com/items?itemName=fxnicolas.homebrewery4vsc).
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+This extension provides the following features:
 
-For example if there is an image subfolder under your extension project workspace:
+* **Extended Markdown editor** to generate beautiful documents in the style of the Dungeons & Dragons books and resources.
+* Snippets for the **Homebrewery syntax**.
+* **Live Preview** with synchronized scrolling. Click in the preview to scroll the editor.
+* **Generate HTML** for PDF printing.
 
-\!\[feature X\]\(images/feature-x.png\)
+### Commands
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+From a markdown editor:
 
-## Requirements
+* **Homebrewery: Open Preview** opens a live preview.
+* **Homebrewery: Open Preview to the Side** opens a preview to the side of the current editor.
+* **Homebrewery: Generate HTML** generates a plain HTML file named after the markdown file. This file can be viewed and printed as PDF from a web browser.
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+From the preview:
+
+* **Homebrewery: Change Layout to ...** switches the layout to single page, two pages and flow.
+* **Homebrewery: Change Zoom In/Out Preview** zooms the preview.
+* **Homebrewery: Reset Preview Zoom** resets the zoom.
+
+### Preview and HTML Output
+
+The preview automatically scrolls with the editor position. To scroll the editor to a specific page, click that page in the preview.
+
+You can configure the preview behavior and HTML output in the [extension settings](#extension-settings).
+
+### Snippets
+
+Snippets provide access to the extended Markdown syntax implemented by Homebrewery.
+
+Snippets can be accessed with `CTRL+Space` in Markdown documents. Homebrewery snippets start with `Homebrewery`.
+
+Font icons provided in Homebrewery are also available as snippets. These start with `Font Icon`. As these snippets can clutter the completion dropdown, you can disable them with the `homebrewery4vsc.enableFontIconCompletions` [setting](#extension-settings).
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+This extension exposes the following settings:
 
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+* `homebrewery4vsc.enableFontIconCompletions`: Enable/disable the font icon completion snippers.
+* `homebrewery4vsc.scrollPreviewWithEditor`: Enable/disable preview scrolling with the editor.
+* `homebrewery4vsc.theme`: The theme (Player's Hanbook, Dungeon Master's Guide, etc) used in preview and the HTML output.
+* `homebrewery4vsc.pageFormet`: Preview and HTML output page format (A4 or Letter).
+* `homebrewery4vsc.hideBackground`: Hide the background image and color in the preview or the HTML output.
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+* Editor scrolling not precise when clicking a page in the preview.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
-
 ### 1.0.0
 
-Initial release of ...
+Initial release of Homebrewery for VS Code
 
-### 1.0.1
+## Related Projects
 
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+- [Homebrewery](https://github.com/naturalcrit/homebrewery)
+- [Dungeon and Markdown](https://marketplace.visualstudio.com/items?itemName=SpjakSoftware.dungeonsandmarkdown)
+- [Homebrewery Preview](https://marketplace.visualstudio.com/items?itemName=officerhalf.homebrewery-vscode)

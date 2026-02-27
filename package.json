@@ -2,7 +2,7 @@
   "name": "homebrewery4vsc",
   "displayName": "Homebrewery for VS Code",
   "description": "Edit your favorite RPG content in your favavorite editor",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "publisher": "fxnicolas",
   "author": { "name": "FX Nicolas", "url": "https://github.com/fxnicolas"},
   "license": "MIT",
@@ -15,7 +15,8 @@
     "vscode": "^1.109.0"
   },
   "categories": [
-    "Other"
+    "Other",
+    "Snippets"
   ],
   "keywords": [
     "dnd",
