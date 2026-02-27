@@ -5,7 +5,7 @@
   "version": "0.0.1",
   "publisher": "fxnicolas",
   "license": "MIT",
-  "icon": "media/favicons/icon.png",
+  "icon": "media/favicons/favicon_circled.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/fxnicolas/homebrewery4vsc"
@@ -101,7 +101,10 @@
       {
         "command": "homebrewery4vsc.previewZoomReset",
         "title": "Homebrewery: Reset Preview Zoom",
-        "icon": "$(search)"
+        "icon": {
+          "light": "./media/icons/zoom-reset.svg",
+          "dark": "./media/icons/zoom-reset_dark.svg"
+        }
       }
     ],
     "menus": {
