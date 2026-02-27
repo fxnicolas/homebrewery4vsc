@@ -5,8 +5,6 @@ import url from 'postcss-url';
 import AdmZip from "adm-zip";
 import { fileURLToPath } from 'url';
 
-//TODO: IMPORTANT: Automate the PackHomebrew script.
-
 const HOMEBREWERY_REPO_ZIP_URL =
     "https://github.com/naturalcrit/homebrewery/archive/refs/heads/master.zip";
 
@@ -234,7 +232,6 @@ async function build() {
         console.log('Inlining URLs in CSS Files...');
         inlineCssFilesInDir(SOURCE_CSS_FOLDER, SOURCE_CSS_FOLDER, TARGET_CSS_FOLDER);
         console.log('Theme build complete.');
-        // TODO: Add copy for markdown.js and icon fonts.
         console.log(`Copying Markdown and IconFont js to ${WORKSPACE_ROOT}...`);
         copyFilesAndFolders(repositoryRoot, MARKDOWN_AND_ICONFONTS, WORKSPACE_ROOT);
         // console.log('Cleaning up temporary folder.');
