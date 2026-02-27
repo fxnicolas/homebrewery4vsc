@@ -6,3 +6,4 @@ node_modules
 DEVNOTES.md
 /homebrewery
 .DS_Store
+.tmp

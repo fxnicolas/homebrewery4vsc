@@ -190,7 +190,7 @@ export const htmlTemplate = (context: vscode.ExtensionContext, addScrollEventsSc
     let template = TEMPLATE_HTML;
 
     // Add Blank styles as default. 
-    let cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/V3/Blank/', 'style.css');
+    let cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/Blank/', 'style.css');
     let cssContent = fs.readFileSync(cssPath, 'utf8');
     template = template.replace('{{ base_styles }}', `<style>\n${cssContent}\n</style>`);
 
@@ -199,16 +199,16 @@ export const htmlTemplate = (context: vscode.ExtensionContext, addScrollEventsSc
     const currentTheme = config.get<string>('theme') || '5ePHB';
     // Journal Theme
     if (currentTheme === 'Journal') {
-        cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/V3/', currentTheme, 'style.css');
+        cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/', currentTheme, 'style.css');
         cssContent = fs.readFileSync(cssPath, 'utf8');
     }
     // PHB or DMG Theme
     if (currentTheme === '5ePHB' || currentTheme === '5eDMG') {
-        cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/V3/5ePHB/', 'style.css');
+        cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/5ePHB/', 'style.css');
         cssContent = fs.readFileSync(cssPath, 'utf8');
         // DMG Only
         if (currentTheme === '5eDMG') {
-            cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/V3/', currentTheme, 'style.css');
+            cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/', currentTheme, 'style.css');
             cssContent = cssContent + fs.readFileSync(cssPath, 'utf8');
         }
     }
@@ -216,7 +216,7 @@ export const htmlTemplate = (context: vscode.ExtensionContext, addScrollEventsSc
 
     // Add Bundle styles. 
     //FIXME: Added Bundle.css temporarily by copying it from the Homebrewery website. Assets inlining is not done yet.
-    cssPath = path.join(context.extensionPath, THEMES_FOLDER, 'bundle.css');
+    cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/', 'bundle.css');
     cssContent = fs.readFileSync(cssPath, 'utf8');
     template = template.replace('{{ bundle_styles }}', `<style>\n${cssContent}\n</style>`);
 
