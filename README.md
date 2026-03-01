@@ -57,6 +57,13 @@ This extension exposes the following settings:
 * `homebrewery4vsc.pageFormet`: Preview and HTML output page format (A4 or Letter).
 * `homebrewery4vsc.hideBackground`: Hide the background image and color in the preview or the HTML output.
 
+## Credits
+
+This extension is inspired from the [**Dungeon and Markdown**](https://marketplace.visualstudio.com/items?itemName=SpjakSoftware.dungeonsandmarkdown) extension by Spjak Software (Jacob Olesen).
+
+This extension uses the Themes and Markdown Renderer from [**The Homebrewery**](https://github.com/naturalcrit/homebrewery), under the MIT license.
+The Homebrewery is copyright (c) 2016 Scott Tolksdorf
+
 ## FAQ
 
 ### How to hide the default Markdown Preview button?
@@ -64,8 +71,6 @@ This extension exposes the following settings:
 VS Code comes with a default markdown preview, which adds to the markdown editor's toolbar a button labelled *Open Preview to the Side*. To hide it from the toolbar, right-click the button and select *Hide 'Open Preview to the Side'*, as shown below. You can restore it later if needed.
 
 <img src="./media/images/hide-default-markdown-preview-button.png" alt="Hide 'Open Preview to the Side'" style="width:400px;"/>
-
-
 
 ## Known Issues
 
@@ -81,4 +86,3 @@ Initial release of Homebrewery for VS Code
 
 - [Homebrewery](https://github.com/naturalcrit/homebrewery)
 - [Dungeon and Markdown](https://marketplace.visualstudio.com/items?itemName=SpjakSoftware.dungeonsandmarkdown)
-- [Homebrewery Preview](https://marketplace.visualstudio.com/items?itemName=officerhalf.homebrewery-vscode)
