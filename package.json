@@ -224,7 +224,7 @@
             "pattern": "^.*css$"
           },
           "uniqueItems": true,
-          "markdownDescription": "Custom style sheets added to all previews and file generations\n\nRequires either a fully qualified url e.g. `https://www.example.com/custom.css` or a file path relative to the open workspace, e.g. `styles\\custom.css`"
+          "markdownDescription": "Custom style sheets added to the preview and generated files\n\nThis file can be a url `https://www.mysite.com/custom.css` or a file path relative to the open workspace, e.g. `styles\\mystyles.css`"
         },
         "homebrewery4vsc.theme": {
           "type": "string",

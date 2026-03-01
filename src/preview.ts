@@ -65,19 +65,27 @@ export default class Preview {
     };
 
     async refresh() {
-        if (vscode.window.activeTextEditor && this.checkDocumentIsMarkdown(true) && this.panel && this.panel !== undefined) {
-            let currentMarkdownText = vscode.window.activeTextEditor.document.getText();
-            const filePaths = vscode.window.activeTextEditor.document.fileName.split('/');
+        const editor = vscode.window.activeTextEditor;
+        //FIXME: ActiveTextEditor seems unset on a refresh. 
+        //FIXME: WebView is Disposed Error occurs frequently
+        //FIXME: Previewers are all refreshing from the same text editor
+        if (!editor) {
+            vscode.window.showWarningMessage("No active editor");
+            return;
+        }
+        if (editor && this.checkDocumentIsMarkdown(true) && this.panel) {
+            let currentMarkdownText = editor.document.getText();
+            const filePaths = editor.document.fileName.split('/');
             const fileName = filePaths[filePaths.length - 1];
             this.panel.title = `[Preview] ${fileName}`;
-            let currentHTMLContent = renderHTML(currentMarkdownText, this.context, true);
-            this._resource = vscode.window.activeTextEditor.document.uri;
+            let currentHTMLContent = await renderHTML(currentMarkdownText, this.context, true);
+            this._resource = editor.document.uri;
             this.panel.webview.html = currentHTMLContent;
             this.updateZoomLevel();
-            if (vscode.window.activeTextEditor.document.languageId === 'markdown' && getConfig().get('scrollPreviewWithEditor')) {
+            if (editor.document.languageId === 'markdown' && getConfig().get('scrollPreviewWithEditor')) {
                 this.postMessage({
                     type: 'scroll',
-                    page: computePageNumber(vscode.window.activeTextEditor.visibleRanges, vscode.window.activeTextEditor.document),
+                    page: computePageNumber(editor.visibleRanges, editor.document),
                     mode: 'instant'
                 });
             }
@@ -226,7 +234,7 @@ export default class Preview {
                     }
                 }
             }
-            vscode.window.showInformationMessage(`Jumping from Page ${targetPage}  to Line ${targetLine}`);
+            // vscode.window.showInformationMessage(`Jumping from Page ${targetPage}  to Line ${targetLine}`);
             const pos = new vscode.Position(targetLine, 0);
             const range = new vscode.Range(pos, pos);
             editor.selection = new vscode.Selection(pos, pos);

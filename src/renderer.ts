@@ -48,14 +48,14 @@ function renderPage(pageText: string, index: number) {
     return pageBody;
 }
 
-export function renderHTML(text: string, context: vscode.ExtensionContext, addScrollEventsScript: boolean = false) {
+export async function renderHTML(text: string, context: vscode.ExtensionContext, addScrollEventsScript: boolean = false) : Promise < string > {
     // This function is the main entry point for rendering the markdown text into HTML. It takes the markdown text, the extension context, and optionally the webview panel and filename as input. It returns the final HTML output that can be displayed in the webview or saved to a file.
     let pages = preProcessText(text).split(/^\\page$/gm);
     let htmlBody = "";
     for (let i = 0; i < pages.length; i++) {
         htmlBody += renderPage(pages[i], i);
     }
-    let template = htmlTemplate(context, addScrollEventsScript);
+    let template = await htmlTemplate(context, addScrollEventsScript);
     let htmlOutput = template ? template.replace('{{ body }}', htmlBody) : template;
     return htmlOutput;
 }

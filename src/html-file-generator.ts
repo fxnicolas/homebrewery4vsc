@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { renderHTML } from './renderer';
 
-export function generateFile(context: vscode.ExtensionContext) {
+export async function generateFile(context: vscode.ExtensionContext) {
     let editor = vscode.window.activeTextEditor;
     let doc = editor?.document;
     if (!editor || doc?.languageId !== 'markdown') {
@@ -28,7 +28,7 @@ export function generateFile(context: vscode.ExtensionContext) {
     }
 
     let text = editor?.document.getText();
-    let res = text ? renderHTML(text, context, false) : "";
+    let res = text ? await renderHTML(text, context, false) : "";
 
     res ? fs.writeFileSync(outPath, res, 'utf8') : null;
 }

@@ -60,31 +60,58 @@ function isWebUrl(url: string) {
     return res.protocol === "http:" || res.protocol === "https:";
 }
 
-function getCustomStyles(context: vscode.ExtensionContext, panel?: vscode.WebviewPanel) {
-    //FIXME: Inline Custom Styles as Needed
-    let styleElements = "";
-    let conf = getConfig();
-    const styleFiles = conf.get("customStyleSheets") ? conf.get("customStyleSheets") as [] : [];
-    for (let file of styleFiles) {
-        // File path is a web url e.g. https://example.com/custom.css. Works in preview and generate html
-        if (isWebUrl(file)) {
-            styleElements += `<link href='${file}' rel='stylesheet' />\n`;
-        }
-        // File path is local
-        else {
-            let wsPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri : vscode.Uri.parse("");
-            let fullPath = vscode.Uri.joinPath(wsPath, file);
-            // Rewrite file path for preview
-            if (context && panel) {
-                styleElements += `<link href='${panel.webview.asWebviewUri(fullPath)}' rel='stylesheet' />\n`;
+async function getCustomStyles(context: vscode.ExtensionContext, panel?: vscode.WebviewPanel): Promise<string> {
+    const conf = getConfig();
+    const styleFiles: string[] = conf.get("customStyleSheets") ?? [];
+
+    let combinedCss = "";
+    for (const file of styleFiles) {
+
+        try {
+            // Remote CSS (http/https)
+            if (isWebUrl(file)) {
+                const response = await fetch(file);
+                if (!response.ok) {
+                    vscode.window.showErrorMessage(`Failed to fetch Custom CSS: ${file}`);
+                    continue;
+                }
+                const css = await response.text();
+                combinedCss += `\n/* Source: ${file} */\n${css}\n`;
             }
-            // Rewrite file path for generate html
+
+            // Local file
             else {
-                styleElements += `<link href='${fullPath}' rel='stylesheet' />\n`;
+                const wsFolder = vscode.workspace.workspaceFolders?.[0];
+                if (!wsFolder) { continue; };
+
+                const fullUri = vscode.Uri.joinPath(wsFolder.uri, file);
+                try {
+                    const fileBuffer = await vscode.workspace.fs.readFile(fullUri);
+                    const css = Buffer.from(fileBuffer).toString("utf8");
+                    combinedCss += `\n/* Source: ${fullUri.fsPath} */\n${css}\n`;
+                }
+                catch (err: any) {
+
+                    if (err instanceof vscode.FileSystemError &&
+                        err.code === 'FileNotFound') {
+
+                        vscode.window.showErrorMessage(
+                            `Custom CSS file not found: ${file}`
+                        );
+                    } else {
+                        vscode.window.showErrorMessage(
+                            `Error reading CSS file: ${file}`
+                        );
+                    }
+                }
+
             }
+        } catch (err) {
+            console.warn(`Error loading CSS file: ${file}`, err);
         }
     }
-    return styleElements;
+
+    return combinedCss;
 }
 
 function getBackgroundHandlingStyles(): string {
@@ -185,51 +212,58 @@ const scrollEventScript = `
         </script>
         `;
 
-export const htmlTemplate = (context: vscode.ExtensionContext, addScrollEventsScript: boolean) => {
-
+export const htmlTemplate = async (context: vscode.ExtensionContext, addScrollEventsScript: boolean): Promise<string> => {
     let template = TEMPLATE_HTML;
 
     // Add Blank styles as default. 
     let cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/Blank/', 'style.css');
-    let cssContent = fs.readFileSync(cssPath, 'utf8');
+
+    let cssContent = await fs.promises.readFile(cssPath, 'utf8');
+
     template = template.replace('{{ base_styles }}', `<style>\n${cssContent}\n</style>`);
 
-    // Add Theme styles. 
+    // Add Theme styles
     const config = getConfig();
     const currentTheme = config.get<string>('theme') || '5ePHB';
-    // Journal Theme
+
     if (currentTheme === 'Journal') {
         cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/', currentTheme, 'style.css');
-        cssContent = fs.readFileSync(cssPath, 'utf8');
+        cssContent = await fs.promises.readFile(cssPath, 'utf8');
     }
-    // PHB or DMG Theme
+
     if (currentTheme === '5ePHB' || currentTheme === '5eDMG') {
         cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/5ePHB/', 'style.css');
-        cssContent = fs.readFileSync(cssPath, 'utf8');
-        // DMG Only
+        cssContent = await fs.promises.readFile(cssPath, 'utf8');
+
         if (currentTheme === '5eDMG') {
             cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/', currentTheme, 'style.css');
-            cssContent = cssContent + fs.readFileSync(cssPath, 'utf8');
+
+            cssContent += await fs.promises.readFile(cssPath, 'utf8');
         }
     }
+
     template = template.replace('{{ theme_styles }}', `<style>\n${cssContent}\n</style>`);
 
-    // Add Bundle styles. 
+    // Add Bundle styles
     cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/', 'bundle.css');
-    cssContent = fs.readFileSync(cssPath, 'utf8');
+
+    cssContent = await fs.promises.readFile(cssPath, 'utf8');
+
     template = template.replace('{{ bundle_styles }}', `<style>\n${cssContent}\n</style>`);
 
-    // Add page layout styles based on the settings.
+    // Page layout styles
     template = template.replace('{{ page_layout_styles }}', `<style>\n${getPageLayoutStyles()}\n</style>`);
 
-    // Add Background Styles per the settings..
-    template = template.replace('{{ background_handling_styles }}', `<style>\n${getBackgroundHandlingStyles()}\n </style>`);
+    // Background styles
+    template = template.replace('{{ background_handling_styles }}', `<style>\n${getBackgroundHandlingStyles()}\n</style>`);
 
-    // Add Scroll Events Script if enabled in settings.
+    // Scroll events
     template = template.replace('{{ scrollEventsScript }}', addScrollEventsScript ? scrollEventScript : '');
 
-    // Add Custom styles configured in the settings
-    template = template.replace('{{ custom_styles }}', getCustomStyles(context));
+    // Custom styles (now async)
+    const customStyles = await getCustomStyles(context);
+
+    template = template.replace('{{ custom_styles }}', `<style>\n${customStyles}\n</style>`);
 
     return template;
 };
