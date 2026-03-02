@@ -9,33 +9,11 @@ import { getConfig } from "./utils";
 // const output = vscode.window.createOutputChannel(EXTENSION_ID);
 // output.appendLine('Extension ready!');
 
-export const enum LayoutSpread {
+const enum LayoutSpread {
     Simple = "simple",
     Facing = "facing",
     Flow = "flow"
 };
-
-function computePageNumber(visibleRanges: readonly vscode.Range[], document: vscode.TextDocument): number {
-    let topLine = 0;
-    if (visibleRanges.length > 0) {
-        topLine = visibleRanges[0].start.line;
-    }
-
-    const markdownText = document.getText();
-    const lines = markdownText.split(/\r\n|\r|\n/);
-
-    // Count `\page` directives that appear before the top visible line.
-    let pageDirectivesBefore = 0;
-    const limit = Math.min(topLine, lines.length);
-    for (let i = 0; i < limit; i++) {
-        if (/^\\page\b/.test(lines[i].trim())) {
-            pageDirectivesBefore++;
-        }
-    }
-    // Return 1-based page number: pages are separated by `\page`, so
-    // zero directives before means page 1.
-    return pageDirectivesBefore + 1;
-}
 
 export default class Preview {
 
@@ -79,7 +57,7 @@ export default class Preview {
             if (editor.document.languageId === 'markdown' && getConfig().get('scrollPreviewWithEditor')) {
                 this.postMessage({
                     type: 'scroll',
-                    page: computePageNumber(editor.visibleRanges, editor.document),
+                    page: this.computePageNumber(editor.visibleRanges, editor.document),
                     mode: 'instant'
                 });
             }
@@ -106,6 +84,28 @@ export default class Preview {
         return renderHTML(html, this.context)
     }
          */
+
+    computePageNumber(visibleRanges: readonly vscode.Range[], document: vscode.TextDocument): number {
+        let topLine = 0;
+        if (visibleRanges.length > 0) {
+            topLine = visibleRanges[0].start.line;
+        }
+
+        const markdownText = document.getText();
+        const lines = markdownText.split(/\r\n|\r|\n/);
+
+        // Count `\page` directives that appear before the top visible line.
+        let pageDirectivesBefore = 0;
+        const limit = Math.min(topLine, lines.length);
+        for (let i = 0; i < limit; i++) {
+            if (/^\\page\b/.test(lines[i].trim())) {
+                pageDirectivesBefore++;
+            }
+        }
+        // Return 1-based page number: pages are separated by `\page`, so
+        // zero directives before means page 1.
+        return pageDirectivesBefore + 1;
+    }
 
     getDynamicContentPath(filepath: string) {
         const rootPath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
@@ -183,7 +183,7 @@ export default class Preview {
                 if (textEditor.document.languageId === 'markdown' && getConfig().get('scrollPreviewWithEditor')) {
                     this.postMessage({
                         type: 'scroll',
-                        page: computePageNumber(visibleRanges, textEditor.document),
+                        page: this.computePageNumber(visibleRanges, textEditor.document),
                         mode: 'smooth'
                     });
                 }

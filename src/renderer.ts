@@ -30,7 +30,7 @@ interface Metadata {
 /**
  * Generates HTML <title> and <meta> tags from metadata.
  */
-export function generateHeadTags(meta: Metadata | null): string {
+function generateHeadTags(meta: Metadata | null): string {
 
     if (!meta) {
         return "";
@@ -104,7 +104,7 @@ interface ExtractMetadataResult {
  * Extracts a ```metadata fenced block, parses it as YAML,
  * and returns both the parsed metadata and the cleaned content.
  */
-export function extractMetadata<T = any>(input: string): ExtractMetadataResult {
+function extractMetadata<T = any>(input: string): ExtractMetadataResult {
     const regex = /```metadata\s*([\s\S]*?)\s*```/;
     const match = input.match(regex);
     if (!match) {
@@ -130,7 +130,7 @@ export function extractMetadata<T = any>(input: string): ExtractMetadataResult {
  * Extracts a ```css fenced block, parses it as YAML,
  * and returns both the css and the cleaned content.
  */
-export function extractCss<T = any>(input: string): { css: string | null; content: string; } {
+function extractCss<T = any>(input: string): { css: string | null; content: string; } {
     const regex = /```css\s*([\s\S]*?)\s*```/;
     const match = input.match(regex);
     if (!match) {
