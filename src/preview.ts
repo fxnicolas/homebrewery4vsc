@@ -4,7 +4,7 @@ import * as path from 'path';
 import { renderHTML } from './renderer';
 // import { disposeAll } from './utils/dispose';
 import * as constants from './constants';
-
+import { getConfig } from "./utils";
 
 // const output = vscode.window.createOutputChannel(EXTENSION_ID);
 // output.appendLine('Extension ready!');
@@ -14,10 +14,6 @@ export const enum LayoutSpread {
     Facing = "facing",
     Flow = "flow"
 };
-
-function getConfig() {
-    return vscode.workspace.getConfiguration(constants.EXTENSION_ID);
-}
 
 function computePageNumber(visibleRanges: readonly vscode.Range[], document: vscode.TextDocument): number {
     let topLine = 0;

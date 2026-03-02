@@ -4,6 +4,7 @@ import Preview from './preview';
 import { generateFile } from './html-file-generator';
 import { allIconFontsCompletionItems } from './iconfonts-completions';
 import * as constants from './constants';
+import { getConfig } from './utils';
 
 export function activate(context: vscode.ExtensionContext) {
 	let preview = new Preview(context);
@@ -53,7 +54,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Enable or disable the Font Icon completion provider.
 	const toggleIconFontsProvider = () => {
-		const config = vscode.workspace.getConfiguration(constants.EXTENSION_ID);
+		const config = getConfig();
 		const enabled = config.get<boolean>('enableFontIconCompletions');
 		if (enabled && !iconFontsProvider) {
 			iconFontsProvider = vscode.languages.registerCompletionItemProvider(

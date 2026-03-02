@@ -6,6 +6,7 @@ import * as path from 'path';
 import * as constants from './constants';
 import { formatString } from './utils';
 const THEMES_FOLDER = './media/themes/';
+import { getConfig } from './utils';
 
 // FIXME: Add Content Security Policy (CSP) to the HTML Template.
 // FIXME: Inline the fonts linked in TEMPLATE_HTML
@@ -48,10 +49,6 @@ const TEMPLATE_HTML = `
     </body>
 </html>`;
 
-function getConfig() {
-    return vscode.workspace.getConfiguration(constants.EXTENSION_ID);
-}
-
 function isWebUrl(url: string) {
     let res: URL;
     try {
@@ -69,7 +66,7 @@ async function getCustomStyles(context: vscode.ExtensionContext, panel?: vscode.
     let customStyles = "";
     for (const file of styleFiles) {
         try {
-            
+
             // Remote CSS (http/https)
             if (isWebUrl(file)) {
                 try {
@@ -84,7 +81,7 @@ async function getCustomStyles(context: vscode.ExtensionContext, panel?: vscode.
                 } catch (err: any) {
                     const message = err.message;
                     vscode.window.showErrorMessage(
-                        formatString(constants.ErrorMessages.CUSTOM_CSS_FAILED_FETCH_NETWORK, {file, message})
+                        formatString(constants.ErrorMessages.CUSTOM_CSS_FAILED_FETCH_NETWORK, { file, message })
                     );
                     continue;
                 }
@@ -227,14 +224,8 @@ export const htmlTemplate = async (context: vscode.ExtensionContext, addScrollEv
 
     // Add Theme styles
     const config = getConfig();
-    const currentTheme = theme || config.get<string>('theme') || "5ePHB";
-    // if (theme) {
-    //     currentTheme = theme;
-    // }
-    // else {
-    //     const config = getConfig();
-    //     currentTheme = config.get<string>('theme') || '5ePHB';
-    // }
+    const currentTheme = theme || config.get<string>('theme') || "5ePHB";
+
     if (currentTheme === 'Journal') {
         cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/', currentTheme, 'style.css');
         cssContent = await fs.promises.readFile(cssPath, 'utf8');

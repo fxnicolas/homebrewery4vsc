@@ -1,3 +1,7 @@
+import * as vscode from 'vscode';
+import * as constants from './constants';
+
+
 /**
  * Replaces ${placeholders} in a template string with values from a dictionary.
  *
@@ -25,4 +29,8 @@
  */
 export function formatString(template: string, values: Record<string, string>) {
     return template.replace(/\$\{(\w+)\}/g, (_, key) => values[key] ?? "");
+}
+
+export function getConfig() {
+    return vscode.workspace.getConfiguration(constants.EXTENSION_ID);
 }
