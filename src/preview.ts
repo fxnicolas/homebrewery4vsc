@@ -1,11 +1,9 @@
 "use strict";
 import * as vscode from 'vscode';
-import * as constants from './constants';
-import * as fs from 'fs';
 import * as path from 'path';
 import { renderHTML } from './renderer';
 // import { disposeAll } from './utils/dispose';
-import { EXTENSION_ID } from './constants';
+import * as constants from './constants';
 
 
 // const output = vscode.window.createOutputChannel(EXTENSION_ID);
@@ -18,7 +16,7 @@ export const enum LayoutSpread {
 };
 
 function getConfig() {
-    return vscode.workspace.getConfiguration(EXTENSION_ID);
+    return vscode.workspace.getConfiguration(constants.EXTENSION_ID);
 }
 
 function computePageNumber(visibleRanges: readonly vscode.Range[], document: vscode.TextDocument): number {
@@ -70,7 +68,7 @@ export default class Preview {
         //FIXME: WebView is Disposed Error occurs frequently
         //FIXME: Previewers are all refreshing from the same text editor
         if (!editor) {
-            vscode.window.showWarningMessage("No active editor");
+            vscode.window.showWarningMessage(constants.ErrorMessages.NO_ACTIVE_EDITOR);
             return;
         }
         if (editor && this.checkDocumentIsMarkdown(true) && this.panel) {
@@ -135,7 +133,7 @@ export default class Preview {
     checkDocumentIsMarkdown(showWarning: boolean): boolean {
         let result = this.getDocumentType() === "markdown";
         if (!result && showWarning) {
-            vscode.window.showInformationMessage(constants.NO_MARKDOWN);
+            vscode.window.showInformationMessage(constants.ErrorMessages.NOT_MARKDOWN);
         }
         return result;
     }

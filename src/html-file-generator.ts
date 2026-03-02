@@ -2,16 +2,17 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { renderHTML } from './renderer';
+import * as constants from './constants';
 
 export async function generateFile(context: vscode.ExtensionContext) {
     let editor = vscode.window.activeTextEditor;
     let doc = editor?.document;
     if (!editor || doc?.languageId !== 'markdown') {
-        vscode.window.showErrorMessage('Not a valid Markdown file');
+        vscode.window.showErrorMessage(constants.ErrorMessages.NOT_MARKDOWN);
         return;
     }
     else if (doc.isUntitled) {
-        vscode.window.showErrorMessage('Please save the file first');
+        vscode.window.showErrorMessage(constants.ErrorMessages.SAVE_FIRST);
         return;
     }
 

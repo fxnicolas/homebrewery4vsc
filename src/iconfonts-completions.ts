@@ -4,6 +4,8 @@ import elderberryInn from './homebrewery/themes/fonts/iconFonts/elderberryInn.js
 import fontAwesome from './homebrewery/themes/fonts/iconFonts/fontAwesome.js';
 import gameIcons from './homebrewery/themes/fonts/iconFonts/gameIcons.js';
 
+import { iconFontProviderCompletionsTexts } from './constants';
+import { formatString } from "./utils";
 import * as vscode from 'vscode';
 
 function cleanIconName(str: string, itemPrefix?: string): string {
@@ -27,19 +29,17 @@ function iconFontProviderItems(iconEnum: any, fontName: string, itemPrefix: stri
 
         const item = new vscode.CompletionItem(
             {
-                label: `Font Icon: ${snippetName}`,
-                description: `Insert ${fontName} Icon`
+                label: formatString(iconFontProviderCompletionsTexts.LABEL_PATTERN, {snippetName}),
+                description: formatString(iconFontProviderCompletionsTexts.DESCRIPTION_PATTERN, {fontName})
             },
             vscode.CompletionItemKind.Snippet,
         );
-
-        // item.detail = `Insert the ${ snippetName } icon from the ${ fontName } font (Homebrewery for VS Code)`;
 
         // What gets inserted
         item.insertText = `:${key}:`;
 
         // Preview
-        item.documentation = new vscode.MarkdownString(`Insert the *${snippetName}* icon from the *${fontName}* font`);
+        item.documentation = new vscode.MarkdownString(formatString(iconFontProviderCompletionsTexts.DOCUMENTATION_PATTERN, {snippetName, fontName}));
 
         items.push(item);
 

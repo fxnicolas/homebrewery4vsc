@@ -3,7 +3,8 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { EXTENSION_ID } from './constants';
+import * as constants from './constants';
+import { formatString } from './utils';
 const THEMES_FOLDER = './media/themes/';
 
 // FIXME: Add Content Security Policy (CSP) to the HTML Template.
@@ -46,7 +47,7 @@ const TEMPLATE_HTML = `
 </html>`;
 
 function getConfig() {
-    return vscode.workspace.getConfiguration(EXTENSION_ID);
+    return vscode.workspace.getConfiguration(constants.EXTENSION_ID);
 }
 
 function isWebUrl(url: string) {
@@ -63,22 +64,29 @@ function isWebUrl(url: string) {
 async function getCustomStyles(context: vscode.ExtensionContext, panel?: vscode.WebviewPanel): Promise<string> {
     const conf = getConfig();
     const styleFiles: string[] = conf.get("customStyleSheets") ?? [];
-
-    let combinedCss = "";
+    let customStyles = "";
     for (const file of styleFiles) {
-
         try {
+            
             // Remote CSS (http/https)
             if (isWebUrl(file)) {
-                const response = await fetch(file);
-                if (!response.ok) {
-                    vscode.window.showErrorMessage(`Failed to fetch Custom CSS: ${file}`);
+                try {
+                    const response = await fetch(file);
+                    if (!response.ok) {
+                        const status = response.status.toString();
+                        vscode.window.showErrorMessage(formatString(constants.ErrorMessages.CUSTOM_CSS_FAILED_FETCH, { file, status }));
+                        continue;
+                    }
+                    const css = await response.text();
+                    customStyles += `\n/* Source: ${file} */\n${css}\n`;
+                } catch (err: any) {
+                    const message = err.message;
+                    vscode.window.showErrorMessage(
+                        formatString(constants.ErrorMessages.CUSTOM_CSS_FAILED_FETCH_NETWORK, {file, message})
+                    );
                     continue;
                 }
-                const css = await response.text();
-                combinedCss += `\n/* Source: ${file} */\n${css}\n`;
             }
-
             // Local file
             else {
                 const wsFolder = vscode.workspace.workspaceFolders?.[0];
@@ -88,30 +96,23 @@ async function getCustomStyles(context: vscode.ExtensionContext, panel?: vscode.
                 try {
                     const fileBuffer = await vscode.workspace.fs.readFile(fullUri);
                     const css = Buffer.from(fileBuffer).toString("utf8");
-                    combinedCss += `\n/* Source: ${fullUri.fsPath} */\n${css}\n`;
+                    customStyles += `\n/* Source: ${fullUri.fsPath} */\n${css}\n`;
                 }
                 catch (err: any) {
-
                     if (err instanceof vscode.FileSystemError &&
                         err.code === 'FileNotFound') {
-
-                        vscode.window.showErrorMessage(
-                            `Custom CSS file not found: ${file}`
-                        );
+                        vscode.window.showErrorMessage(formatString(constants.ErrorMessages.CUSTOM_CSS_FILE_NOT_FOUND, { file }));
                     } else {
-                        vscode.window.showErrorMessage(
-                            `Error reading CSS file: ${file}`
-                        );
+                        vscode.window.showErrorMessage(formatString(constants.ErrorMessages.CUSTOM_CSS_FILE_ERROR, { file }));
                     }
                 }
-
             }
         } catch (err) {
-            console.warn(`Error loading CSS file: ${file}`, err);
+            console.warn(formatString(constants.ErrorMessages.CUSTOM_CSS_ERROR, { file }), err);
         }
     }
 
-    return combinedCss;
+    return customStyles;
 }
 
 function getBackgroundHandlingStyles(): string {
