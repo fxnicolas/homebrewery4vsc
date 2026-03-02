@@ -14,6 +14,7 @@ const TEMPLATE_HTML = `
 <!DOCTYPE html>
 <html>
     <head>
+        {{ metadata }}
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
         <meta name="color-scheme" content="light">
         <link href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" rel="stylesheet" />
@@ -34,8 +35,9 @@ const TEMPLATE_HTML = `
                     {{ base_styles }}
                     {{ theme_styles }}
                     {{ page_layout_styles }}
-                    {{ custom_styles }}
                     {{ background_handling_styles }}
+                    {{ custom_styles }}
+                    {{ inlined_styles }}
                     <div class="pages" id="pagesContainer">
                         {{ body }}
                     </div>
@@ -213,7 +215,7 @@ const scrollEventScript = `
         </script>
         `;
 
-export const htmlTemplate = async (context: vscode.ExtensionContext, addScrollEventsScript: boolean): Promise<string> => {
+export const htmlTemplate = async (context: vscode.ExtensionContext, addScrollEventsScript: boolean, theme?: string): Promise<string> => {
     let template = TEMPLATE_HTML;
 
     // Add Blank styles as default. 
@@ -225,8 +227,14 @@ export const htmlTemplate = async (context: vscode.ExtensionContext, addScrollEv
 
     // Add Theme styles
     const config = getConfig();
-    const currentTheme = config.get<string>('theme') || '5ePHB';
-
+    const currentTheme = theme || config.get<string>('theme') || "5ePHB";
+    // if (theme) {
+    //     currentTheme = theme;
+    // }
+    // else {
+    //     const config = getConfig();
+    //     currentTheme = config.get<string>('theme') || '5ePHB';
+    // }
     if (currentTheme === 'Journal') {
         cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/', currentTheme, 'style.css');
         cssContent = await fs.promises.readFile(cssPath, 'utf8');

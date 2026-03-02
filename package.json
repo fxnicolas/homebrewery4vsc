@@ -244,7 +244,7 @@
             "Journal"
           ],
           "default": "5ePHB",
-          "description": "Theme to use for previews and HTML generated files."
+          "description": "Default Theme to use for previews and HTML generated files. A theme specified in the document metadata overrides this value."
         },
         "homebrewery4vsc.pageFormat": {
           "type": "string",
@@ -320,6 +320,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
     "@types/vscode": "^1.109.0",
@@ -337,6 +338,7 @@
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
+    "js-yaml": "^4.1.1",
     "lodash": "^4.17.21",
     "marked": "15.0.12",
     "marked-alignment-paragraphs": "^1.0.0",
