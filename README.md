@@ -19,6 +19,23 @@ This extension provides the following features:
 * **Live Preview** with synchronized scrolling. Click in the preview to scroll the editor.
 * **Generate HTML** for PDF printing.
 
+### Editor
+
+This extension enhances the default Markdown editor with:
+
+* [Completion snippets](#snippets).
+* Coloring for `metadata` and `css` fenced code blocs.
+* Toolbar button named **Homebrewery: Open Preview to the Side**, with an alternate **Homebrewery: Open Preview** button.
+
+### Snippets
+
+Snippets provide access to the extended Markdown syntax implemented by Homebrewery. They can be accessed with `CTRL+Space` in Markdown documents. 
+
+Homebrewery snippets start with `Homebrewery`.
+
+Font icons provided in Homebrewery are also available as snippets. These start with `Font Icon`.<br>
+**NOTE**: As these snippets can clutter the completion dropdown, you can disable them with the `homebrewery4vsc.enableFontIconCompletions` [setting](#extension-settings).
+
 ### Commands
 
 From a markdown editor:
@@ -35,17 +52,13 @@ From the preview:
 
 ### Preview and HTML Output
 
-The preview automatically scrolls with the editor position. To scroll the editor to a specific page, click that page in the preview.
+The live preview displays your markdown document as a Homebrewery rendering, with multiple page.
+The Preview toolbar includes buttons to switch the layout and zoom in the preview.
+
+Note that the preview automatically scrolls with the editor position. To scroll the editor to a specific page, click that page in the preview.
 
 You can configure the preview behavior and HTML output in the [extension settings](#extension-settings).
 
-### Snippets
-
-Snippets provide access to the extended Markdown syntax implemented by Homebrewery.
-
-Snippets can be accessed with `CTRL+Space` in Markdown documents. Homebrewery snippets start with `Homebrewery`.
-
-Font icons provided in Homebrewery are also available as snippets. These start with `Font Icon`. As these snippets can clutter the completion dropdown, you can disable them with the `homebrewery4vsc.enableFontIconCompletions` [setting](#extension-settings).
 
 ## Extension Settings
 
@@ -54,15 +67,17 @@ This extension exposes the following settings:
 * `homebrewery4vsc.enableFontIconCompletions`: Enable/disable the font icon completion snippers.
 * `homebrewery4vsc.scrollPreviewWithEditor`: Enable/disable preview scrolling with the editor.
 * `homebrewery4vsc.theme`: The theme (Player's Hanbook, Dungeon Master's Guide, etc) used in preview and the HTML output.
-* `homebrewery4vsc.pageFormet`: Preview and HTML output page format (A4 or Letter).
-* `homebrewery4vsc.hideBackground`: Hide the background image and color in the preview or the HTML output.
+* `homebrewery4vsc.customStyleSheets`: List of style sheets (CSS files within the workspace or accessed with HTTP) added to all documents when rendering.
+* `homebrewery4vsc.pageFormat`: Preview and HTML output page format (A4 or Letter).
+* `homebrewery4vsc.inlineLocalImages`: Inline local images in the HTML output. This creates standalone HTML files.
+* `homebrewery4vsc.hideBackground`: Hide the background image and color in the preview or the HTML output, mainly for printing.
 
 ## Credits
 
 This extension is inspired from the [**Dungeon and Markdown**](https://marketplace.visualstudio.com/items?itemName=SpjakSoftware.dungeonsandmarkdown) extension by Spjak Software (Jacob Olesen).
 
 This extension uses the Themes and Markdown Renderer from [**The Homebrewery**](https://github.com/naturalcrit/homebrewery), under the MIT license.
-The Homebrewery is copyright (c) 2016 Scott Tolksdorf
+The Homebrewery is copyright (c) 2016 Scott Tolksdorf.<br>**Many thanks to the contributors who keep this project alive!**
 
 ## FAQ
 
