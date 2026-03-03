@@ -31,6 +31,26 @@ export function formatString(template: string, values: Record<string, string>) {
     return template.replace(/\$\{(\w+)\}/g, (_, key) => values[key] ?? "");
 }
 
+/**
+ * Retrieves the configuration settings for the current VS Code extension.
+ *
+ * This function wraps `vscode.workspace.getConfiguration()` using the
+ * extension’s unique identifier defined in `constants.EXTENSION_ID`.
+ * It provides easy access to user- or workspace-level configuration values
+ * declared under that namespace (as defined in the extension’s `package.json`).
+ *
+ * @function getConfig
+ * @returns {vscode.WorkspaceConfiguration}
+ * A `WorkspaceConfiguration` object representing the settings for this extension.
+ * Use `.get()`, `.update()`, or `.has()` on this object to read or modify specific settings.
+ *
+ * @example
+ * const config = getConfig();
+ * const enablePreview = config.get<boolean>('enablePreview');
+ *
+ * @see vscode.workspace.getConfiguration
+ * @see https://code.visualstudio.com/api/references/vscode-api#WorkspaceConfiguration
+ */
 export function getConfig() {
     return vscode.workspace.getConfiguration(constants.EXTENSION_ID);
 }

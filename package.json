@@ -37,8 +37,15 @@
   "contributes": {
     "grammars": [
       {
-        "path": "./syntaxes/injection.json",
         "scopeName": "homebrewery.injection",
+        "path": "./syntaxes/injection.json",
+        "injectTo": [
+          "text.html.markdown"
+        ]
+      },
+      {
+        "scopeName": "metadata.yaml.codeblock",
+        "path": "./syntaxes/metadata-yaml-injection.json",
         "injectTo": [
           "text.html.markdown"
         ]
@@ -265,6 +272,11 @@
           "default": true,
           "description": "Enable font icons completion snippets. Disabling this removes them from the completion dropdown."
         },
+        "homebrewery4vsc.inlineLocalImages": {
+          "type": "boolean",
+          "default": true,
+          "description": "Inline local images in the HTML output. This creates standalone HTML files."
+        },
         "homebrewery4vsc.hideBackground": {
           "type": "string",
           "enum": [
@@ -321,6 +333,7 @@
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
+    "@types/jsdom": "^28.0.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
     "@types/vscode": "^1.109.0",
@@ -349,6 +362,7 @@
     "marked-nonbreaking-spaces": "^1.0.1",
     "marked-smartypants-lite": "^1.0.3",
     "marked-subsuper-text": "^1.0.4",
-    "marked-variables": "^1.0.5"
+    "marked-variables": "^1.0.5",
+    "node-html-parser": "^7.0.2"
   }
 }

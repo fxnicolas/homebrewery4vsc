@@ -1,7 +1,7 @@
 "use strict";
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { renderHTML } from './renderer';
+import Renderer  from './renderer';
 // import { disposeAll } from './utils/dispose';
 import * as constants from './constants';
 import { getConfig } from "./utils";
@@ -153,9 +153,13 @@ export default class Preview {
         if (editor && this.isMarkdownEditor(editor, true) && this.panel) {
             let currentMarkdownText = editor.document.getText();
             this.panel.title = `[Preview] ${this.getEditorFileName(editor)}`;
-            let currentHTMLContent = await renderHTML(currentMarkdownText, this.context, true);
-            this.panel.webview.html = currentHTMLContent;
             this.documentUri = editor.document.uri;
+            const renderer = new Renderer(this.documentUri, this.context);
+            renderer.renderHTML(currentMarkdownText, true).then(currentHTMLContent => {
+                if (this.panel) {
+                    this.panel.webview.html = currentHTMLContent; 
+                }
+            });
             this.updateZoomLevel();
 
             // FIXME: Only scroll if active text editor is changed

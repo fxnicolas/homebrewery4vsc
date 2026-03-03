@@ -1,0 +1,16 @@
+{
+    "scopeName": "metadata.yaml.codeblock",
+    "injectionSelector": "L:text.html.markdown",
+    "patterns": [
+        {
+            "begin": "(```|~~~)\\s*metadata\\s*$",
+            "end": "(```|~~~)",
+            "name": "markup.fenced_code.block.markdown",
+            "patterns": [
+                {
+                    "include": "source.yaml"
+                }
+            ]
+        }
+    ]
+}

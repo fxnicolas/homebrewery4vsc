@@ -1,7 +1,7 @@
 'use strict';
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import { renderHTML } from './renderer';
+import Renderer from './renderer';
 import * as constants from './constants';
 
 export async function generateFile(context: vscode.ExtensionContext) {
@@ -20,16 +20,17 @@ export async function generateFile(context: vscode.ExtensionContext) {
         doc.save();
     }
 
-    let outPath = doc.fileName.replace(/\.\w+?$/, `.html`);
-    outPath = outPath.replace(/^([cdefghij]):\\/, (match, p1) => {
+    let outputPath = doc.fileName.replace(/\.\w+?$/, `.html`);
+    outputPath = outputPath.replace(/^([cdefghij]):\\/, (match, p1) => {
         return `${p1.toUpperCase()}:\\`; // Capitalize drive letter
     });
-    if (!outPath.endsWith('.html')) {
-        outPath += '.html';
+    if (!outputPath.endsWith('.html')) {
+        outputPath += '.html';
     }
 
-    let text = editor?.document.getText();
-    let res = text ? await renderHTML(text, context, false) : "";
+    let markdownContent = editor?.document.getText();
+    let documentUri = editor.document.uri;
+    let ouputHTMLContent = markdownContent ? await new Renderer(documentUri, context).renderHTML(markdownContent, false) : "";
 
-    res ? fs.writeFileSync(outPath, res, 'utf8') : null;
+    ouputHTMLContent ? fs.writeFileSync(outputPath, ouputHTMLContent, 'utf8') : null;
 }
