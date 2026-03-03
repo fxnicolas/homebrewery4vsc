@@ -29,7 +29,7 @@ const TEMPLATE_HTML = `
                 <div class="brewRenderer">
                      <style>
                         /* Prevents VS Code dark theme bleed in Preview */
-                        html, body, blockquote {
+                        html, body, blockquote,img {
                             all:unset;
                         }
                     </style>
