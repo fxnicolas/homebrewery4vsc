@@ -217,6 +217,16 @@
           "command": "homebrewery4vsc.generate",
           "when": "editorLangId == markdown",
           "group": "navigation"
+        },
+        {
+          "command": "homebrewery4vsc.sidePreview",
+          "when": "editorLangId == markdown",
+          "group": "navigation"
+        },
+        {
+          "command": "homebrewery4vsc.preview",
+          "when": "editorLangId == markdown",
+          "group": "navigation"
         }
       ]
     },
