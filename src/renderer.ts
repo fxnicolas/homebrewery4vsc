@@ -81,12 +81,47 @@ export default class Renderer {
         }
     }
 
-    private async inlineLocalImages(
+    private async inlineAssetImages(
         html: string,
         documentUri: vscode.Uri = this.documentUri
     ): Promise<string> {
 
+        const root = parse(html);
+        const images = root.querySelectorAll('img');
+        await Promise.all(images.map(async (img) => {
+            let src = img.getAttribute('src');
+            try {
+                if (!src) { return; };
+                if (src.startsWith('/assets/')) {
+                    const assetUri = vscode.Uri.joinPath(this.context.extensionUri, decodeURIComponent(src));
+                    let fileBuffer: Buffer;
+                    try {
+                        fileBuffer = await fs.readFile(assetUri.fsPath);
+                    } catch {
+                        console.warn(`Image ${src} not found in assets, skipping.`);
+                        return; // Skip missing files silently
+                    }
+                    const mimeType = this.getMimeType(src);
+                    const base64 = fileBuffer.toString('base64');
+                    img.setAttribute(
+                        'src',
+                        `data:${mimeType};base64,${base64}`
+                    );
+                }
+            }
+            catch (err) {
+                console.warn(`Failed to inline image ${src} from Assets:`, err);
+            }
+        }));
+        // Re-serialize
+        const finalHtml = root.toString();
+        return finalHtml;
+    };
 
+    private async inlineLocalImages(
+        html: string,
+        documentUri: vscode.Uri = this.documentUri
+    ): Promise<string> {
         const baseDir = path.dirname(documentUri.fsPath);
 
         const root = parse(html);
@@ -150,6 +185,7 @@ export default class Renderer {
      *
      */
     private async postProcessPageHtml(pageHtml: string): Promise<string> {
+        pageHtml = await this.inlineAssetImages(pageHtml);
         if (this.isVscPreview || getConfig().get('inlineLocalImages')) {
             pageHtml = await this.inlineLocalImages(pageHtml);
         }

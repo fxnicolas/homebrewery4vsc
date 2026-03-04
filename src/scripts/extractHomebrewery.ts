@@ -29,6 +29,12 @@ const MARKDOWN_AND_ICONFONTS = [
     { from: "/build/fonts/iconFonts/gameIcons.js", to: "/src/homebrewery/themes/fonts/iconFonts/gameIcons.js" }
 ];
 
+const GRAPHICAL_ASSETS = [
+    { from: "/build/assets/naturalCritLogoBlack.svg", to: "/assets/naturalCritLogoBlack.svg" },
+    { from: "/build/assets/naturalCritLogoRed.svg", to: "/assets/naturalCritLogoRed.svg" },
+    { from: "/build/assets/naturalCritLogoWhite.svg", to: "/assets/naturalCritLogoWhite.svg" },
+];
+
 const TMP_DIR = path.resolve(".tmp");
 const ZIP_PATH = path.join(TMP_DIR, "master.zip");
 const EXTRACT_DIR = path.join(TMP_DIR, "homebrewery");
@@ -234,6 +240,8 @@ async function build() {
         console.log('Theme build complete.');
         console.log(`Copying Markdown and IconFont js to ${WORKSPACE_ROOT}...`);
         copyFilesAndFolders(repositoryRoot, MARKDOWN_AND_ICONFONTS, WORKSPACE_ROOT);
+        console.log(`Copying Graphical Assets to ${WORKSPACE_ROOT}...`);
+        copyFilesAndFolders(repositoryRoot, GRAPHICAL_ASSETS, WORKSPACE_ROOT);
         // console.log('Cleaning up temporary folder.');
         // cleanUp();
     }
