@@ -12,7 +12,8 @@ export function activate(context: vscode.ExtensionContext) {
 	let disposableSidePreview = vscode.commands.registerCommand('homebrewery4vsc.sidePreview', async () => { await preview.initMarkdownPreview(vscode.ViewColumn.Two); });
 	let disposableStandalonePreview = vscode.commands.registerCommand('homebrewery4vsc.preview', async () => { await preview.initMarkdownPreview(vscode.ViewColumn.One); });
 
-	let generateCommand = vscode.commands.registerCommand('homebrewery4vsc.generate', () => { generateFile(context); });
+
+	let generateCommand = vscode.commands.registerCommand('homebrewery4vsc.generate',(uri?: vscode.Uri) => generateFile(context, uri));
 	let previewLayoutSimpleSpread = vscode.commands.registerCommand('homebrewery4vsc.previewLayoutSimpleSpread', () => { preview.togglePreviewLayoutSpread(); });
 	let previewLayoutFacingSpread = vscode.commands.registerCommand('homebrewery4vsc.previewLayoutFacingSpread', () => { preview.togglePreviewLayoutSpread(); });
 	let previewLayoutFlowSpread = vscode.commands.registerCommand('homebrewery4vsc.previewLayoutFlowSpread', () => { preview.togglePreviewLayoutSpread(); });

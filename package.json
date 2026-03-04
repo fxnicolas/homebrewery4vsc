@@ -204,6 +204,20 @@
           "when": "activeWebviewPanelId == HomebrewPreview",
           "group": "navigation@1"
         }
+      ],
+      "explorer/context": [
+        {
+          "command": "homebrewery4vsc.generate",
+          "when": "resourceLangId == markdown",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "homebrewery4vsc.generate",
+          "when": "editorLangId == markdown",
+          "group": "navigation"
+        }
       ]
     },
     "keybindings": [
