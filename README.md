@@ -106,7 +106,8 @@ VS Code recognize these files as markdown but as **Plain Text**. To have them as
 1. In the VS Code status bar (at the bottom of the window), click **Plain Text**.
 2. In **Select Language Mode**, select **Configure File Association for `.txt`...**<br>
 <img src="./media/images/select-language-mode.png" alt="Hide 'Open Preview to the Side'" style="width:400px;"/>
-3. Finally, select **Markdown**.
+
+3. Finally, select **Markdown** .
 
 
 
