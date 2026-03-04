@@ -109,9 +109,6 @@ VS Code recognize these files as markdown but as **Plain Text**. To have them as
 
 3. Finally, select **Markdown** .
 
-
-
-
 ## Known Issues
 
 * Editor scrolling not precise when clicking a page in the preview.
