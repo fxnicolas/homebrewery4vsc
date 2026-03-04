@@ -76,7 +76,7 @@ This extension exposes the following settings:
 
 This extension is inspired from the [**Dungeon and Markdown**](https://marketplace.visualstudio.com/items?itemName=SpjakSoftware.dungeonsandmarkdown) extension by Spjak Software (Jacob Olesen).
 
-This extension uses the Themes and Markdown Renderer from [**The Homebrewery**](https://github.com/naturalcrit/homebrewery), under the MIT license.
+This extension uses the Themes, Icons and Markdown Renderer from [**The Homebrewery**](https://github.com/naturalcrit/homebrewery), under the MIT license.
 The Homebrewery is copyright (c) 2016 Scott Tolksdorf.<br>**Many thanks to the contributors who keep this project alive!**
 
 ## FAQ
@@ -86,6 +86,30 @@ The Homebrewery is copyright (c) 2016 Scott Tolksdorf.<br>**Many thanks to the c
 VS Code comes with a default markdown preview, which adds to the markdown editor's toolbar a button labelled *Open Preview to the Side*. To hide it from the toolbar, right-click the button and select *Hide 'Open Preview to the Side'*, as shown below. You can restore it later if needed.
 
 <img src="./media/images/hide-default-markdown-preview-button.png" alt="Hide 'Open Preview to the Side'" style="width:400px;"/>
+
+### How to synchronize my workspace with the Homebrewery?
+
+The Homebrewery provides a feature to synchronize your brews in your Google Drive Folder. For automated synchronization:
+
+1. Create your brews in the Homebrewery, and activate the Google Drive synchronization there.
+2. Add the **Google Drive > My Drive > Homebrewery** folder to the VS Code workspace.
+3. Edit the text files generated in this folder by the Homebrewery.
+
+Changes done in VS Code will appear in the Homebrewery and vice-versa.
+
+### How to work with text (.txt) files?
+
+When editing files in the Homebrewery, or downloading source files, you'll notice that these files have a `.txt` extension (and not `.md`).
+
+VS Code recognize these files as markdown but as **Plain Text**. To have them associated to the Markdown syntax:
+
+1. In the VS Code status bar (at the bottom of the window), click **Plain Text**.
+2. In **Select Language Mode**, select **Configure File Association for `.txt`...**<br>
+<img src="./media/images/select-language-mode.png" alt="Hide 'Open Preview to the Side'" style="width:400px;"/>
+3. Finally, select **Markdown**.
+
+
+
 
 ## Known Issues
 
