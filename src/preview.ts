@@ -110,9 +110,9 @@ export default class Preview {
                 await this.refresh.call(this);
 
                 // Register events for refresh
-                vscode.workspace.onDidChangeTextDocument(await this.refresh.bind(this));
+                vscode.workspace.onDidChangeTextDocument(await this.update.bind(this));
                 vscode.workspace.onDidChangeConfiguration(await this.refresh.bind(this));
-                vscode.workspace.onDidSaveTextDocument(await this.refresh.bind(this));
+                vscode.workspace.onDidSaveTextDocument(await this.update.bind(this));
                 vscode.window.onDidChangeActiveTextEditor(await this.refresh.bind(this));
 
                 // Process editor scroll events
@@ -140,6 +140,21 @@ export default class Preview {
                     this.panel = undefined;
                 }, null, this.context.subscriptions);
             }
+        }
+    };
+
+    async update() {
+        const editor = vscode.window.activeTextEditor;        
+        if (editor && this.isMarkdownEditor(editor, true) && this.panel) {
+            this.documentUri = editor.document.uri;
+            let currentMarkdownText = editor.document.getText();
+            const renderer = new Renderer(this.documentUri, this.context);
+            renderer.renderBody(currentMarkdownText).then(updatedBody => {
+                this.postMessage({
+                    type: 'update',
+                    html: updatedBody,
+                });
+            });
         }
     };
 

@@ -445,14 +445,8 @@ export default class Renderer {
         // Extract CSS
         let { css, content: cleanContent } = this.extractCss(content);
 
-        // Preprocess entire markdown payload
-        let pages = this.preProcessText(cleanContent).split(/^\\page$/gm);
-
-        // Render the Body, one page at a time
-        let htmlBody = "";
-        for (let i = 0; i < pages.length; i++) {
-            htmlBody += await this.renderPage(pages[i], i);
-        }
+        // Render the Body (all pages)
+        let htmlBody = await this.renderBody(cleanContent);
 
         // Generate the template
         let template = await htmlTemplate(this.context, isVscPreview, theme);
@@ -467,4 +461,19 @@ export default class Renderer {
 
         return htmlOutput;
     }
+
+    public async renderBody(markdownText: string): Promise<string> {
+        const pages = this.preProcessText(markdownText).split(/^\\page$/gm);
+
+        // This starts all "renderPage" tasks simultaneously
+        const renderPromises = pages.map((pageContent, i) => this.renderPage(pageContent, i));
+
+        // Wait for ALL promises to settle
+        // Results will be an array of strings in the correct order
+        const htmlPages = await Promise.all(renderPromises);
+
+        // 4. Join them into the final body
+        return htmlPages.join("");
+    }
+
 };
