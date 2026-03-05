@@ -37,7 +37,7 @@ window.addEventListener('message', event => {
             el.style.zoom = zoomLevel + '%';
             break;
         // update: update the page body without reloading the whole document
-        case 'update':
+        case 'updateBody':
             console.log("Update event " + event);
             const html = event.data.html;
             document.getElementById("pagesContainer").innerHTML = html;

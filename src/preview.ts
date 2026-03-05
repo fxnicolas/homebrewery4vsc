@@ -87,7 +87,7 @@ export default class Preview {
             if (this.panel) {
                 // Reuse existing panel.
                 this.documentUri = editor.document.uri;
-                await this.refresh.call(this);
+                await this.reloadPreview.call(this);
                 this.panel.reveal();
             } else {
                 // Create and show a new webview
@@ -107,13 +107,13 @@ export default class Preview {
                 this.documentUri = editor.document.uri;
 
                 // And set its HTML content
-                await this.refresh.call(this);
+                await this.reloadPreview.call(this);
 
                 // Register events for refresh
-                vscode.workspace.onDidChangeTextDocument(await this.update.bind(this));
-                vscode.workspace.onDidChangeConfiguration(await this.refresh.bind(this));
-                vscode.workspace.onDidSaveTextDocument(await this.update.bind(this));
-                vscode.window.onDidChangeActiveTextEditor(await this.refresh.bind(this));
+                vscode.workspace.onDidChangeTextDocument(await this.updateBody.bind(this));
+                vscode.workspace.onDidChangeConfiguration(await this.reloadPreview.bind(this));
+                vscode.workspace.onDidSaveTextDocument(await this.updateBody.bind(this));
+                vscode.window.onDidChangeActiveTextEditor(await this.reloadPreview.bind(this));
 
                 // Process editor scroll events
                 vscode.window.onDidChangeTextEditorVisibleRanges(({ textEditor, visibleRanges }) => {
@@ -143,7 +143,7 @@ export default class Preview {
         }
     };
 
-    async update() {
+    async updateBody() {
         const editor = vscode.window.activeTextEditor;        
         if (editor && this.isMarkdownEditor(editor, true) && this.panel) {
             this.documentUri = editor.document.uri;
@@ -151,14 +151,14 @@ export default class Preview {
             const renderer = new Renderer(this.documentUri, this.context);
             renderer.renderBody(currentMarkdownText).then(updatedBody => {
                 this.postMessage({
-                    type: 'update',
+                    type: 'updateBody',
                     html: updatedBody,
                 });
             });
         }
     };
 
-    async refresh() {
+    async reloadPreview() {
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
             // FIXME: Switching text causes no Active Text Editor (SUPPRESSED)
