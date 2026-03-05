@@ -2,7 +2,7 @@
   "name": "homebrewery4vsc",
   "displayName": "Homebrewery for VS Code",
   "description": "Edit your favorite RPG content in your favavorite editor",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "publisher": "iffrit",
   "author": {
     "name": "FX Nicolas",
