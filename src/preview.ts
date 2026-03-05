@@ -1,7 +1,7 @@
 "use strict";
 import * as vscode from 'vscode';
 import * as path from 'path';
-import Renderer  from './renderer';
+import Renderer from './renderer';
 // import { disposeAll } from './utils/dispose';
 import * as constants from './constants';
 import { getConfig } from "./utils";
@@ -22,6 +22,8 @@ export default class Preview {
     context: vscode.ExtensionContext;
     private documentUri: vscode.Uri | undefined;
     private isDisposed: boolean = false;
+    private lastSentPage: number = -1;
+
 
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
@@ -38,25 +40,39 @@ export default class Preview {
             return 1;
         }
 
-        // 1. Calculate the middle line of the visible range
+        // Calculate the middle line of the visible range
         const range = visibleRanges[0];
         const middleLine = Math.floor((range.start.line + range.end.line) / 2);
 
         const markdownText = document.getText();
         const lines = markdownText.split(/\r\n|\r|\n/);
 
-        // 2. Count `\page` directives that appear before that middle line
+        // Count `\page` directives that appear before that middle line
         let pageDirectivesBefore = 0;
         const limit = Math.min(middleLine, lines.length);
 
         for (let i = 0; i < limit; i++) {
-            // Using your original regex with .trim() for accuracy
             if (/^\\page\b/.test(lines[i].trim())) {
                 pageDirectivesBefore++;
             }
         }
 
         return pageDirectivesBefore + 1;
+    }
+
+    private syncPreview(textEditor: vscode.TextEditor, visibleRanges: readonly vscode.Range[]) {
+        // Calculate the page based on the range provided
+        const currentPage = this.computePageNumber(visibleRanges, textEditor.document);
+
+        // Only post a message if the page actually changed
+        if (currentPage !== this.lastSentPage) {
+            this.lastSentPage = currentPage;
+            this.postMessage({
+                type: 'scroll',
+                page: currentPage,
+                mode: 'smooth'
+            });
+        }
     }
 
     private isMarkdownEditor(editor: vscode.TextEditor, showWarning: boolean = true): boolean {
@@ -119,43 +135,28 @@ export default class Preview {
                 vscode.workspace.onDidSaveTextDocument(await this.updateBody.bind(this));
                 vscode.window.onDidChangeActiveTextEditor(await this.reloadPreview.bind(this));
 
-                // Process editor scroll events
+
+
+                // Synchronize Editor Scrolling -> Preview
                 vscode.window.onDidChangeTextEditorVisibleRanges(({ textEditor, visibleRanges }) => {
                     if (this.isMarkdownEditor(textEditor) && getConfig().get('scrollPreviewWithEditor')) {
-                        this.postMessage({
-                            type: 'scroll',
-                            page: this.computePageNumber(visibleRanges, textEditor.document),
-                            mode: 'smooth'
-                        });
+                        // Pass the visible ranges (the lines physically on screen)
+                        this.syncPreview(textEditor, visibleRanges);
                     }
                 });
 
-                // Process cursor movement / selection change events
+                // Synchronize Editor Click and Cursor Move -> Preview
                 vscode.window.onDidChangeTextEditorSelection(({ textEditor, selections }) => {
+                    if (this.isMarkdownEditor(textEditor) && getConfig().get('scrollPreviewWithEditor')) {
+                        // Create a fake range based on where the cursor (selection) is
+                        const cursorRange = new vscode.Range(selections[0].active, selections[0].active);
 
-                    if (!this.isMarkdownEditor(textEditor) || !getConfig().get('scrollPreviewWithEditor')) {
-                        return;
+                        // Pass the cursor's position as the "range" to sync
+                        this.syncPreview(textEditor, [cursorRange]);
                     }
-
-                    // We use the first selection (primary cursor)
-                    const primarySelection = selections[0];
-                    const cursorLine = primarySelection.active.line;
-
-                    // Create a pseudo-range representing just the cursor position
-                    // The logic remains the same: count \page directives before this line.
-                    const cursorRange = new vscode.Range(
-                        new vscode.Position(cursorLine, 0),
-                        new vscode.Position(cursorLine, 0)
-                    );
-
-                    this.postMessage({
-                        type: 'scroll',
-                        page: this.computePageNumber([cursorRange], textEditor.document),
-                        mode: 'smooth'
-                    });
                 });
 
-                // Webview scroll events
+                // Synchronize Click Page in Preview -> Editor
                 this.panel.webview.onDidReceiveMessage(message => {
                     // Clicking in the webview sends a message { "goToPage", targetPage }
                     if (message.type === 'goToPage') {
@@ -173,7 +174,7 @@ export default class Preview {
     };
 
     async updateBody() {
-        const editor = vscode.window.activeTextEditor;        
+        const editor = vscode.window.activeTextEditor;
         if (editor && this.isMarkdownEditor(editor, true) && this.panel) {
             this.documentUri = editor.document.uri;
             let currentMarkdownText = editor.document.getText();
@@ -201,7 +202,7 @@ export default class Preview {
             const renderer = new Renderer(this.documentUri, this.context);
             renderer.renderHTML(currentMarkdownText, true).then(currentHTMLContent => {
                 if (this.panel) {
-                    this.panel.webview.html = currentHTMLContent; 
+                    this.panel.webview.html = currentHTMLContent;
                 }
             });
             this.updateZoomLevel();
@@ -219,7 +220,9 @@ export default class Preview {
 
     private scrollEditorToPage(targetPage: number) {
         for (const editor of vscode.window.visibleTextEditors) {
-            if (!this.isPreviewOf(editor.document.uri)) continue;
+            if (!this.isPreviewOf(editor.document.uri)) {
+                continue;
+            }
 
             const doc = editor.document;
             let targetLine = 0; // Default to the very top (Page 1)
