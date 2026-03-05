@@ -45,7 +45,7 @@ const TEMPLATE_HTML = `
                 </div>
             </div>
         </div>
-    {{ scrollEventsScript }}
+    {{ preview-script }}
     </body>
 </html>`;
 
@@ -150,69 +150,14 @@ function getPageLayoutStyles(): string {
     return pageLayoutStyles;
 }
 
-const scrollEventScript = `
-        <script>
-            // Listens to scroll events from the extension
-            window.addEventListener('message', event => {
+function getPreviewScript(context: vscode.ExtensionContext): string {
+    const previewScriptFile = path.join(context.extensionPath, 'media', "scripts", 'preview-script.js');
+    const previewScript = fs.readFileSync(previewScriptFile, { encoding: 'utf8' });
+    return `<script>\n${previewScript}\n</script>`;
 
-                type = event.data.type;
+}
 
-                // scroll: Jumps to the corresponding page in the preview.
-                if (type === 'scroll') {
-                    const { type, page, mode } = event.data;
-                    anchor = "p" + page;
-                    const el = document.getElementById(anchor);
-                    if (el) {
-                        el.scrollIntoView({
-                            behavior: mode,
-                            block: 'start',
-                            inline: 'start'
-                        });
-                    }
-                }
-                
-                // layout: switches the layout to single page, two-pages or flow.
-                if (type == 'layout') {
-                    const { layout } = event.data;
-                    const el = document.getElementById('pagesContainer');
-                    el.className = 'pages ' + layout
-                }
-                
-                // zoom: changes the preview zoom level. 
-                if (type == 'zoom') {
-                    const { zoomLevel } = event.data;
-                    const el = document.getElementById('pagesContainer');
-                    el.style.zoom= zoomLevel + '%';
-                }
-                    
-            });
-
-            const vscode = acquireVsCodeApi();
-
-            // Detect a click and send the corresponding page number to VS Code. The markdown editor scrolls to that page.
-            document.addEventListener('click', (event) => {
-                let el = event.target;
-                while (el && el !== document.body) {
-                    if (el.classList?.contains('page')) {
-                        const id = el.id; // e.g. "page-12"
-
-                        const match = id.match(/\\d+/);
-                        if (match) {
-                            const pageNumber = parseInt(match[0], 10);
-                            vscode.postMessage({
-                                type: 'goToPage',
-                                page: pageNumber
-                            });
-                        }
-                        break;
-                    }
-                    el = el.parentElement;
-                }
-            });
-        </script>
-        `;
-
-export const htmlTemplate = async (context: vscode.ExtensionContext, addScrollEventsScript: boolean, theme?: string): Promise<string> => {
+export const htmlTemplate = async (context: vscode.ExtensionContext, addPreviewScript: boolean, theme?: string): Promise<string> => {
     let template = TEMPLATE_HTML;
 
     // Add Blank styles as default. 
@@ -258,7 +203,7 @@ export const htmlTemplate = async (context: vscode.ExtensionContext, addScrollEv
     template = template.replace('{{ background_handling_styles }}', `<style>\n${getBackgroundHandlingStyles()}\n</style>`);
 
     // Scroll events
-    template = template.replace('{{ scrollEventsScript }}', addScrollEventsScript ? scrollEventScript : '');
+    template = template.replace('{{ preview-script }}', addPreviewScript ? `${getPreviewScript(context)}` : '');
 
     // Custom styles (now async)
     const customStyles = await getCustomStyles(context);
