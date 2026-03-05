@@ -34,24 +34,28 @@ export default class Preview {
     }
 
     private computePageNumber(visibleRanges: readonly vscode.Range[], document: vscode.TextDocument): number {
-        let topLine = 0;
-        if (visibleRanges.length > 0) {
-            topLine = visibleRanges[0].start.line;
+        if (visibleRanges.length === 0) {
+            return 1;
         }
+
+        // 1. Calculate the middle line of the visible range
+        const range = visibleRanges[0];
+        const middleLine = Math.floor((range.start.line + range.end.line) / 2);
 
         const markdownText = document.getText();
         const lines = markdownText.split(/\r\n|\r|\n/);
 
-        // Count `\page` directives that appear before the top visible line.
+        // 2. Count `\page` directives that appear before that middle line
         let pageDirectivesBefore = 0;
-        const limit = Math.min(topLine, lines.length);
+        const limit = Math.min(middleLine, lines.length);
+
         for (let i = 0; i < limit; i++) {
+            // Using your original regex with .trim() for accuracy
             if (/^\\page\b/.test(lines[i].trim())) {
                 pageDirectivesBefore++;
             }
         }
-        // Return 1-based page number: pages are separated by `\page`, so
-        // zero directives before means page 1.
+
         return pageDirectivesBefore + 1;
     }
 
@@ -126,6 +130,31 @@ export default class Preview {
                     }
                 });
 
+                // Process cursor movement / selection change events
+                vscode.window.onDidChangeTextEditorSelection(({ textEditor, selections }) => {
+
+                    if (!this.isMarkdownEditor(textEditor) || !getConfig().get('scrollPreviewWithEditor')) {
+                        return;
+                    }
+
+                    // We use the first selection (primary cursor)
+                    const primarySelection = selections[0];
+                    const cursorLine = primarySelection.active.line;
+
+                    // Create a pseudo-range representing just the cursor position
+                    // The logic remains the same: count \page directives before this line.
+                    const cursorRange = new vscode.Range(
+                        new vscode.Position(cursorLine, 0),
+                        new vscode.Position(cursorLine, 0)
+                    );
+
+                    this.postMessage({
+                        type: 'scroll',
+                        page: this.computePageNumber([cursorRange], textEditor.document),
+                        mode: 'smooth'
+                    });
+                });
+
                 // Webview scroll events
                 this.panel.webview.onDidReceiveMessage(message => {
                     // Clicking in the webview sends a message { "goToPage", targetPage }
@@ -189,50 +218,44 @@ export default class Preview {
     }
 
     private scrollEditorToPage(targetPage: number) {
-        // Synchronize Editor scroll with preview.
-        // The preview sends a message the page number, and we find it counting the \page instances.
-
-        // Loop on text editors
         for (const editor of vscode.window.visibleTextEditors) {
-            if (!this.isPreviewOf(editor.document.uri)) {
-                // Ignore all but the one attached to the preview.
-                continue;
-            }
+            if (!this.isPreviewOf(editor.document.uri)) continue;
+
             const doc = editor.document;
-            let targetLine = 1;
+            let targetLine = 0; // Default to the very top (Page 1)
+
             if (targetPage > 1) {
-                let count = 1;
+                let pagesFound = 1;
                 for (let i = 0; i < doc.lineCount; i++) {
                     const lineText = doc.lineAt(i).text.trim();
-                    if (lineText.startsWith('\\page')) {
-                        count++;
-                        if (count === targetPage) {
-                            targetLine = i + 1;
+
+                    if (/^\\page\b/.test(lineText)) {
+                        pagesFound++;
+                        if (pagesFound === targetPage) {
+                            // We found the delimiter. The content starts on the NEXT line.
+                            targetLine = Math.min(i + 1, doc.lineCount - 1);
                             break;
                         }
                     }
                 }
             }
-            // vscode.window.showInformationMessage(`Jumping from Page ${targetPage}  to Line ${targetLine}`);
+
             const pos = new vscode.Position(targetLine, 0);
-            const range = new vscode.Range(pos, pos);
-            editor.selection = new vscode.Selection(pos, pos);
-            editor.revealRange(range, vscode.TextEditorRevealType.AtTop);
-            // Nudge the scroll up to account for sticky lines
-            const firstVisibleLine = editor.visibleRanges[0].start.line;
-            if (firstVisibleLine > 0) {
-                const delta = firstVisibleLine - targetLine;
-                // Scroll by delta lines above
-                editor.revealRange(
-                    new vscode.Range(
-                        new vscode.Position(targetLine - delta, 0),
-                        new vscode.Position(targetLine - delta, 0)
-                    ),
-                    vscode.TextEditorRevealType.AtTop
-                );
-            }
+            const selection = new vscode.Selection(pos, pos);
+
+            // 1. Move the cursor
+            editor.selection = selection;
+
+            // 2. Reveal the range. 
+            // 'AtTop' is usually what you want for a new page.
+            // If you have "Sticky Scroll" enabled in VSCode, 'AtTop' 
+            // automatically respects the sticky header height.
+            editor.revealRange(
+                new vscode.Range(pos, pos),
+                vscode.TextEditorRevealType.AtTop
+            );
         }
-    };
+    }
 
     public togglePreviewLayoutSpread() {
         switch (this.currentLayoutSpread) {
