@@ -1,65 +1,65 @@
 {
-    "name": "HomebrewerySyntax",
-    "scopeName": "homebrewery.injection",
-    "injectionSelector": "L:meta.paragraph.markdown",
-    "patterns": [
-      {
-        "include": "#page"
-      },
-      {
-        "include": "#column"
-      },
-      {
-        "include": "#colons"
-      },
-      {
-        "include": "#double-curly"
-      },
-      {
-        "include": "#double-curly-end"
-      },
-      {
-        "include": "#single-curly"
-      },
-      {
-        "include": "#links"
-      }
-    ],
-    "repository": {
-      "page": {
-        "match": "\\\\page",
-        "name": "keyword.control"
-      },
-      "column": {
-        "match": "\\\\column",
-        "name": "keyword.control"
-      },
-      "colons": {
-        "match": "^:+$",
-        "name": "keyword.control"
-      },
-      "double-curly": {
-        "match": "{{.*?}}|{{.*",
-        "name": "constant.character.set.regexp"
-      },
-      "double-curly-end": {
-        "match": "}}",
-        "name": "constant.character.set.regexp"
-      },
-      "single-curly": {
-        "match": "{[^{].*?[^}]}",
-        "name": "support.type"
-      },
-      "links": {
-        "match": ".*\\[(.*)\\](\\(.*?\\))",
-        "captures": {
-            "1": {
-                "name":"variable.other.constant"
-            },
-            "2": {
-              "name":"entity.name.function"
-          }
+  "name": "HomebrewerySyntax",
+  "scopeName": "homebrewery.injection",
+  "injectionSelector": "L:text.html.markdown",
+  "patterns": [
+    {
+      "include": "#page"
+    },
+    {
+      "include": "#column"
+    },
+    {
+      "include": "#colons"
+    },
+    {
+      "include": "#double-curly"
+    },
+    {
+      "include": "#double-curly-end"
+    },
+    {
+      "include": "#single-curly"
+    },
+    {
+      "include": "#links"
+    }
+  ],
+  "repository": {
+    "page": {
+      "match": "^\\s*\\\\page\\b.*$",
+      "name": "keyword.control.homebrewery.page"
+    },
+    "column": {
+      "match": "^\\s*\\\\column\\b.*$",
+      "name": "keyword.control.homebrewery.column"
+    },
+    "colons": {
+      "match": "^:+$",
+      "name": "keyword.control.homebrewery.page"
+    },
+    "double-curly": {
+      "match": "{{.*?}}|{{.*",
+      "name": "constant.character.set.regexp"
+    },
+    "double-curly-end": {
+      "match": "}}",
+      "name": "constant.character.set.regexp"
+    },
+    "single-curly": {
+      "match": "{[^{].*?[^}]}",
+      "name": "support.type"
+    },
+    "links": {
+      "match": ".*\\[(.*)\\](\\(.*?\\))",
+      "captures": {
+        "1": {
+          "name": "variable.other.constant"
+        },
+        "2": {
+          "name": "entity.name.function"
         }
       }
     }
+  }
 }

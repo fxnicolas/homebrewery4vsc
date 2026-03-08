@@ -5,15 +5,17 @@ import { generateFile } from './html-file-generator';
 import { allIconFontsCompletionItems } from './iconfonts-completions';
 import * as constants from './constants';
 import { getConfig } from './utils';
+import { DecorationManager } from './decoration-manager';
+
 
 export function activate(context: vscode.ExtensionContext) {
 	let preview = new Preview(context);
-	
+
 	let disposableSidePreview = vscode.commands.registerCommand('homebrewery4vsc.sidePreview', async () => { await preview.initMarkdownPreview(vscode.ViewColumn.Two); });
 	let disposableStandalonePreview = vscode.commands.registerCommand('homebrewery4vsc.preview', async () => { await preview.initMarkdownPreview(vscode.ViewColumn.One); });
 
 
-	let generateCommand = vscode.commands.registerCommand('homebrewery4vsc.generate',(uri?: vscode.Uri) => generateFile(context, uri));
+	let generateCommand = vscode.commands.registerCommand('homebrewery4vsc.generate', (uri?: vscode.Uri) => generateFile(context, uri));
 	let previewLayoutSimpleSpread = vscode.commands.registerCommand('homebrewery4vsc.previewLayoutSimpleSpread', () => { preview.togglePreviewLayoutSpread(); });
 	let previewLayoutFacingSpread = vscode.commands.registerCommand('homebrewery4vsc.previewLayoutFacingSpread', () => { preview.togglePreviewLayoutSpread(); });
 	let previewLayoutFlowSpread = vscode.commands.registerCommand('homebrewery4vsc.previewLayoutFlowSpread', () => { preview.togglePreviewLayoutSpread(); });
@@ -65,7 +67,12 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
+	// Page and Column Text Decorations
+	new DecorationManager(context);
+
 }
+
+
 
 // This method is called when your extension is deactivated
 export function deactivate() { }

@@ -65,6 +65,7 @@ You can configure the preview behavior and HTML output in the [extension setting
 This extension exposes the following settings:
 
 * `homebrewery4vsc.enableFontIconCompletions`: Enable/disable the font icon completion snippers.
+* `homebrewery4vsc.highlightColumnAndPageBreaks`: Highlight entire lines containing page and column breaks, for better editor readability.
 * `homebrewery4vsc.scrollPreviewWithEditor`: Enable/disable preview scrolling with the editor.
 * `homebrewery4vsc.theme`: The theme (Player's Hanbook, Dungeon Master's Guide, etc) used in preview and the HTML output.
 * `homebrewery4vsc.customStyleSheets`: List of style sheets (CSS files within the workspace or accessed with HTTP) added to all documents when rendering.
@@ -111,13 +112,22 @@ VS Code recognize these files as markdown but as **Plain Text**. To have them as
 
 ## Known Issues
 
-* Editor scrolling not precise when clicking a page in the preview.
+* No known issue
 
 ## Release Notes
 
 ### 1.0.0
 
-Initial release of Homebrewery for VS Code
+Initial release of Homebrewery for VS Code.
+
+### 1.1.0
+
+- Optimized scrolling synchronization
+- Preview lazy reload on markdown edits to prevent flickering effect
+
+### 1.2.0
+
+- Added page and column breaks highlighting in the markdown editor.
 
 ## Related Projects
 

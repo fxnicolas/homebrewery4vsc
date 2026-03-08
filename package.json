@@ -296,6 +296,11 @@
           "default": true,
           "description": "Enable font icons completion snippets. Disabling this removes them from the completion dropdown."
         },
+        "homebrewery4vsc.highlightColumnAndPageBreaks": {
+          "type": "boolean",
+          "default": true,
+          "description": "Highlight entire lines containing page and column breaks, for better editor readability."
+        },
         "homebrewery4vsc.inlineLocalImages": {
           "type": "boolean",
           "default": true,
