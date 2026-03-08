@@ -307,7 +307,7 @@ export default class Renderer {
      * Extracts Homebrewery's metadata block from the markdown input, parses it
      * as YAML, and returns both the parsed metadata and the remaining content.
      */
-    private extractMetadata<T = any>(input: string): ExtractMetadataResult {
+    public extractMetadata<T = any>(input: string): ExtractMetadataResult {
         const regex = /```metadata\s*([\s\S]*?)\s*```/;
         const match = input.match(regex);
         if (!match) {
@@ -333,7 +333,7 @@ export default class Renderer {
      * Extracts a Homebrewery's CSS block from the markdown input.
      * and returns both the css and the remaning content.
      */
-    private extractCss<T = any>(input: string): { css: string | null; content: string; } {
+    public extractCss<T = any>(input: string): { css: string | null; content: string; } {
         const regex = /```css\s*([\s\S]*?)\s*```/;
         const match = input.match(regex);
         if (!match) {

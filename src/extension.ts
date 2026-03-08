@@ -5,7 +5,7 @@ import { generateFile } from './html-file-generator';
 import { allIconFontsCompletionItems } from './iconfonts-completions';
 import * as constants from './constants';
 import { getConfig } from './utils';
-import { DecorationManager } from './decoration-manager';
+import { DecorationManager } from './decorationManager';
 
 
 export function activate(context: vscode.ExtensionContext) {

@@ -10,7 +10,9 @@ export module ErrorMessages {
     export const CUSTOM_CSS_FILE_NOT_FOUND = "Custom CSS file not found: ${file}";
     export const CUSTOM_CSS_FILE_ERROR = "Error reading CSS file: ${file}";
     export const CUSTOM_CSS_ERROR = "Error loading CSS: ${file}";
-    export const GENERIC_ERROR = "Error: ${error}"
+    export const THEME_FILE_NOT_FOUND = "Theme file not found: ${themeFile}";
+    export const THEME_FILE_ERROR = "Error reading Theme file: ${themeFile}";
+    export const GENERIC_ERROR = "Error: ${error}";
 }
 
 export module InfoMessages {

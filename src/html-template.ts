@@ -7,10 +7,10 @@ import * as constants from './constants';
 import { formatString } from './utils';
 const THEMES_FOLDER = './media/themes/';
 import { getConfig } from './utils';
+import { getThemeStyles} from './theme';
 
 // FIXME: Add Content Security Policy (CSP) to the HTML Template.
 // FIXME: Inline the fonts linked in TEMPLATE_HTML
-
 const TEMPLATE_HTML = `
 <!DOCTYPE html>
 <html>
@@ -119,6 +119,7 @@ function getBackgroundHandlingStyles(): string {
     const backgroundHandling = config.get<string>('hideBackground') || 'never';
     let backgroundHandlingStyles = "";
     backgroundHandlingStyles += (backgroundHandling === "onPrint" || backgroundHandling === "always") ? `
+        /* Remove Background on Printouts */
             @media print {
                 .page {
                     background-image: none;
@@ -126,6 +127,7 @@ function getBackgroundHandlingStyles(): string {
                     }
             }` : "";
     backgroundHandlingStyles += (backgroundHandling === "always") ? `
+        /* Remove Background on HTML and Printouts */
             .page {
                 background-image: none;
                 background-color: #FFFFFF;
@@ -141,6 +143,8 @@ function getPageLayoutStyles(): string {
     let pageLayoutStyles = '';
     if (pageFormat === 'A4') {
         pageLayoutStyles = `
+        /* Page Layout             */    
+        /* Force Page Layout to A4 */
             .page {
                 width: 210mm;
                 height: 296.8mm;
@@ -167,27 +171,13 @@ export const htmlTemplate = async (context: vscode.ExtensionContext, addPreviewS
 
     template = template.replace('{{ base_styles }}', `<style>\n${cssContent}\n</style>`);
 
-    // Add Theme styles
+    // Select theme: The one set in file metadata or the default one.
     const config = getConfig();
     const currentTheme = theme || config.get<string>('theme') || "5ePHB";
 
-    if (currentTheme === 'Journal') {
-        cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/', currentTheme, 'style.css');
-        cssContent = await fs.promises.readFile(cssPath, 'utf8');
-    }
-
-    if (currentTheme === '5ePHB' || currentTheme === '5eDMG') {
-        cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/5ePHB/', 'style.css');
-        cssContent = await fs.promises.readFile(cssPath, 'utf8');
-
-        if (currentTheme === '5eDMG') {
-            cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/', currentTheme, 'style.css');
-
-            cssContent += await fs.promises.readFile(cssPath, 'utf8');
-        }
-    }
-
-    template = template.replace('{{ theme_styles }}', `<style>\n${cssContent}\n</style>`);
+    // Get the styles from the Theme
+    const themeStyles = await getThemeStyles(context, currentTheme);
+    template = template.replace('{{ theme_styles }}', `<style>/* Theme Styles*/\n${themeStyles}\n</style>`);
 
     // Add Bundle styles
     cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/', 'bundle.css');

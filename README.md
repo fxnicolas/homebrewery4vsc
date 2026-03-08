@@ -2,13 +2,14 @@
 
 Edit your favorite RPG content in your favorite editor.
 
-This VS Code extension provides an editor for the [Homebrewery](https://homebrewery.naturalcrit.com/) content with completion snippets and a built-in live preview.
+This VS Code extension provides an editor for RPG Homebrew content (aka **Brew**) using the Markdown syntax, as supported by [The Homebrewery](https://homebrewery.naturalcrit.com/).
+It provides completion snippets and a built-in live preview.
 
-Inspired by some [related projects](#related-projects) which do not support the new elements and is no longer updated.
+It is inspired by some projects listed in [related projects](#related-projects).
 
 ## Installation
 
-Requires [Visual Studio Code](https://code.visualstudio.com/download). Once VSCode is installed, search for the extension or install it from [here](https://marketplace.visualstudio.com/items?itemName=fxnicolas.homebrewery4vsc).
+This extension requires [Visual Studio Code](https://code.visualstudio.com/download). Once VSCode is installed, search for the extension or install it from [here](https://marketplace.visualstudio.com/items?itemName=fxnicolas.homebrewery4vsc).
 
 ## Features
 
@@ -16,7 +17,7 @@ This extension provides the following features:
 
 * **Extended Markdown editor** to generate beautiful documents in the style of the Dungeons & Dragons books and resources.
 * Snippets for the **Homebrewery syntax**.
-* **Live Preview** with synchronized scrolling. Click in the preview to scroll the editor.
+* **Live Preview** with synchronized scrolling.
 * **Generate HTML** for PDF printing.
 
 ### Editor
@@ -42,7 +43,7 @@ From a markdown editor:
 
 * **Homebrewery: Open Preview** opens a live preview.
 * **Homebrewery: Open Preview to the Side** opens a preview to the side of the current editor.
-* **Homebrewery: Generate HTML** generates a plain HTML file named after the markdown file. This file can be viewed and printed as PDF from a web browser.
+* **Homebrewery: Generate HTML** generates a plain HTML file named after the brew file. This file can be viewed and printed as PDF from a web browser.
 
 From the preview:
 
@@ -59,6 +60,80 @@ Note that the preview automatically scrolls with the editor position. To scroll 
 
 You can configure the preview behavior and HTML output in the [extension settings](#extension-settings).
 
+### Themes
+
+The extension includes the *5e Player's Handbook* , *5e Dungeon Master's Guide*, and *Journal* default themes from the Homebrewery.
+Each brew can use a different theme, indicated in the `theme` property of the `metadata` fenced block within the brew file.
+If no theme is declared in the brew, the default theme configured in the `homebrewery4vsc.theme` setting applies.
+
+Example: A brew using the 5ePHB (*5e Player's Handbook*) default theme.
+
+```yaml
+    ```metadata
+    title: The Vampire's Bride
+    description: 'Test to use a well known style.'
+    tags:
+    - meta:Scenario
+    systems:
+    - 5e
+    renderer: V3
+    theme: 5ePHB
+    ```
+
+    The story starts here.
+    ...
+```
+
+
+You can refer in the `theme` property to another brew from your workspace and use it as a *local theme*.<br>
+This brew file should have:
+- A `theme` property of the `metadata` fenced block, pointing to one of the default themes.
+- A `css` fenced block containing the various styles that compose this theme.
+
+Example: A brew referring to a `HB-StrahdStyle.txt` theme in the workspace.
+
+```yaml
+    ```metadata
+    title: The Vampire's Bride
+    description: 'Test to use a well known style.'
+    tags:
+    - meta:Scenario
+    systems:
+    - 5e
+    renderer: V3
+    theme: ./themes/HB-StrahdStyle.txt
+    ```
+
+    The story starts here.
+    ...
+```
+
+The content of the `HB-StrahdStyle.txt`file. It uses the `5ePHB` base theme, and adds CSS on top of it.
+
+```markdown
+    ```metadata
+    title: Strahd Style
+    description: 'This is a theme file'
+    tags:
+    - meta:Theme
+    systems:
+    - 5e
+    renderer: V3
+    theme: 5ePHB
+    ```
+
+    ```css
+    /* A lot of CSS here */
+
+```
+
+**TIP**: A large set of awesome templates (designed by **@KaiburrKathHound**) are available from [The Homebrewery](https://homebrewery.naturalcrit.com/user/KaiburrKathHound?sort=created&dir=asc)
+
+### CSS
+
+In addition to the themes, the extension supports a `css`fenced block in a brew to define local styles.
+
+You can also set in the `homebrewery4vsc.customStyleSheets` setting a list of css files that will apply to all your brews in the workspace.
 
 ## Extension Settings
 
@@ -94,13 +169,13 @@ The Homebrewery provides a feature to synchronize your brews in your Google Driv
 
 1. Create your brews in the Homebrewery, and activate the Google Drive synchronization there.
 2. Add the **Google Drive > My Drive > Homebrewery** folder to the VS Code workspace.
-3. Edit the text files generated in this folder by the Homebrewery.
+3. Edit the brew files generated in this folder by the Homebrewery.
 
 Changes done in VS Code will appear in the Homebrewery and vice-versa.
 
 ### How to work with text (.txt) files?
 
-When editing files in the Homebrewery, or downloading source files, you'll notice that these files have a `.txt` extension (and not `.md`).
+When editing brews in the Homebrewery, or downloading sources, you'll notice that these files have a `.txt` extension (and not `.md`).
 
 VS Code recognize these files as markdown but as **Plain Text**. To have them associated to the Markdown syntax:
 
@@ -128,6 +203,8 @@ Initial release of Homebrewery for VS Code.
 ### 1.2.0
 
 - Added page and column breaks highlighting in the markdown editor.
+- Added a None theme.
+- Added better support for local Themes
 
 ## Related Projects
 

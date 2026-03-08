@@ -262,17 +262,20 @@
           "enum": [
             "5ePHB",
             "5eDMG",
-            "Journal"
+            "Journal",
+            "None"
           ],
           "markdownEnumDescriptions": [
             "Use the 5e Player's Handbook theme",
             "Use the 5e Dungeon Master's Guide theme",
-            "Use a Journal (Notebook) theme"
+            "Use a Journal (Notebook) theme",
+            "Do not use a default theme"
           ],
           "enumItemLabels": [
             "Player's Handbook",
             "Dungeon Master's Guide",
-            "Journal"
+            "Journal",
+            "None"
           ],
           "default": "5ePHB",
           "description": "Default Theme to use for previews and HTML generated files. A theme specified in the document metadata overrides this value."
