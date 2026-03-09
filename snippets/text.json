@@ -125,5 +125,15 @@
 		"prefix": "Homebrewery Footer Text",
 		"body": "{{footnote Footer Text}}",
 		"description": "Footer with free text."
+	},
+	"Assign Variable": {
+		"prefix": "Homebrewery Assign Variable",
+		"body": "[variable]:content",
+		"description": "Assign a variable."
+	},
+	"Output Variable": {
+		"prefix": "Homebrewery Ouput Variable",
+		"body": "$[variable]",
+		"description": "Output a variable value."
 	}
 }
