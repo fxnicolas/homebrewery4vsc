@@ -43,7 +43,7 @@ export const DEFAULT_THEMES: Theme[] = [
     }
 ];
 
-async function getThemeFromFile(context: vscode.ExtensionContext, themeFile: string): Promise<string> {
+async function getThemeFromFile(context: vscode.ExtensionContext, themeFile: string, raiseErrors: boolean = false): Promise<string> {
     const wsFolder = vscode.workspace.workspaceFolders?.[0];
     let css = "";
     if (wsFolder) {
@@ -58,7 +58,7 @@ async function getThemeFromFile(context: vscode.ExtensionContext, themeFile: str
             if (themeFileMetadata && themeFileMetadata.theme) {
                 // Get the styles from the **Base Theme** specified in the Metadata
                 //FIXME: There is a risk of circular logic if a theme file references another theme file (or itself) as its base theme.
-                const baseThemeCss = await getThemeStyles(context, themeFileMetadata.theme);
+                const baseThemeCss = await getThemeStyles(context, themeFileMetadata.theme, raiseErrors);
                 // Get the styles of the Theme, from CSS Fenced Block
                 const themeCss = renderer.getInlineStyles(themeFilePayload);
                 css = `/* Base Theme Content for ${themeFileMetadata.theme} */\n${baseThemeCss}\n\n/* File Theme Content */\n${themeCss}`;
@@ -67,22 +67,26 @@ async function getThemeFromFile(context: vscode.ExtensionContext, themeFile: str
         catch (err: any) {
             if (err instanceof vscode.FileSystemError &&
                 err.code === 'FileNotFound') {
-                vscode.window.showErrorMessage(formatString(constants.ErrorMessages.THEME_FILE_NOT_FOUND, { themeFile }));
+                if (raiseErrors) {
+                    vscode.window.showErrorMessage(formatString(constants.ErrorMessages.THEME_FILE_NOT_FOUND, { themeFile }));
+                }
             } else {
-                vscode.window.showErrorMessage(formatString(constants.ErrorMessages.THEME_FILE_NOT_FOUND, { themeFile }));
+                if (raiseErrors) {
+                    vscode.window.showErrorMessage(formatString(constants.ErrorMessages.THEME_FILE_NOT_FOUND, { themeFile }));
+                }
             }
         }
     }
     return css;
 };
 
-export async function getThemeStyles( context: vscode.ExtensionContext, themeCodeOrFileName: string ): Promise<string> {
+export async function getThemeStyles(context: vscode.ExtensionContext, themeCodeOrFileName: string, raiseErrors: boolean = false): Promise<string> {
 
     const theme = DEFAULT_THEMES.find(t => t.code === themeCodeOrFileName);
 
     // Not a default theme. The code is a themeFile
     if (!theme) {
-        return await getThemeFromFile(context, themeCodeOrFileName);
+        return await getThemeFromFile(context, themeCodeOrFileName, raiseErrors);
     }
 
     // Default Theme. Each CSS file is read and appended to the CSS.
@@ -92,7 +96,9 @@ export async function getThemeStyles( context: vscode.ExtensionContext, themeCod
                 const fullPath = path.join(context.extensionPath, THEMES_FOLDER, cssPath);
                 return `/* Styles from ${cssPath} */\n\n${fs.readFileSync(fullPath, 'utf-8')}`;
             } catch (err) {
-                console.warn(`Could not read CSS file: ${cssPath}`, err);
+                if (raiseErrors) {
+                    vscode.window.showErrorMessage(formatString(constants.ErrorMessages.DEFAULT_THEME_FILE_NOT_FOUND, { themeCode: themeCodeOrFileName, themeFile: cssPath }));
+                }
                 return '';
             }
         })

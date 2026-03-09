@@ -5,6 +5,7 @@ import Renderer from './renderer';
 // import { disposeAll } from './utils/dispose';
 import * as constants from './constants';
 import { getConfig } from "./utils";
+import { getThemeStyles } from './theme';
 
 // const output = vscode.window.createOutputChannel(EXTENSION_ID);
 // output.appendLine('Extension ready!');
@@ -132,9 +133,9 @@ export default class Preview {
                 await this.reloadPreview.call(this);
 
                 // Register events for refresh
-                vscode.workspace.onDidChangeTextDocument(await this.updateBody.bind(this));
+                vscode.workspace.onDidChangeTextDocument(await this.updatePreview.bind(this));
                 vscode.workspace.onDidChangeConfiguration(await this.reloadPreview.bind(this));
-                vscode.workspace.onDidSaveTextDocument(await this.updateBody.bind(this));
+                vscode.workspace.onDidSaveTextDocument(await this.updatePreview.bind(this));
                 vscode.window.onDidChangeActiveTextEditor(await this.reloadPreview.bind(this));
 
                 // Synchronize Editor Scrolling -> Preview
@@ -173,14 +174,16 @@ export default class Preview {
         }
     };
 
-    async updateBody() {
+    async updatePreview() {
         const editor = vscode.window.activeTextEditor;
         if (editor && this.isMarkdownEditor(editor, true) && this.panel) {
             this.documentUri = editor.document.uri;
             let currentMarkdownText = editor.document.getText();
+
+            // Getting Metadata and Inline Styles for live refresh if needed.
             const renderer = new Renderer(this.documentUri, this.context);
             let inlineStyles = renderer.getInlineStyles(currentMarkdownText);
-            let theme = renderer.getMetadata(currentMarkdownText)?.theme;
+            const theme = renderer.getMetadata(currentMarkdownText)?.theme ?? "";
 
             // Update CSS if needed
             if (this.currentinlineStyles !== inlineStyles) {
@@ -193,11 +196,13 @@ export default class Preview {
 
             // Update Theme CSS if needed
             if (this.currentTheme !== theme) {
+                getThemeStyles(this.context, theme, false).then(themeStyles => {
                 this.postMessage({
-                    type: 'updateTheme',
-                    theme: theme,
+                    type: 'updateThemeStyles',
+                    themeStyles: themeStyles,
                 });
-                this.currentTheme = theme ? theme : "";
+                this.currentTheme = theme;
+            });
             }
 
             // Update Body
@@ -237,7 +242,7 @@ export default class Preview {
             this.updateZoomLevel();
 
             // FIXME: Only scroll if active text editor is changed
-            if (editor.document.languageId === 'markdown' && getConfig().get('scrollPreviewWithEditor')) {
+            if (this.isMarkdownEditor(editor, true) && getConfig().get('scrollPreviewWithEditor')) {
                 this.postMessage({
                     type: 'scroll',
                     page: this.computePageNumber(editor.visibleRanges, editor.document),

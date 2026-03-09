@@ -176,8 +176,8 @@ export const htmlTemplate = async (context: vscode.ExtensionContext, addPreviewS
     const currentTheme = theme || config.get<string>('theme') || "5ePHB";
 
     // Get the styles from the Theme
-    const themeStyles = await getThemeStyles(context, currentTheme);
-    template = template.replace('{{ theme_styles }}', `<style id="theme_styles">/* Theme Styles*/\n${themeStyles}\n</style>`);
+    const themeStyles = await getThemeStyles(context, currentTheme, true);
+    template = template.replace('{{ theme_styles }}', `<style id="theme_styles">\n/* Theme Styles*/\n${themeStyles}\n</style>`);
 
     // Add Bundle styles
     cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/', 'bundle.css');
@@ -196,8 +196,6 @@ export const htmlTemplate = async (context: vscode.ExtensionContext, addPreviewS
     const customStyles = await getCustomStyles(context);
 
     template = template.replace('{{ custom_styles }}', `<style id="custom_styles">\n${customStyles}\n</style>`);
-
-    // template = template.replace('{{ inline_styles }}', `<style id="inline_styles"></style>`);
 
     // Scroll events
     template = template.replace('{{ preview-script }}', addPreviewScript ? `${getPreviewScript(context)}` : '');
