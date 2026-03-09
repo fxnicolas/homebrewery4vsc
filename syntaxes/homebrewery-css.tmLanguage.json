@@ -1,0 +1,14 @@
+{
+    "name": "HomebreweryCss",
+    "scopeName": "homebrewery.css",
+    "injectionSelector": "L:text.html.markdown",
+    "patterns": [
+        {
+            "begin": "(```|~~~)\\s*css\\s*$",
+            "end": "(```|~~~)",
+            "name": "markup.fenced_code.block.css",
+            "patterns": [ { "include": "source.css" } ]
+        }
+    ]
+}
+

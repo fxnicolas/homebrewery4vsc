@@ -37,18 +37,22 @@
   "contributes": {
     "grammars": [
       {
-        "scopeName": "homebrewery.injection",
-        "path": "./syntaxes/injection.json",
-        "injectTo": [
-          "text.html.markdown"
-        ]
+        "scopeName": "homebrewery.markdown",
+        "path": "./syntaxes/homebrewery.tmLanguage.json",
+        "injectTo": [ "text.html.markdown" ]
       },
       {
-        "scopeName": "metadata.yaml.codeblock",
-        "path": "./syntaxes/metadata-yaml-injection.json",
-        "injectTo": [
-          "text.html.markdown"
-        ]
+        "scopeName": "homebrewery.metadata",
+        "path": "./syntaxes/homebrewery-metadata.tmLanguage.json",
+        "injectTo": [ "text.html.markdown" ]
+      },
+      {
+        "scopeName": "homebrewery.css",
+        "path": "./syntaxes/homebrewery-css.tmLanguage.json",
+        "injectTo": [ "text.html.markdown" ],
+        "embeddedLanguages": {
+          "markup.fenced_code.block.css": "css"
+        }
       }
     ],
     "commands": [

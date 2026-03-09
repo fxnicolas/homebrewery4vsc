@@ -1,6 +1,6 @@
 {
-  "name": "HomebrewerySyntax",
-  "scopeName": "homebrewery.injection",
+  "name": "HomebreweryMarkdown",
+  "scopeName": "homebrewery.markdown",
   "injectionSelector": "L:text.html.markdown",
   "patterns": [
     {
