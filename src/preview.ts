@@ -20,6 +20,8 @@ export default class Preview {
     currentLayoutSpread: LayoutSpread = LayoutSpread.Simple;
     currentZoom: number = 100;
     context: vscode.ExtensionContext;
+    currentTheme : string = "";
+    currentinlineStyles : string = "";
     private documentUri: vscode.Uri | undefined;
     private isDisposed: boolean = false;
     private lastSentPage: number = -1;
@@ -135,8 +137,6 @@ export default class Preview {
                 vscode.workspace.onDidSaveTextDocument(await this.updateBody.bind(this));
                 vscode.window.onDidChangeActiveTextEditor(await this.reloadPreview.bind(this));
 
-
-
                 // Synchronize Editor Scrolling -> Preview
                 vscode.window.onDidChangeTextEditorVisibleRanges(({ textEditor, visibleRanges }) => {
                     if (this.isMarkdownEditor(textEditor) && getConfig().get('scrollPreviewWithEditor')) {
@@ -179,6 +179,28 @@ export default class Preview {
             this.documentUri = editor.document.uri;
             let currentMarkdownText = editor.document.getText();
             const renderer = new Renderer(this.documentUri, this.context);
+            let inlineStyles = renderer.getInlineStyles(currentMarkdownText);
+            let theme = renderer.getMetadata(currentMarkdownText)?.theme;
+
+            // Update CSS if needed
+            if (this.currentinlineStyles !== inlineStyles) {
+                this.postMessage({
+                    type: 'updateInlineStyles',
+                    inlineStyles: inlineStyles,
+                });
+                this.currentinlineStyles = inlineStyles ? inlineStyles : "";
+            }
+
+            // Update Theme CSS if needed
+            if (this.currentTheme !== theme) {
+                this.postMessage({
+                    type: 'updateTheme',
+                    theme: theme,
+                });
+                this.currentTheme = theme ? theme : "";
+            }
+
+            // Update Body
             renderer.renderBody(currentMarkdownText).then(updatedBody => {
                 this.postMessage({
                     type: 'updateBody',
@@ -200,6 +222,13 @@ export default class Preview {
             this.panel.title = `[Preview] ${this.getEditorFileName(editor)}`;
             this.documentUri = editor.document.uri;
             const renderer = new Renderer(this.documentUri, this.context);
+            
+            // Set the current CSS and Theme of the preview
+            let css = renderer.getInlineStyles(currentMarkdownText);
+            let theme = renderer.getMetadata(currentMarkdownText)?.theme;
+
+            this.currentinlineStyles = css ? css : "";
+            this.currentTheme = theme ? theme : "";
             renderer.renderHTML(currentMarkdownText, true).then(currentHTMLContent => {
                 if (this.panel) {
                     this.panel.webview.html = currentHTMLContent;

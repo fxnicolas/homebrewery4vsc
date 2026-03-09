@@ -44,8 +44,7 @@ export async function generateFile(
         const markdownContent = doc.getText();
 
         const outputHTMLContent =
-            await new Renderer(documentUri, context)
-                .renderHTML(markdownContent, false);
+            await new Renderer(documentUri, context).renderHTML(markdownContent, false);
 
         if (!outputHTMLContent) {
             vscode.window.showErrorMessage(constants.ErrorMessages.HTML_GENERATION_FAILED);

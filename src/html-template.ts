@@ -38,7 +38,7 @@ const TEMPLATE_HTML = `
                     {{ page_layout_styles }}
                     {{ background_handling_styles }}
                     {{ custom_styles }}
-                    {{ inlined_styles }}
+                    {{ inline_styles }}
                     <div class="pages" id="pagesContainer">
                         {{ body }}
                     </div>
@@ -169,7 +169,7 @@ export const htmlTemplate = async (context: vscode.ExtensionContext, addPreviewS
 
     let cssContent = await fs.promises.readFile(cssPath, 'utf8');
 
-    template = template.replace('{{ base_styles }}', `<style>\n${cssContent}\n</style>`);
+    template = template.replace('{{ base_styles }}', `<style id="base_styles">\n${cssContent}\n</style>`);
 
     // Select theme: The one set in file metadata or the default one.
     const config = getConfig();
@@ -177,28 +177,30 @@ export const htmlTemplate = async (context: vscode.ExtensionContext, addPreviewS
 
     // Get the styles from the Theme
     const themeStyles = await getThemeStyles(context, currentTheme);
-    template = template.replace('{{ theme_styles }}', `<style>/* Theme Styles*/\n${themeStyles}\n</style>`);
+    template = template.replace('{{ theme_styles }}', `<style id="theme_styles">/* Theme Styles*/\n${themeStyles}\n</style>`);
 
     // Add Bundle styles
     cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/', 'bundle.css');
 
     cssContent = await fs.promises.readFile(cssPath, 'utf8');
 
-    template = template.replace('{{ bundle_styles }}', `<style>\n${cssContent}\n</style>`);
+    template = template.replace('{{ bundle_styles }}', `<style id="bundle_styles">\n${cssContent}\n</style>`);
 
     // Page layout styles
-    template = template.replace('{{ page_layout_styles }}', `<style>\n${getPageLayoutStyles()}\n</style>`);
+    template = template.replace('{{ page_layout_styles }}', `<style  id="page_layout_styles">\n${getPageLayoutStyles()}\n</style>`);
 
     // Background styles
-    template = template.replace('{{ background_handling_styles }}', `<style>\n${getBackgroundHandlingStyles()}\n</style>`);
-
-    // Scroll events
-    template = template.replace('{{ preview-script }}', addPreviewScript ? `${getPreviewScript(context)}` : '');
+    template = template.replace('{{ background_handling_styles }}', `<style id="background_handling_styles">\n${getBackgroundHandlingStyles()}\n</style>`);
 
     // Custom styles (now async)
     const customStyles = await getCustomStyles(context);
 
-    template = template.replace('{{ custom_styles }}', `<style>\n${customStyles}\n</style>`);
+    template = template.replace('{{ custom_styles }}', `<style id="custom_styles">\n${customStyles}\n</style>`);
+
+    // template = template.replace('{{ inline_styles }}', `<style id="inline_styles"></style>`);
+
+    // Scroll events
+    template = template.replace('{{ preview-script }}', addPreviewScript ? `${getPreviewScript(context)}` : '');
 
     return template;
 };

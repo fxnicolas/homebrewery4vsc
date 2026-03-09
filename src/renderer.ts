@@ -11,6 +11,9 @@ import { getConfig } from './utils';
 // @ts-ignore
 declare module './markdown';
 
+const CSS_REGEX = /```css\s*([\s\S]*?)\s*```/;
+const METADATA_REGEX = /```metadata\s*([\s\S]*?)\s*```/;
+
 interface Metadata {
     title?: string;
     description?: string;
@@ -20,11 +23,6 @@ interface Metadata {
     theme?: string;
 }
 
-
-interface ExtractMetadataResult {
-    metadata: Metadata | null;
-    content: string;
-}
 
 export default class Renderer {
     public context: vscode.ExtensionContext;
@@ -38,7 +36,7 @@ export default class Renderer {
 
     /**
      * Preprocessor for markdown text.
-     * @param text input markdown text
+     * @param markdownText input markdown text
      * @returns processed markdown text.
      * 
      * @remarks
@@ -46,10 +44,10 @@ export default class Renderer {
      * 1. **Inject Footnotes**: Dynamically replace {footnote H1...H6} with the H1...H6 text.
      *
      */
-    private preProcessText(text: string) {
+    private preProcessText(markdownText: string) {
         // This function is used to preprocess the markdown text before rendering. It can be used to add any custom syntax or transformations that we want to support in our markdown files. For example, we can use it to inject footnotes, handle custom directives, etc.
-        text = this.injectFootnotes(text);
-        return text;
+        markdownText = this.injectFootnotes(markdownText);
+        return markdownText;
     }
 
     /**
@@ -192,57 +190,14 @@ export default class Renderer {
         return pageHtml;
     }
 
-    /**
-     * Represents optional metadata for a Homebrewery-style markdown document.
-     *
-     * Metadata provides descriptive and configuration information that influences
-     * how the resulting HTML or PDF is rendered. It may include document title,
-     * tags for organization, game system compatibility, theme selection, and
-     * other rendering hints.
-     *
-     * This interface typically corresponds to a YAML-like metadata block at the
-     * top of a markdown file (e.g., between `---` markers) and is extracted using
-     * the `extractMetadata()` function.
-     *
-     * @interface Metadata
-     * @property {string} [title]
-     * The document’s title, usually displayed in the page header or HTML `<title>` tag.
-     *
-     * @property {string} [description]
-     * A short summary or abstract of the content, used in `<meta>` tags for 
-     * search indexing or tooltips.
-     *
-     * @property {string[]} [tags]
-     * A list of category or keyword tags for classifying the document.
-     *
-     * @property {string[]} [systems]
-     * Identifies one or more game systems (e.g., "D&D 5e", "Pathfinder") 
-     * that the content is designed for.
-     *
-     * @property {string} [renderer]
-     * Specifies a preferred rendering engine or version, allowing variations in how
-     * markdown or layout features are interpreted.
-     *
-     * @property {string} [theme]
-     * The visual theme to apply during rendering (e.g., "default", "dark", "parchment").
-     *
-     * @example
-     * const metadata: Metadata = {
-     *   title: "The Shadow Crypt",
-     *   description: "A short homebrew adventure for Level 5 heroes.",
-     *   tags: ["adventure", "undead", "dungeon"],
-     *   systems: ["5e"],
-     *   renderer: "V4",
-     *   theme: "5ePHB"
-     * };
-     */
+
 
     /**
      * Generates HTML <title> and <meta> tags from metadata.
      */
-    private generateHeadTags(meta: Metadata | null): string {
+    private generateHeadTags(metadata: Metadata | null): string {
 
-        if (!meta) {
+        if (!metadata) {
             return "";
         };
 
@@ -256,98 +211,89 @@ export default class Renderer {
         const parts: string[] = [];
 
         // Title
-        if (meta.title) {
-            parts.push(`<title>${escapeHtml(meta.title)}</title>`);
-            parts.push(`<meta property="og:title" content="${escapeHtml(meta.title)}">`);
+        if (metadata.title) {
+            parts.push(`<title>${escapeHtml(metadata.title)}</title>`);
+            parts.push(`<meta property="og:title" content="${escapeHtml(metadata.title)}">`);
         }
 
         // Description
-        if (meta.description) {
+        if (metadata.description) {
             parts.push(
-                `<meta name="description" content="${escapeHtml(meta.description)}">`
+                `<meta name="description" content="${escapeHtml(metadata.description)}">`
             );
             parts.push(
-                `<meta property="og:description" content="${escapeHtml(meta.description)}">`
+                `<meta property="og:description" content="${escapeHtml(metadata.description)}">`
             );
         }
 
         // Tags → keywords
-        if (meta.tags?.length) {
+        if (metadata.tags?.length) {
             parts.push(
-                `<meta name="keywords" content="${escapeHtml(meta.tags.join(", "))}">`
+                `<meta name="keywords" content="${escapeHtml(metadata.tags.join(", "))}">`
             );
         }
 
         // Systems
-        if (meta.systems?.length) {
+        if (metadata.systems?.length) {
             parts.push(
-                `<meta name="systems" content="${escapeHtml(meta.systems.join(", "))}">`
+                `<meta name="systems" content="${escapeHtml(metadata.systems.join(", "))}">`
             );
         }
 
         // Renderer
-        if (meta.renderer) {
+        if (metadata.renderer) {
             parts.push(
-                `<meta name="renderer" content="${escapeHtml(meta.renderer)}">`
+                `<meta name="renderer" content="${escapeHtml(metadata.renderer)}">`
             );
         }
 
         // Theme
-        if (meta.theme) {
+        if (metadata.theme) {
             parts.push(
-                `<meta name="theme" content="${escapeHtml(meta.theme)}">`
+                `<meta name="theme" content="${escapeHtml(metadata.theme)}">`
             );
         }
 
         return parts.join("\n");
     }
 
+    /**
+     * Get Brew's metadata block from the markdown input, parses it
+     * as YAML, and returns the parsed metadata
+     */
+    public getMetadata<T = any>(markdownText: string): Metadata | null {
+        let metadata: Metadata | null = null;
+        const match = markdownText.match(METADATA_REGEX);
+        if (match) {
+            try {
+                metadata = yaml.load(match[1]) as Metadata;
+            } catch (err: any) {
+                throw new Error(`Invalid metadata YAML: ${err.message}`);
+            }
+        }
+        return metadata;
+    };
 
     /**
-     * Extracts Homebrewery's metadata block from the markdown input, parses it
-     * as YAML, and returns both the parsed metadata and the remaining content.
+     * Get a Brew's CSS fenced block from the markdown input.
+     * and returns this css content as a string.
      */
-    public extractMetadata<T = any>(input: string): ExtractMetadataResult {
-        const regex = /```metadata\s*([\s\S]*?)\s*```/;
-        const match = input.match(regex);
-        if (!match) {
-            return {
-                metadata: null,
-                content: input
-            };
-        }
-        let metadata: Metadata | null = null;
-        try {
-            metadata = yaml.load(match[1]) as Metadata;
-        } catch (err: any) {
-            throw new Error(`Invalid metadata YAML: ${err.message}`);
-        }
-        const cleanedContent = input.replace(regex, "").trim();
-        return {
-            metadata,
-            content: cleanedContent
+    public getInlineStyles<T = any>(markdownText: string): string {
+        let cssContent : string = "";
+        const match = markdownText.match(CSS_REGEX);
+        if (match) {
+            cssContent = match[1];
         };
+        return cssContent;
     }
 
+
     /**
-     * Extracts a Homebrewery's CSS block from the markdown input.
-     * and returns both the css and the remaning content.
+     * Get a Brew's body content from the markdown input.
+     * and returns this content as a string.
      */
-    public extractCss<T = any>(input: string): { css: string | null; content: string; } {
-        const regex = /```css\s*([\s\S]*?)\s*```/;
-        const match = input.match(regex);
-        if (!match) {
-            return {
-                css: "",
-                content: input
-            };
-        } else {
-            const cleanedContent = input.replace(regex, "").trim();
-            return {
-                css: match[1],
-                content: cleanedContent
-            };
-        }
+    public getBody<T = any>(markdownText: string): string {
+        return  markdownText.replace(CSS_REGEX, "").replace(METADATA_REGEX, "").trim();
     }
 
     /**
@@ -355,8 +301,8 @@ export default class Renderer {
      * It looks for {footnote H1}, {footnote H2}, etc. and replaces them with 
      * the corresponding heading text.
      */
-    private injectFootnotes(text: string) {
-        const lines = text.split('\n');
+    private injectFootnotes(markdownText: string) {
+        const lines = markdownText.split('\n');
         const headings: { [key: number]: string } = {}; // {1: "", 2: "", ...}
 
         return lines.map(line => {
@@ -398,7 +344,7 @@ export default class Renderer {
      *
      * @async
      * @function renderHTML
-     * @param {string} text 
+     * @param {string} markdownText 
      * The source text to render. It may include optional metadata headers, inlined CSS blocks, 
      * and page split markers (`\page`).
      *
@@ -431,30 +377,32 @@ export default class Renderer {
      *    from `htmlTemplate()`.
      *
      */
-    public async renderHTML(text: string, isVscPreview: boolean = false): Promise<string> {
+    public async renderHTML(markdownText: string, isVscPreview: boolean = false): Promise<string> {
 
         this.isVscPreview = isVscPreview;
 
         // Extract Metadata
-        let { metadata, content } = this.extractMetadata(text);
-        const htmlMeta = this.generateHeadTags(metadata);
+        let metadata = this.getMetadata(markdownText);
+        const htmlMetaTags = this.generateHeadTags(metadata);
         let theme = "";
         if (metadata && metadata.theme) {
             theme = metadata.theme;
         }
-        // Extract CSS
-        let { css, content: cleanContent } = this.extractCss(content);
-
+        // Extract inline styles CSS
+        let inlineStyles = this.getInlineStyles(markdownText);
+        
+        let body = this.getBody(markdownText);
         // Render the Body (all pages)
-        let htmlBody = await this.renderBody(cleanContent);
+        let htmlBody = await this.renderBody(body);
 
         // Generate the template
         let template = await htmlTemplate(this.context, isVscPreview, theme);
 
         // Insert metadata (if any)
-        template = template.replace('{{ metadata }}', htmlMeta);
+        template = template.replace('{{ metadata }}', htmlMetaTags);
+
         // Insert inlined CSSS
-        template = template.replace('{{ inlined_styles }}', `<style>\n${css}\n</style>`);
+        template = template.replace('{{ inline_styles }}', `<style id="inline_styles">\n${inlineStyles}\n</style>`);
 
         // Insert the Body
         let htmlOutput = template.replace('{{ body }}', htmlBody);
@@ -463,9 +411,14 @@ export default class Renderer {
     }
 
     public async renderBody(markdownText: string): Promise<string> {
-        const pages = this.preProcessText(markdownText).split(/^\\page$/gm);
 
-        // This starts all "renderPage" tasks simultaneously
+        // Get the body content (no CSS, not metadata)
+        let body = this.getBody(markdownText);
+
+        // Split the boby into pages after proprocessing.
+        const pages = this.preProcessText(body).split(/^\\page$/gm);
+
+        // All pages rendering start simultaneously
         const renderPromises = pages.map((pageContent, i) => this.renderPage(pageContent, i));
 
         // Wait for ALL promises to settle

@@ -12,7 +12,8 @@ window.addEventListener('message', event => {
     switch (type) {
         // scroll: Jumps to the corresponding page in the preview.
         case 'scroll':
-            const { type, page, mode } = event.data;
+            const page = event.data.page;
+            const mode = event.data.mode;
             anchor = "p" + page;
             el = document.getElementById(anchor);
             if (el) {
@@ -25,21 +26,28 @@ window.addEventListener('message', event => {
             break;
         // layout: switches the layout to single page, two-pages or flow.
         case 'layout':
-            const { layout } = event.data;
+            const layout = event.data.layout;
             el = document.getElementById('pagesContainer');
             el.className = 'pages ' + layout;
             break;
 
         // zoom: changes the preview zoom level. 
         case 'zoom':
-            const { zoomLevel } = event.data;
+            const zoomLevel = event.data.zoomLevel;
             el = document.getElementById('pagesContainer');
             el.style.zoom = zoomLevel + '%';
             break;
-        // update: update the page body without reloading the whole document
+        // updateBody: update the page body without reloading the whole document
         case 'updateBody':
             const html = event.data.html;
             document.getElementById("pagesContainer").innerHTML = html;
+            break;
+        // updateInlineStyles: Updates the script with id=inline_styles to apply inkine CSS while editing.
+        case 'updateInlineStyles':
+            const inlineStyles = event.data.inlineStyles;
+            el = document.getElementById('inline_styles');
+            el.textContent = inlineStyles;
+            break;
     }
 });
 

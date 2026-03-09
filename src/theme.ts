@@ -54,13 +54,13 @@ async function getThemeFromFile(context: vscode.ExtensionContext, themeFile: str
             const themeFilePayload = Buffer.from(fileBuffer).toString("utf8");
             // Use a Renderer to extract the Theme File metadata (contains its Base Theme) and CSS.
             const renderer = new Renderer(fullUri, context);
-            const themeFileMetadata = renderer.extractMetadata(themeFilePayload).metadata;
+            const themeFileMetadata = renderer.getMetadata(themeFilePayload);
             if (themeFileMetadata && themeFileMetadata.theme) {
                 // Get the styles from the **Base Theme** specified in the Metadata
                 //FIXME: There is a risk of circular logic if a theme file references another theme file (or itself) as its base theme.
                 const baseThemeCss = await getThemeStyles(context, themeFileMetadata.theme);
                 // Get the styles of the Theme, from CSS Fenced Block
-                const themeCss = renderer.extractCss(themeFilePayload).css;
+                const themeCss = renderer.getInlineStyles(themeFilePayload);
                 css = `/* Base Theme Content for ${themeFileMetadata.theme} */\n${baseThemeCss}\n\n/* File Theme Content */\n${themeCss}`;
             }
         }
