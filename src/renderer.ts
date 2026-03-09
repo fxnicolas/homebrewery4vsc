@@ -7,6 +7,7 @@ import * as path from 'path';
 import * as fs from 'fs/promises';
 import { parse } from 'node-html-parser';
 import { getConfig } from './utils';
+import { SnippetsBlock } from './snippets-completions.js';
 
 // @ts-ignore
 declare module './markdown';
@@ -21,6 +22,7 @@ interface Metadata {
     systems?: string[];
     renderer?: string;
     theme?: string;
+    snippets?: SnippetsBlock[];
 }
 
 

@@ -29,4 +29,10 @@ export module iconFontProviderCompletionsTexts {
     export const DOCUMENTATION_PATTERN = "Insert the *${snippetName}* icon from the *${fontName}* font";
 }
 
+export module snippetProviderCompletionTexts {
+    export const LABEL_PATTERN = "${prefix}: ${name}";
+    export const DESCRIPTION_PATTERN = "Insert ${name}";
+    export const DOCUMENTATION_PATTERN = "Insert snippet ${name}";
+}
+
 export const EXTENSION_ID = 'homebrewery4vsc';

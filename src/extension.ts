@@ -3,9 +3,14 @@ import * as vscode from 'vscode';
 import Preview from './preview';
 import { generateFile } from './html-file-generator';
 import { allIconFontsCompletionItems } from './iconfonts-completions';
+import { SnippetsBlock, snippetsProviderItems } from './snippets-completions';
+import Renderer from './renderer';
+
 import * as constants from './constants';
 import { getConfig } from './utils';
 import { DecorationManager } from './decorationManager';
+
+let currentSnippets: SnippetsBlock[] = [];
 
 
 export function activate(context: vscode.ExtensionContext) {
@@ -34,7 +39,9 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(previewZoomOut);
 	context.subscriptions.push(previewZoomReset);
 
-	// Icon fonts completion provider
+	/**********************************/
+	/* Icon fonts completion provider */
+	/**********************************/
 	let iconFontsProvider: vscode.Disposable | undefined;
 
 	// Enable or disable the Font Icon completion provider.
@@ -67,7 +74,44 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
-	// Page and Column Text Decorations
+
+	/*********************/
+	/* Snippets Provider */
+	/*********************/
+	// Register provider ONCE
+	const provider = vscode.languages.registerCompletionItemProvider(
+		{ language: "markdown" },
+		{
+			provideCompletionItems() {
+				return snippetsProviderItems(currentSnippets);
+			}
+		}
+	);
+
+	context.subscriptions.push(provider);
+
+	function reloadSnippets(document: vscode.TextDocument | undefined) {
+		if (!document || document.languageId !== "markdown" || document !== vscode.window.activeTextEditor?.document) {
+			return;
+		}
+		console.log("Reloading snippets");
+		const renderer = new Renderer(document.uri, context);
+		const metadata = renderer.getMetadata(document.getText());
+		currentSnippets = metadata?.snippets ?? [];
+	}
+
+	// Update snippets when text changes
+	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(e => {reloadSnippets(e.document);}));
+
+	// Update when switching editor
+	context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(e => {reloadSnippets(e?.document);}));
+
+	// Initial load
+	reloadSnippets(vscode.window.activeTextEditor?.document);
+
+	/************************************/
+	/* Page and Column Text Decorations */
+	/************************************/
 	new DecorationManager(context);
 
 }
