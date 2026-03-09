@@ -1,8 +1,8 @@
 # Homebrewery for VS Code
 
-Edit your favorite RPG content in your favorite editor.
+Edit your favorite TTRPG content in your favorite editor.
 
-This VS Code extension provides an editor for RPG Homebrew content (aka **Brew**) using the Markdown syntax, as supported by [The Homebrewery](https://homebrewery.naturalcrit.com/).
+This VS Code extension provides an editor for your TTRPG content (aka **Brews**) using Markdown syntax supported by [The Homebrewery](https://homebrewery.naturalcrit.com/).
 It provides completion snippets and a built-in live preview.
 
 It is inspired by some projects listed in [related projects](#related-projects).
@@ -188,23 +188,6 @@ VS Code recognize these files as markdown but as **Plain Text**. To have them as
 ## Known Issues
 
 * No known issue
-
-## Release Notes
-
-### 1.0.0
-
-Initial release of Homebrewery for VS Code.
-
-### 1.1.0
-
-- Optimized scrolling synchronization
-- Preview lazy reload on markdown edits to prevent flickering effect
-
-### 1.2.0
-
-- Added page and column breaks highlighting in the markdown editor.
-- Added a None theme.
-- Added better support for local Themes
 
 ## Related Projects
 
