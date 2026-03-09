@@ -5,6 +5,8 @@ Edit your favorite TTRPG content in your favorite editor.
 This VS Code extension provides an editor for your TTRPG content (aka **Brews**) using Markdown syntax supported by [The Homebrewery](https://homebrewery.naturalcrit.com/).
 It provides completion snippets and a built-in live preview.
 
+![Homebrewery for Visual Code Demo](./media/images/homebrewery4vsc-demo.gif)
+
 It is inspired by some projects listed in [related projects](#related-projects).
 
 ## Installation
