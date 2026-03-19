@@ -78,7 +78,7 @@ export default class Preview {
         }
     }
 
-    private isMarkdownEditor(editor: vscode.TextEditor, showWarning: boolean = true): boolean {
+    private isMarkdownEditor(editor: vscode.TextEditor, showWarning: boolean = false): boolean {
         const languageId: string = editor ? editor.document.languageId.toLowerCase() : "";
         const result = languageId === "markdown";
         if (!result && showWarning) {
@@ -110,7 +110,7 @@ export default class Preview {
             if (this.panel) {
                 // Reuse existing panel.
                 this.documentUri = editor.document.uri;
-                await this.reloadPreview.call(this);
+                await this.updatePreview.call(this);
                 this.panel.reveal();
             } else {
                 // Create and show a new webview
@@ -136,7 +136,7 @@ export default class Preview {
                 vscode.workspace.onDidChangeTextDocument(await this.updatePreview.bind(this));
                 vscode.workspace.onDidChangeConfiguration(await this.reloadPreview.bind(this));
                 vscode.workspace.onDidSaveTextDocument(await this.updatePreview.bind(this));
-                vscode.window.onDidChangeActiveTextEditor(await this.reloadPreview.bind(this));
+                vscode.window.onDidChangeActiveTextEditor(await this.updatePreview.bind(this));
 
                 // Synchronize Editor Scrolling -> Preview
                 vscode.window.onDidChangeTextEditorVisibleRanges(({ textEditor, visibleRanges }) => {
