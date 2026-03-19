@@ -94,7 +94,6 @@ export function activate(context: vscode.ExtensionContext) {
 		if (!document || document.languageId !== "markdown" || document !== vscode.window.activeTextEditor?.document) {
 			return;
 		}
-		console.log("Reloading snippets");
 		const renderer = new Renderer(document.uri, context);
 		const metadata = renderer.getMetadata(document.getText());
 		currentSnippets = metadata?.snippets ?? [];
