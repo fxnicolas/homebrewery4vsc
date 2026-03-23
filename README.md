@@ -11,7 +11,7 @@ It is inspired by some projects listed in [related projects](#related-projects).
 
 ## Installation
 
-This extension requires [Visual Studio Code](https://code.visualstudio.com/download). Once VSCode is installed, search for the extension or install it from [here](https://marketplace.visualstudio.com/items?itemName=fxnicolas.homebrewery4vsc).
+This extension requires [Visual Studio Code](https://code.visualstudio.com/download). Once VSCode is installed, search for the extension or install it from [here](https://marketplace.visualstudio.com/items?itemName=iffrit.homebrewery4vsc).
 
 ## Features
 
