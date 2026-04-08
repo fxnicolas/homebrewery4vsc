@@ -39,17 +39,23 @@
       {
         "scopeName": "homebrewery.markdown",
         "path": "./syntaxes/homebrewery.tmLanguage.json",
-        "injectTo": [ "text.html.markdown" ]
+        "injectTo": [
+          "text.html.markdown"
+        ]
       },
       {
         "scopeName": "homebrewery.metadata",
         "path": "./syntaxes/homebrewery-metadata.tmLanguage.json",
-        "injectTo": [ "text.html.markdown" ]
+        "injectTo": [
+          "text.html.markdown"
+        ]
       },
       {
         "scopeName": "homebrewery.css",
         "path": "./syntaxes/homebrewery-css.tmLanguage.json",
-        "injectTo": [ "text.html.markdown" ],
+        "injectTo": [
+          "text.html.markdown"
+        ],
         "embeddedLanguages": {
           "markup.fenced_code.block.css": "css"
         }
@@ -371,7 +377,7 @@
     "@types/js-yaml": "^4.0.9",
     "@types/jsdom": "^28.0.0",
     "@types/mocha": "^10.0.10",
-    "@types/node": "22.x",
+    "@types/node": "^22.19.17",
     "@types/vscode": "^1.109.0",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",

@@ -27,6 +27,7 @@ export default class Preview {
     private isDisposed: boolean = false;
     private lastSentPage: number = -1;
 
+    private debounceTimer: ReturnType<typeof setTimeout> | undefined;
 
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
@@ -104,6 +105,7 @@ export default class Preview {
         );
     }
 
+
     async initMarkdownPreview(viewColumn: number) {
         const editor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
         if (editor && this.isMarkdownEditor(editor)) {
@@ -133,10 +135,10 @@ export default class Preview {
                 await this.reloadPreview.call(this);
 
                 // Register events for refresh
-                vscode.workspace.onDidChangeTextDocument(await this.updatePreview.bind(this));
-                vscode.workspace.onDidChangeConfiguration(await this.reloadPreview.bind(this));
-                vscode.workspace.onDidSaveTextDocument(await this.updatePreview.bind(this));
-                vscode.window.onDidChangeActiveTextEditor(await this.updatePreview.bind(this));
+                vscode.workspace.onDidChangeTextDocument(this.debouncedupdatePreview.bind(this));
+                vscode.workspace.onDidChangeConfiguration(this.reloadPreview.bind(this));
+                vscode.workspace.onDidSaveTextDocument(this.debouncedupdatePreview.bind(this));
+                vscode.window.onDidChangeActiveTextEditor(this.debouncedupdatePreview.bind(this));
 
                 // Synchronize Editor Scrolling -> Preview
                 vscode.window.onDidChangeTextEditorVisibleRanges(({ textEditor, visibleRanges }) => {
@@ -173,6 +175,16 @@ export default class Preview {
             }
         }
     };
+
+    async debouncedupdatePreview() {
+        const editor = vscode.window.activeTextEditor;
+        if (editor && this.isMarkdownEditor(editor, true) && this.panel) {
+            clearTimeout(this.debounceTimer);
+            this.debounceTimer = setTimeout(() => {
+                this.updatePreview();
+            }, 300);
+        }
+    }
 
     async updatePreview() {
         const editor = vscode.window.activeTextEditor;
