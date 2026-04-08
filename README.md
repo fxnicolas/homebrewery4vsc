@@ -11,7 +11,7 @@ It is inspired by some projects listed in [related projects](#related-projects).
 
 ## Installation
 
-This extension requires [Visual Studio Code](https://code.visualstudio.com/download). Once VSCode is installed, search for the extension or install it from [here](https://marketplace.visualstudio.com/items?itemName=iffrit.homebrewery4vsc).
+This extension requires [Visual Studio Code](https://code.visualstudio.com/download). Once VSCode is installed, search for the extension or install it from [the marketplace](https://marketplace.visualstudio.com/items?itemName=iffrit.homebrewery4vsc).
 
 ## Features
 
@@ -32,11 +32,11 @@ This extension enhances the default Markdown editor with:
 
 ### Snippets
 
-Snippets provide access to the extended Markdown syntax implemented by Homebrewery. They can be accessed with `CTRL+Space` in Markdown documents. 
+Snippets provide access to the extended Markdown syntax implemented by Homebrewery. They can be accessed with `CTRL+Space` in Markdown documents.
 
 Homebrewery snippets start with `Homebrewery`.
 
-Font icons provided in Homebrewery are also available as snippets. These start with `Font Icon`.<br>
+Font icons provided in Homebrewery are also available as snippets. These start with `Font Icon`.\
 **NOTE**: As these snippets can clutter the completion dropdown, you can disable them with the `homebrewery4vsc.enableFontIconCompletions` [setting](#extension-settings).
 
 ### Commands
@@ -86,11 +86,11 @@ Example: A brew using the 5ePHB (*5e Player's Handbook*) default theme.
     ...
 ```
 
-
-You can refer in the `theme` property to another brew from your workspace and use it as a *local theme*.<br>
+You can refer in the `theme` property to another brew from your workspace and use it as a *local theme*.\
 This brew file should have:
-- A `theme` property of the `metadata` fenced block, pointing to one of the default themes.
-- A `css` fenced block containing the various styles that compose this theme.
+
+* A `theme` property of the `metadata` fenced block, pointing to one of the default themes.
+* A `css` fenced block containing the various styles that compose this theme.
 
 Example: A brew referring to a `HB-StrahdStyle.txt` theme in the workspace.
 
@@ -155,7 +155,8 @@ This extension exposes the following settings:
 This extension is inspired from the [**Dungeon and Markdown**](https://marketplace.visualstudio.com/items?itemName=SpjakSoftware.dungeonsandmarkdown) extension by Spjak Software (Jacob Olesen).
 
 This extension uses the Themes, Icons and Markdown Renderer from [**The Homebrewery**](https://github.com/naturalcrit/homebrewery), under the MIT license.
-The Homebrewery is copyright (c) 2016 Scott Tolksdorf.<br>**Many thanks to the contributors who keep this project alive!**
+The Homebrewery is copyright (c) 2016 Scott Tolksdorf.\
+**Many thanks to the contributors who keep this project alive!**
 
 ## FAQ
 
@@ -182,7 +183,7 @@ When editing brews in the Homebrewery, or downloading sources, you'll notice tha
 VS Code recognize these files as markdown but as **Plain Text**. To have them associated to the Markdown syntax:
 
 1. In the VS Code status bar (at the bottom of the window), click **Plain Text**.
-2. In **Select Language Mode**, select **Configure File Association for `.txt`...**<br>
+2. In **Select Language Mode**, select **Configure File Association for `.txt`...**\
 <img src="./media/images/select-language-mode.png" alt="Hide 'Open Preview to the Side'" style="width:400px;"/>
 
 3. Finally, select **Markdown** .
@@ -193,5 +194,5 @@ VS Code recognize these files as markdown but as **Plain Text**. To have them as
 
 ## Related Projects
 
-- [Homebrewery](https://github.com/naturalcrit/homebrewery)
-- [Dungeon and Markdown](https://marketplace.visualstudio.com/items?itemName=SpjakSoftware.dungeonsandmarkdown)
+* [Homebrewery](https://github.com/naturalcrit/homebrewery)
+* [Dungeon and Markdown](https://marketplace.visualstudio.com/items?itemName=SpjakSoftware.dungeonsandmarkdown)
