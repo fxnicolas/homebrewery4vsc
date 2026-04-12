@@ -27,6 +27,10 @@ export default class Preview {
     private isDisposed: boolean = false;
     private lastSentPage: number = -1;
     private currentRenderer: Renderer | undefined;
+    private metadataCache: { theme: string, snippets: any[] } | null = null;
+    private inlineStylesCache: string = "";
+    private lastContentType: string = "";
+    private lastUpdateHash: number = 0;
 
     private debounceTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -197,31 +201,29 @@ export default class Preview {
             }
             let currentMarkdownText = editor.document.getText();
 
-            // Getting Metadata and Inline Styles for live refresh if needed.
-            let inlineStyles = this.currentRenderer.getInlineStyles(currentMarkdownText);
+            // Cache and retrieve metadata once
             const theme = this.currentRenderer.getMetadata(currentMarkdownText)?.theme ?? "";
+            if (this.currentTheme !== theme) {
+                getThemeStyles(this.context, theme, false).then((themeStyles) => {
+                    this.postMessage({
+                        type: 'updateThemeStyles',
+                        themeStyles: themeStyles,
+                    });
+                    this.currentTheme = theme;
+                });
+            }
 
-            // Update CSS if needed
-            if (this.currentinlineStyles !== inlineStyles) {
+            // Update inline styles if changed
+            const newInlineStyles = this.currentRenderer.getInlineStyles(currentMarkdownText);
+            if (newInlineStyles !== this.inlineStylesCache) {
                 this.postMessage({
                     type: 'updateInlineStyles',
-                    inlineStyles: inlineStyles,
+                    inlineStyles: newInlineStyles,
                 });
-                this.currentinlineStyles = inlineStyles ? inlineStyles : "";
+                this.inlineStylesCache = newInlineStyles || "";
             }
 
-            // Update Theme CSS if needed
-            if (this.currentTheme !== theme) {
-                getThemeStyles(this.context, theme, false).then(themeStyles => {
-                this.postMessage({
-                    type: 'updateThemeStyles',
-                    themeStyles: themeStyles,
-                });
-                this.currentTheme = theme;
-            });
-            }
-
-            // Update Body
+            // Update body
             this.currentRenderer.renderBody(currentMarkdownText).then((updatedBody) => {
                 this.postMessage({
                     type: 'updateBody',
