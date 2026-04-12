@@ -26,6 +26,7 @@ export default class Preview {
     private documentUri: vscode.Uri | undefined;
     private isDisposed: boolean = false;
     private lastSentPage: number = -1;
+    private currentRenderer: Renderer | undefined;
 
     private debounceTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -189,13 +190,16 @@ export default class Preview {
     async updatePreview() {
         const editor = vscode.window.activeTextEditor;
         if (editor && this.isMarkdownEditor(editor, true) && this.panel) {
-            this.documentUri = editor.document.uri;
+            // Create renderer once per document if not exists or document URI changed
+            if (!this.currentRenderer || this.documentUri !== editor.document.uri) {
+                this.currentRenderer = new Renderer(editor.document.uri, this.context);
+                this.documentUri = editor.document.uri;
+            }
             let currentMarkdownText = editor.document.getText();
 
             // Getting Metadata and Inline Styles for live refresh if needed.
-            const renderer = new Renderer(this.documentUri, this.context);
-            let inlineStyles = renderer.getInlineStyles(currentMarkdownText);
-            const theme = renderer.getMetadata(currentMarkdownText)?.theme ?? "";
+            let inlineStyles = this.currentRenderer.getInlineStyles(currentMarkdownText);
+            const theme = this.currentRenderer.getMetadata(currentMarkdownText)?.theme ?? "";
 
             // Update CSS if needed
             if (this.currentinlineStyles !== inlineStyles) {
@@ -218,7 +222,7 @@ export default class Preview {
             }
 
             // Update Body
-            renderer.renderBody(currentMarkdownText).then(updatedBody => {
+            this.currentRenderer.renderBody(currentMarkdownText).then((updatedBody) => {
                 this.postMessage({
                     type: 'updateBody',
                     html: updatedBody,
@@ -235,18 +239,21 @@ export default class Preview {
             return;
         }
         if (editor && this.isMarkdownEditor(editor, true) && this.panel) {
+            // Create renderer once per document if not exists or document URI changed
+            if (!this.currentRenderer || this.documentUri !== editor.document.uri) {
+                this.currentRenderer = new Renderer(editor.document.uri, this.context);
+            }
             let currentMarkdownText = editor.document.getText();
             this.panel.title = `[Preview] ${this.getEditorFileName(editor)}`;
             this.documentUri = editor.document.uri;
-            const renderer = new Renderer(this.documentUri, this.context);
             
             // Set the current CSS and Theme of the preview
-            let css = renderer.getInlineStyles(currentMarkdownText);
-            let theme = renderer.getMetadata(currentMarkdownText)?.theme;
+            let css = this.currentRenderer.getInlineStyles(currentMarkdownText);
+            let theme = this.currentRenderer.getMetadata(currentMarkdownText)?.theme;
 
             this.currentinlineStyles = css ? css : "";
             this.currentTheme = theme ? theme : "";
-            renderer.renderHTML(currentMarkdownText, true).then(currentHTMLContent => {
+            this.currentRenderer.renderHTML(currentMarkdownText, true).then(currentHTMLContent => {
                 if (this.panel) {
                     this.panel.webview.html = currentHTMLContent;
                 }
