@@ -186,7 +186,7 @@ export default class Renderer {
      */
     private async postProcessPageHtml(pageHtml: string): Promise<string> {
         pageHtml = await this.inlineAssetImages(pageHtml);
-        if (this.isVscPreview || getConfig().get('inlineLocalImages')) {
+        if (!this.isVscPreview && getConfig().get('inlineLocalImages')) {
             pageHtml = await this.inlineLocalImages(pageHtml);
         }
         return pageHtml;
