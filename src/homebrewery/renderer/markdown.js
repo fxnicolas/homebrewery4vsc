@@ -1,4 +1,4 @@
-/* eslint-disable max-depth */
+
 /* eslint-disable max-lines */
 import _                        from 'lodash';
 import { marked as Marked }     from 'marked';
@@ -70,9 +70,9 @@ renderer.link = function (token) {
 	if(title) {
 		out += ` title="${escape(title)}"`;
 	}
-	if(self) {
-		out += ' target="_self"';
-	}
+	// if(self) {
+	// 	out += ' target="_self"';
+	// }
 	out += `>${text}</a>`;
 	return out;
 };
