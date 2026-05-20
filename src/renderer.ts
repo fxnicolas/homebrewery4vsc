@@ -130,9 +130,10 @@ export default class Renderer {
 
     private async convertCssLocalImagesUrl(
         css: string,
-        inlineImages: boolean = false
+        inlineImages: boolean = false,
+        cssDocumentUri: vscode.Uri = this.documentUri
     ): Promise<string> {
-        const documentUri = this.documentUri;
+        const documentUri = cssDocumentUri;
         const baseDir = path.dirname(documentUri.fsPath);
         const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? baseDir;
         const regex = /url\(\s*(['"]?)([^)'"]+)\1\s*\)/g;
@@ -303,19 +304,23 @@ export default class Renderer {
         return pageHtml;
     }
 
-    private async postProcessCss(css: string): Promise<string> {
+    private async postProcessCss(
+        css: string,
+        cssDocumentUri: vscode.Uri = this.documentUri,
+        forceImageInlining: boolean = false
+    ): Promise<string> {
         css = await this.inlineCssAssetImages(css);
         // Webview: Change image URLs to Webview URIs
-        if (this.isVscPreview) {
-            css = await this.convertCssLocalImagesUrl(css, false);
+        if (this.isVscPreview && !forceImageInlining) {
+            css = await this.convertCssLocalImagesUrl(css, false, cssDocumentUri);
         }
         // Inline Local Images
         else {
-            if (getConfig().get('inlineLocalImages')) {
-                css = await this.convertCssLocalImagesUrl(css, true);
+            if (getConfig().get('inlineLocalImages') || forceImageInlining) {
+                css = await this.convertCssLocalImagesUrl(css, true, cssDocumentUri);
             }
             else {
-                css = await this.convertCssLocalImagesUrl(css, false);
+                css = await this.convertCssLocalImagesUrl(css, false, cssDocumentUri);
             }
         }
         return css;
@@ -408,13 +413,17 @@ export default class Renderer {
      * Get a Brew's CSS fenced block from the markdown input.
      * and returns this css content as a string.
      */
-    public async getInlineStyles<T = any>(markdownText: string): Promise<string> {
+    public async getInlineStyles<T = any>(
+        markdownText: string,
+        cssDocumentUri: vscode.Uri = this.documentUri,
+        forceImageInlining: boolean = false
+    ): Promise<string> {
         let cssContent: string = "";
         const match = markdownText.match(CSS_REGEX);
         if (match) {
             cssContent = match[1];
         };
-        return await this.postProcessCss(cssContent);
+        return await this.postProcessCss(cssContent, cssDocumentUri, forceImageInlining);
     }
 
 
