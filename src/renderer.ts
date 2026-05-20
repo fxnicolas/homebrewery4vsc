@@ -30,10 +30,12 @@ export default class Renderer {
     public context: vscode.ExtensionContext;
     public documentUri: vscode.Uri;
     private isVscPreview: boolean = true;
+    private panel: vscode.WebviewPanel | undefined;
 
-    constructor(documentUri: vscode.Uri, context: vscode.ExtensionContext) {
+    constructor(documentUri: vscode.Uri, context: vscode.ExtensionContext, panel: vscode.WebviewPanel | undefined = undefined) {
         this.documentUri = documentUri;
         this.context = context;
+        this.panel = panel;
     };
 
     /**
@@ -118,11 +120,18 @@ export default class Renderer {
         return finalHtml;
     };
 
-    private async inlineLocalImages(
+    private toWebviewUri(panel: vscode.WebviewPanel, fsPath: string): string {
+        // Converts a local file path to a webview Uri
+        return panel.webview.asWebviewUri(vscode.Uri.file(fsPath)).toString();
+    }
+
+    private async convertLocalImagesUrl(
         html: string,
-        documentUri: vscode.Uri = this.documentUri
+        inlineImages: boolean = false
     ): Promise<string> {
+        const documentUri = this.documentUri;
         const baseDir = path.dirname(documentUri.fsPath);
+        const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? baseDir;
 
         const root = parse(html);
         const images = root.querySelectorAll('img');
@@ -142,30 +151,50 @@ export default class Renderer {
                 // Decode URL encoding (%20 etc.)
                 src = decodeURIComponent(src);
 
-                // Resolve relative to base directory
+                // Resolve relative to base and workspace root directory
+                // Used for HTML inlining and webview Uris.
                 const imagePath = path.isAbsolute(src)
-                    ? src
+                    ? path.join(workspaceRoot, src)
                     : path.resolve(baseDir, src);
 
-                // Read file, skip if it doesn't exist
-                let fileBuffer: Buffer;
-                try {
-                    fileBuffer = await fs.readFile(imagePath);
-                } catch {
-                    console.warn(`Image not found, skipping: ${imagePath}`);
-                    return; // Skip missing files silently
+                if (inlineImages) {
+                    // HTML output with Inline Images
+                    // Read file, skip if it doesn't exist
+                    let fileBuffer: Buffer;
+                    try {
+                        fileBuffer = await fs.readFile(imagePath);
+                    } catch {
+                        console.warn(`Image not found, skipping: ${imagePath}`);
+                        return; // Skip missing files silently
+                    }
+
+                    const mimeType = this.getMimeType(imagePath);
+                    const base64 = fileBuffer.toString('base64');
+
+                    img.setAttribute(
+                        'src',
+                        `data:${mimeType};base64,${base64}`
+                    );
+                } else if (this.isVscPreview) {
+                    // Webview
+                    // Transform image URL to webview Uri
+                    if (this.panel) {
+                        const webviewUri = this.toWebviewUri(this.panel, imagePath);
+                        // const webviewUri = this.panel.webview.asWebviewUri(vscode.Uri.file(imagePath)).toString();
+                        img.setAttribute('src', `${webviewUri}`);
+                    }
+                } else {
+                    // HTML Output with no image inlining
+                    // - Resolve absolute paths to workspace root directory
+                    // - Do not resolve relative path.
+                    const imagePath = path.isAbsolute(src)
+                        ? path.join(workspaceRoot, src)
+                        : src;
+                    img.setAttribute('src', `${imagePath}`);
                 }
 
-                const mimeType = this.getMimeType(imagePath);
-                const base64 = fileBuffer.toString('base64');
-
-                img.setAttribute(
-                    'src',
-                    `data:${mimeType};base64,${base64}`
-                );
-
             } catch (err) {
-                console.warn(`Failed to inline image '${src}':`, err);
+                console.warn(`Failed to ${inlineImages ? 'inline' : 'render'} image '${src}':`, err);
             }
         }));
 
@@ -186,9 +215,19 @@ export default class Renderer {
      */
     private async postProcessPageHtml(pageHtml: string): Promise<string> {
         pageHtml = await this.inlineAssetImages(pageHtml);
-        if (!this.isVscPreview && getConfig().get('inlineLocalImages')) {
-            pageHtml = await this.inlineLocalImages(pageHtml);
+        // Webview: Change image URLs to Webview URIs
+        if (this.isVscPreview) {
+            pageHtml = await this.convertLocalImagesUrl(pageHtml, false);
         }
+        // Inline Local Images
+        else {
+            if (getConfig().get('inlineLocalImages')) {
+                pageHtml = await this.convertLocalImagesUrl(pageHtml, true);
+            }
+            else {
+                pageHtml = await this.convertLocalImagesUrl(pageHtml, false);
+            }
+        } 
         return pageHtml;
     }
 
@@ -281,7 +320,7 @@ export default class Renderer {
      * and returns this css content as a string.
      */
     public getInlineStyles<T = any>(markdownText: string): string {
-        let cssContent : string = "";
+        let cssContent: string = "";
         const match = markdownText.match(CSS_REGEX);
         if (match) {
             cssContent = match[1];
@@ -295,7 +334,7 @@ export default class Renderer {
      * and returns this content as a string.
      */
     public getBody<T = any>(markdownText: string): string {
-        return  markdownText.replace(CSS_REGEX, "").replace(METADATA_REGEX, "").trim();
+        return markdownText.replace(CSS_REGEX, "").replace(METADATA_REGEX, "").trim();
     }
 
     /**
@@ -392,7 +431,7 @@ export default class Renderer {
         }
         // Extract inline styles CSS
         let inlineStyles = this.getInlineStyles(markdownText);
-        
+
         let body = this.getBody(markdownText);
         // Render the Body (all pages)
         let htmlBody = await this.renderBody(body);

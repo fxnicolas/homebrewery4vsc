@@ -21,8 +21,8 @@ export default class Preview {
     currentLayoutSpread: LayoutSpread = LayoutSpread.Simple;
     currentZoom: number = 100;
     context: vscode.ExtensionContext;
-    currentTheme : string = "";
-    currentinlineStyles : string = "";
+    currentTheme: string = "";
+    currentinlineStyles: string = "";
     private documentUri: vscode.Uri | undefined;
     private isDisposed: boolean = false;
     private lastSentPage: number = -1;
@@ -129,6 +129,11 @@ export default class Preview {
                     {
                         enableScripts: true,
                         retainContextWhenHidden: true,
+                        localResourceRoots: [
+                            vscode.Uri.file(path.dirname(editor.document.uri.fsPath)),      // Editor file location
+                            this.context.extensionUri,                                      // Extension resources
+                            ...(vscode.workspace.workspaceFolders?.map(f => f.uri) ?? []),  // Workspace folders
+                        ]
                     }
                 );
                 // Set the preview properties
@@ -196,7 +201,7 @@ export default class Preview {
         if (editor && this.isMarkdownEditor(editor, true) && this.panel) {
             // Create renderer once per document if not exists or document URI changed
             if (!this.currentRenderer || this.documentUri !== editor.document.uri) {
-                this.currentRenderer = new Renderer(editor.document.uri, this.context);
+                this.currentRenderer = new Renderer(editor.document.uri, this.context, this.panel);
                 this.documentUri = editor.document.uri;
             }
             let currentMarkdownText = editor.document.getText();
@@ -243,12 +248,12 @@ export default class Preview {
         if (editor && this.isMarkdownEditor(editor, true) && this.panel) {
             // Create renderer once per document if not exists or document URI changed
             if (!this.currentRenderer || this.documentUri !== editor.document.uri) {
-                this.currentRenderer = new Renderer(editor.document.uri, this.context);
+                this.currentRenderer = new Renderer(editor.document.uri, this.context, this.panel);
             }
             let currentMarkdownText = editor.document.getText();
             this.panel.title = `[Preview] ${this.getEditorFileName(editor)}`;
             this.documentUri = editor.document.uri;
-            
+
             // Set the current CSS and Theme of the preview
             let css = this.currentRenderer.getInlineStyles(currentMarkdownText);
             let theme = this.currentRenderer.getMetadata(currentMarkdownText)?.theme;
