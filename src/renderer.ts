@@ -120,6 +120,78 @@ export default class Renderer {
         return finalHtml;
     };
 
+    private async inlineCssAssetImages(
+        css: string,
+        documentUri: vscode.Uri = this.documentUri
+    ): Promise<string> {
+
+        return css;
+    };
+
+    private async convertCssLocalImagesUrl(
+        css: string,
+        inlineImages: boolean = false
+    ): Promise<string> {
+        const documentUri = this.documentUri;
+        const baseDir = path.dirname(documentUri.fsPath);
+        const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? baseDir;
+        const regex = /url\(\s*(['"]?)([^)'"]+)\1\s*\)/g;
+
+
+        // Première passe : collecter tous les matches et leurs remplacements en parallèle
+        const matches: { fullMatch: string; replacement: string }[] = [];
+        const promises: Promise<void>[] = [];
+
+        let m: RegExpExecArray | null;
+        while ((m = regex.exec(css)) !== null) {
+            const [fullMatch, quote, src] = m;
+
+            // URL is HTTP or Data
+            if (/^(https?:|data:|vscode-webview-resource:)/.test(src)) {
+                continue;
+            }
+            const fsPath = path.isAbsolute(src)
+                ? path.join(workspaceRoot, src)
+                : path.resolve(baseDir, src);
+
+            const entry = { fullMatch, replacement: fullMatch }; // fallback = inchangé
+            matches.push(entry);
+
+            promises.push((async () => {
+                if (inlineImages) {
+                    // HTML output with image inlining
+                    try {
+                        const fileBuffer = await fs.readFile(fsPath);
+                        const mimeType = this.getMimeType(fsPath);
+                        const base64 = fileBuffer.toString('base64');
+                        entry.replacement = `url(${quote}data:${mimeType};base64,${base64}${quote})`;
+                    } catch {
+                        console.warn(`CSS image not found, skipping: ${fsPath}`);
+                    }
+                } else if (this.isVscPreview && this.panel) {
+                    // Webview : Transform to Webview Uri
+                    const webviewUri = this.toWebviewUri(this.panel, fsPath);
+                    entry.replacement = `url(${quote}${webviewUri}${quote})`;
+                } else {
+                    // HTML output without image inlining
+                    const imagePath = path.isAbsolute(src)
+                        ? path.join(workspaceRoot, src)
+                        : src;
+                    entry.replacement = `url(${quote}${imagePath}${quote})`;
+                }
+            })());
+        }
+
+        await Promise.all(promises);
+
+        // Deuxième passe : substitution simple chaîne par chaîne
+        for (const { fullMatch, replacement } of matches) {
+            css = css.replace(fullMatch, replacement);
+        }
+
+        return css;
+    }
+
     private toWebviewUri(panel: vscode.WebviewPanel, fsPath: string): string {
         // Converts a local file path to a webview Uri
         return panel.webview.asWebviewUri(vscode.Uri.file(fsPath)).toString();
@@ -227,10 +299,27 @@ export default class Renderer {
             else {
                 pageHtml = await this.convertLocalImagesUrl(pageHtml, false);
             }
-        } 
+        }
         return pageHtml;
     }
 
+    private async postProcessCss(css: string): Promise<string> {
+        css = await this.inlineCssAssetImages(css);
+        // Webview: Change image URLs to Webview URIs
+        if (this.isVscPreview) {
+            css = await this.convertCssLocalImagesUrl(css, false);
+        }
+        // Inline Local Images
+        else {
+            if (getConfig().get('inlineLocalImages')) {
+                css = await this.convertCssLocalImagesUrl(css, true);
+            }
+            else {
+                css = await this.convertCssLocalImagesUrl(css, false);
+            }
+        }
+        return css;
+    }
 
 
     /**
@@ -319,13 +408,13 @@ export default class Renderer {
      * Get a Brew's CSS fenced block from the markdown input.
      * and returns this css content as a string.
      */
-    public getInlineStyles<T = any>(markdownText: string): string {
+    public async getInlineStyles<T = any>(markdownText: string): Promise<string> {
         let cssContent: string = "";
         const match = markdownText.match(CSS_REGEX);
         if (match) {
             cssContent = match[1];
         };
-        return cssContent;
+        return await this.postProcessCss(cssContent);
     }
 
 
@@ -430,7 +519,7 @@ export default class Renderer {
             theme = metadata.theme;
         }
         // Extract inline styles CSS
-        let inlineStyles = this.getInlineStyles(markdownText);
+        let inlineStyles = await this.getInlineStyles(markdownText);
 
         let body = this.getBody(markdownText);
         // Render the Body (all pages)

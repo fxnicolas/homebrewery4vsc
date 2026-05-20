@@ -145,21 +145,26 @@ export default class Preview {
                 await this.reloadPreview.call(this);
 
                 // Register events for refresh
-                vscode.workspace.onDidChangeTextDocument(this.debouncedupdatePreview.bind(this));
-                vscode.workspace.onDidChangeConfiguration(this.reloadPreview.bind(this));
-                vscode.workspace.onDidSaveTextDocument(this.debouncedupdatePreview.bind(this));
-                vscode.window.onDidChangeActiveTextEditor(this.debouncedupdatePreview.bind(this));
+                const onDidChangeTextDocumentListener = vscode.workspace.onDidChangeTextDocument(this.debouncedupdatePreview.bind(this));
+                this.context.subscriptions.push(onDidChangeTextDocumentListener);
+                const onDidChangeConfigurationListener =vscode.workspace.onDidChangeConfiguration(this.reloadPreview.bind(this));
+                this.context.subscriptions.push(onDidChangeConfigurationListener);
+                const onDidSaveTextDocumentListener = vscode.workspace.onDidSaveTextDocument(this.debouncedupdatePreview.bind(this));
+                this.context.subscriptions.push(onDidSaveTextDocumentListener);
+                const onDidChangeActiveTextEditorListener = vscode.window.onDidChangeActiveTextEditor(this.debouncedupdatePreview.bind(this));
+                this.context.subscriptions.push(onDidChangeActiveTextEditorListener);
 
                 // Synchronize Editor Scrolling -> Preview
-                vscode.window.onDidChangeTextEditorVisibleRanges(({ textEditor, visibleRanges }) => {
+                const onDidChangeTextEditorVisibleRangesListener = vscode.window.onDidChangeTextEditorVisibleRanges(({ textEditor, visibleRanges }) => {
                     if (this.isMarkdownEditor(textEditor) && getConfig().get('scrollPreviewWithEditor')) {
                         // Pass the visible ranges (the lines physically on screen)
                         this.syncPreview(textEditor, visibleRanges);
                     }
                 });
+                this.context.subscriptions.push(onDidChangeTextEditorVisibleRangesListener);
 
                 // Synchronize Editor Click and Cursor Move -> Preview
-                vscode.window.onDidChangeTextEditorSelection(({ textEditor, selections }) => {
+                const onDidChangeTextEditorSelectionListener = vscode.window.onDidChangeTextEditorSelection(({ textEditor, selections }) => {
                     if (this.isMarkdownEditor(textEditor) && getConfig().get('scrollPreviewWithEditor')) {
                         // Create a fake range based on where the cursor (selection) is
                         const cursorRange = new vscode.Range(selections[0].active, selections[0].active);
@@ -168,19 +173,29 @@ export default class Preview {
                         this.syncPreview(textEditor, [cursorRange]);
                     }
                 });
+                this.context.subscriptions.push(onDidChangeTextEditorSelectionListener);
+
 
                 // Synchronize Click Page in Preview -> Editor
-                this.panel.webview.onDidReceiveMessage(message => {
+                const onDidReceiveMessageListener = this.panel.webview.onDidReceiveMessage(message => {
                     // Clicking in the webview sends a message { "goToPage", targetPage }
                     if (message.type === 'goToPage') {
                         this.scrollEditorToPage(message.page);
                     }
                 });
+                this.context.subscriptions.push(onDidReceiveMessageListener);
 
                 // Panel Disposal
                 this.panel.onDidDispose(() => {
                     this.isDisposed = true;
                     this.panel = undefined;
+                    // Dispose renderer if exists
+                    if (this.currentRenderer) {
+                        // this.currentRenderer.dispose();
+                        this.currentRenderer = undefined;
+                    }
+                    // Clean up all previously registered listeners
+                    clearTimeout(this.debounceTimer);
                 }, null, this.context.subscriptions);
             }
         }
@@ -219,7 +234,7 @@ export default class Preview {
             }
 
             // Update inline styles if changed
-            const newInlineStyles = this.currentRenderer.getInlineStyles(currentMarkdownText);
+            const newInlineStyles = await this.currentRenderer.getInlineStyles(currentMarkdownText);
             if (newInlineStyles !== this.inlineStylesCache) {
                 this.postMessage({
                     type: 'updateInlineStyles',
@@ -255,7 +270,7 @@ export default class Preview {
             this.documentUri = editor.document.uri;
 
             // Set the current CSS and Theme of the preview
-            let css = this.currentRenderer.getInlineStyles(currentMarkdownText);
+            let css = await this.currentRenderer.getInlineStyles(currentMarkdownText);
             let theme = this.currentRenderer.getMetadata(currentMarkdownText)?.theme;
 
             this.currentinlineStyles = css ? css : "";
