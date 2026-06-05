@@ -2,8 +2,8 @@ import dedent from 'dedent';
 import _ from 'lodash';
 
 
-const spellQuery = `query Spell ($index: String!) {
-  spell(index: $index) {
+const spellQuery = `query Spell ($index: String!, $lang: String = "en") {
+  spell(index: $index, lang: $lang) {
     name
     level
     school {
@@ -19,8 +19,8 @@ const spellQuery = `query Spell ($index: String!) {
   }
 }`;
 
-const spellSuggestionsQuery = `query Races {
-	spells {
+const spellSuggestionsQuery = `query Races ($lang: String = "en") {
+	spells (lang: $lang) {
 	  index
 	  name
 	}

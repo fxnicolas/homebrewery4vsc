@@ -2,8 +2,8 @@ import dedent from 'dedent';
 import _ from 'lodash';
 
 
-const subRaceQuery = `query Subrace($index: String!) {
-  subrace(index: $index) {
+const subRaceQuery = `query Subrace($index: String!, $lang: String = "en") {
+  subrace(index: $index, lang: $lang) {
     name
     desc
     racial_traits {
@@ -22,8 +22,8 @@ const subRaceQuery = `query Subrace($index: String!) {
   }
 }`;
 
-const subRaceSuggestionsQuery = `query Races {
-	subraces {
+const subRaceSuggestionsQuery = `query Races  ($lang: String = "en") {
+	subraces  (lang: $lang) {
       index
       name
     }

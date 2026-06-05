@@ -361,6 +361,26 @@
           ],
           "default": "never",
           "description": "Hide the background image and color."
+        },
+        "homebrewery4vsc.SRDLanguage": {
+          "type": "string",
+          "enum": [
+            "en",
+            "fr-FR",
+            "pt-BR"
+          ],
+          "markdownEnumDescriptions": [
+            "English (default)",
+            "French (France)",
+            "Portuguese (Brazil)"
+          ],
+          "enumItemLabels": [
+            "English (default)",
+            "French (France)",
+            "Portuguese (Brazil)"
+          ],
+          "default": "en",
+          "description": "Language requested in the SRD API calls."
         }
       }
     },

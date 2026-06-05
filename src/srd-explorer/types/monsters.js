@@ -2,8 +2,8 @@ import dedent from 'dedent';
 import _ from 'lodash';
 
 
-const monsterQuery = `query MonsterQuery($index: String!) {
-  monster(index: $index) {
+const monsterQuery = `query MonsterQuery($index: String!, $lang: String = "en" ) {
+  monster(index: $index, lang: $lang) {
     name
     size
     type
@@ -135,8 +135,8 @@ const monsterQuery = `query MonsterQuery($index: String!) {
   }
 }`;
 
-const monsterSuggestionsQuery = `query Monsters($limit: Int!) {
-	monsters(limit: $limit) {
+const monsterSuggestionsQuery = `query Monsters($limit: Int!, $lang: String = "en") {
+	monsters(limit: $limit, lang: $lang) {
 	  index
     name
 	}

@@ -2,8 +2,8 @@ import dedent from 'dedent';
 import _ from 'lodash';
 
 
-const raceQuery = `query Race($index: String!) {
-  race(index: $index) {
+const raceQuery = `query Race($index: String!, $lang: String = "en" ) {
+  race(index: $index, lang: $lang) {
     name
     ability_bonuses {
       ability_score {
@@ -24,8 +24,8 @@ const raceQuery = `query Race($index: String!) {
   }
 }`;
 
-const raceSuggestionsQuery = `query Races {
-	races {
+const raceSuggestionsQuery = `query Races($lang: String = "en") {
+	races (lang: $lang) {
 	  index
 	  name
 	}

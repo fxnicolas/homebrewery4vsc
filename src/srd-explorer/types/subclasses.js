@@ -2,8 +2,8 @@ import dedent from 'dedent';
 import _ from 'lodash';
 
 
-const subClassQuery = `query SubClassQuery($index: String!) {
-  subclass(index: $index) {
+const subClassQuery = `query SubClassQuery($index: String!, $lang: String = "en") {
+  subclass(index: $index, lang: $lang) {
     name
     subclass_flavor
     class {
@@ -39,8 +39,8 @@ const subClassQuery = `query SubClassQuery($index: String!) {
   }
 }`;
 
-const subClassSuggestionsQuery = `query Races {
-	subclasses {
+const subClassSuggestionsQuery = `query Races  ($lang: String = "en") {
+	subclasses (lang: $lang){
       index
       name
     }

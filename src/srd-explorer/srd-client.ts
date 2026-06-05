@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import axios from 'axios';
 import * as path from 'path';
+import { getConfig } from '../utils';
 
 import { raceFormat, raceQuery, raceSuggestionsQuery } from './types/races';
 import { spellFormat, spellQuery, spellSuggestionsQuery } from './types/spells';
@@ -70,6 +71,8 @@ export class SrdClient {
     public async getSrdNodeContent(url: vscode.Uri): Promise<string> {
         const type = path.basename(path.dirname(url.path));
         const index = path.basename(url.path); // 'c'
+        const config = getConfig();
+        const language = config.get<string>('SRDLanguage') || "en";
         
         if (!type || !(type in GRAPHQL_MAP)) {
             this.loggerChannel.error(`Unknown type: ${type}`);
@@ -79,7 +82,7 @@ export class SrdClient {
             this.loggerChannel.info(`Getting Content for ${url}: ${type} > ${index}`);
             const response = await axios.post(`${this.apiUrl}/graphql`, {
                 query: GRAPHQL_MAP[type as keyof typeof GRAPHQL_MAP],
-                variables: { index: index }
+                variables: { index: index, lang : language }
             });
             const output = OUTPUT_MAP[type as keyof typeof OUTPUT_MAP](response.data, API_URL);
             const content = output ? output : "";
@@ -93,6 +96,9 @@ export class SrdClient {
 
     public async getChildSrdNodes(element: vscode.TreeItem): Promise<vscode.TreeItem[]> {
         const type = element.id;
+        const config = getConfig();
+        const language = config.get<string>('SRDLanguage') || "en";
+
         if (!type || !(type in SUGGESTIONS_MAP)) {
             this.loggerChannel.error(`Unknown type: ${type}`);
             return [];
@@ -101,7 +107,7 @@ export class SrdClient {
             this.loggerChannel.info(`Getting List for ${element.resourceUri}`);
             const response = await axios.post(`${this.apiUrl}/graphql?lang=fr`, {
                 query: SUGGESTIONS_MAP[type as keyof typeof SUGGESTIONS_MAP],
-                variables: { limit: 500 }
+                variables: { limit: 500, lang: language }
             });
 
             const items: { index: string; name: string }[] = response.data.data[type];

@@ -2,8 +2,8 @@ import dedent from 'dedent';
 import _ from 'lodash';
 
 
-const classQuery = `query Class ($index: String! ) {
-  class(index: $index) {
+const classQuery = `query Class ($index: String!, $lang: String = "en" ) {
+  class(index: $index, lang: $lang) {
     name
     hit_die
     class_levels {
@@ -124,8 +124,8 @@ const classQuery = `query Class ($index: String! ) {
   }
 }`;
 
-const classSuggestionsQuery = `query Classes {
-	classes {
+const classSuggestionsQuery = `query Classes ($lang: String = "en") {
+	classes (lang: $lang) {
 	  index
     name
 	}

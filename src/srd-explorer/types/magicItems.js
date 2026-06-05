@@ -1,16 +1,16 @@
 import dedent from 'dedent';
 import _ from 'lodash';
 
-const magicItemQuery = `query MagicItemQuery($index: String!) {
-  magicItem(index: $index) {
+const magicItemQuery = `query MagicItemQuery($index: String!, $lang: String = "en" ) {
+  magicItem(index: $index, lang: $lang) {
     name
     desc
     image
   }
 }`;
 
-const magicItemSuggestionsQuery = `query MagicItems($limit: Int!) {
-  magicItems(limit: $limit) {
+const magicItemSuggestionsQuery = `query MagicItems($limit: Int!, $lang: String = "en") {
+  magicItems(limit: $limit, lang: $lang) {
     index
 	name
   }

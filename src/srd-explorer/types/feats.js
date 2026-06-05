@@ -1,8 +1,8 @@
 import dedent from 'dedent';
 import _ from 'lodash';
 
-const featQuery = `query Feat($index: String!) {
-  feat(index: $index) {
+const featQuery = `query Feat($index: String!, $lang: String = "en" ) {
+  feat(index: $index, lang: $lang) {
     name
     prerequisites {
       ability_score {
@@ -14,8 +14,8 @@ const featQuery = `query Feat($index: String!) {
   }
 }`;
 
-const featSuggestionsQuery = `query Feats {
-  feats {
+const featSuggestionsQuery = `query Feats ($lang: String = "en") {
+  feats (lang: $lang) {
     index
 	name
   }
