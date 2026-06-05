@@ -10,6 +10,8 @@ import * as constants from './constants';
 import { getConfig } from './utils';
 import { DecorationManager } from './decorationManager';
 
+import { SrdNodeProvider } from './srd-explorer/srd-explorer';
+
 let currentSnippets: SnippetsBlock[] = [];
 
 
@@ -113,9 +115,23 @@ export function activate(context: vscode.ExtensionContext) {
 	/************************************/
 	new DecorationManager(context);
 
+	/************************************/
+	/* SRD EXplorer */
+	/************************************/
+	const srdProvider = new SrdNodeProvider();
+	vscode.window.registerTreeDataProvider('homebrewery4vsc.srd-explorer', srdProvider);
+	let insertSrdContentComment = vscode.commands.registerCommand('homebrewery4vsc.insertSrdContent', async (url: string) => {
+		const editor = vscode.window.activeTextEditor;
+		if (!editor) return;
+
+		const content = await srdProvider.getSrdContent(vscode.Uri.parse(url));
+		editor.edit(editBuilder => {
+			editBuilder.insert(editor.selection.active, content);
+		});
+	});
+	context.subscriptions.push(insertSrdContentComment);
+
 }
-
-
 
 // This method is called when your extension is deactivated
 export function deactivate() { }
