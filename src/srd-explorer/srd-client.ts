@@ -120,10 +120,17 @@ export class SrdClient {
         }
     }
 
-    private createNode(id: string, label: string, url: string, collapsible: vscode.TreeItemCollapsibleState): vscode.TreeItem {
+    private createNode(id: string, label: string, url: string, collapsible: vscode.TreeItemCollapsibleState, relativeIconPath?: string): vscode.TreeItem {
+        this.loggerChannel.warn(relativeIconPath ? relativeIconPath : "No Icon Specified");
         const treeItem = new vscode.TreeItem(label, collapsible);
         treeItem.resourceUri = vscode.Uri.parse(`${this.apiUrl}${url}`);
         treeItem.id = id;
+        if (relativeIconPath) {
+            treeItem.iconPath = {
+                light: vscode.Uri.file(path.join(__dirname, relativeIconPath)),
+                dark:  vscode.Uri.file(path.join(__dirname, relativeIconPath.replace(".svg", "_dark.svg"))),
+            };
+        }
 
         if (collapsible === vscode.TreeItemCollapsibleState.None) {
             treeItem.command = {
@@ -139,7 +146,7 @@ export class SrdClient {
 
     public async getSrdRootNodes(): Promise<vscode.TreeItem[]> {
         return Object.entries(TYPES_MAP).map(([key, label]) =>
-            this.createNode(key, label, `api/2014/${key}`, vscode.TreeItemCollapsibleState.Collapsed)
+            this.createNode(key, label, `api/2014/${key}`, vscode.TreeItemCollapsibleState.Collapsed, `../media/icons/dnd-icons/${key}.svg`)
         );
     }
 
