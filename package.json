@@ -381,7 +381,7 @@
             "Portuguese (Brazil)"
           ],
           "default": "en",
-          "description": "Language requested in the SRD API calls."
+          "description": "Localization used in the D&D 5e SRD Reference."
         }
       }
     },

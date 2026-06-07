@@ -21,6 +21,7 @@ This extension provides the following features:
 * Snippets for the **Homebrewery syntax**.
 * **Live Preview** with synchronized scrolling.
 * **Generate HTML** for PDF printing.
+* **SRD 5e Reference View** listing classes, feats, magic items, monsters, spells, etc available in the *5e System Reference Document*.
 
 ### Editor
 
@@ -38,6 +39,16 @@ Homebrewery snippets start with `Homebrewery`.
 
 Font icons provided in Homebrewery are also available as snippets. These start with `Font Icon`.\
 **NOTE**: As these snippets can clutter the completion dropdown, you can disable them with the `homebrewery4vsc.enableFontIconCompletions` [setting](#extension-settings).
+
+### D&D 5e SRD Reference
+
+![Homebrewery for Visual Code Demo](./media/images/homebrewery4vsc-srd-view-demo.gif)
+
+This treeview lists key elements of the *5e System Reference Document (SRD)*, such as classes, feats, magic items, monsters, spells, etc. This information is retrieved from the [D&D 5e SRD API](https://www.dnd5eapi.co/).
+
+Clicking an item in the list adds its content to your brew.
+
+**NOTE**: This API is <ins>partially</ins> localized in French and Portuguese (Brazil). Configure the language used to request information from this API using the `homebrewery4vsc.SRDLanguage` [setting](#extension-settings).
 
 ### Commands
 
@@ -149,6 +160,7 @@ This extension exposes the following settings:
 * `homebrewery4vsc.pageFormat`: Preview and HTML output page format (A4 or Letter).
 * `homebrewery4vsc.inlineLocalImages`: Inline local images in the HTML output. This creates standalone HTML files.
 * `homebrewery4vsc.hideBackground`: Hide the background image and color in the preview or the HTML output, mainly for printing.
+* `homebrewery4vsc.SRDLanguage`: Localization used in the SRD 5e Reference.
 
 ## Credits
 
@@ -157,6 +169,10 @@ This extension is inspired from the [**Dungeon and Markdown**](https://marketpla
 This extension uses the Themes, Icons and Markdown Renderer from [**The Homebrewery**](https://github.com/naturalcrit/homebrewery), under the MIT license.
 The Homebrewery is copyright (c) 2016 Scott Tolksdorf.\
 **Many thanks to the contributors who keep this project alive!**
+
+[**Intrinsical's D&D 5e Icon Set**](https://github.com/intrinsical/tw-dnd/tree/main/icons) by David Kor Kian Wei is used for the *SRD 5e Reference View* under [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/?ref=chooser-v1).
+
+*SRD 5e Reference View* uses code from the [**APItoHB**](https://github.com/G-Ambatte/APItoHB/tree/main) from G.Ambatte.
 
 ## FAQ
 
