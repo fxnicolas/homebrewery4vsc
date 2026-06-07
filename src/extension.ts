@@ -11,6 +11,7 @@ import { getConfig } from './utils';
 import { DecorationManager } from './decorationManager';
 
 import { SrdNodeProvider } from './srd-explorer/srd-explorer';
+import { ErrorMessages } from './constants';
 
 let currentSnippets: SnippetsBlock[] = [];
 
@@ -122,8 +123,10 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.window.registerTreeDataProvider('homebrewery4vsc.srd-explorer', srdProvider);
 	let insertSrdContentComment = vscode.commands.registerCommand('homebrewery4vsc.insertSrdContent', async (url: string) => {
 		const editor = vscode.window.activeTextEditor;
-		if (!editor) return;
-
+		if (!editor || editor.document.languageId !== "markdown") {
+			vscode.window.showErrorMessage(constants.ErrorMessages.NO_MARKDOWN_EDITOR);
+			return;
+		}
 		const content = await srdProvider.getSrdContent(vscode.Uri.parse(url));
 		editor.edit(editBuilder => {
 			editBuilder.insert(editor.selection.active, content);

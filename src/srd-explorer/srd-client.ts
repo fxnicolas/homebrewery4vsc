@@ -75,11 +75,11 @@ export class SrdClient {
         const language = config.get<string>('SRDLanguage') || "en";
         
         if (!type || !(type in GRAPHQL_MAP)) {
-            this.loggerChannel.error(`Unknown type: ${type}`);
+            this.loggerChannel.error(`SRD Client: Unable to retreive SRD item. Unknown type: ${type}.`);
             return "";
         }
         try {
-            this.loggerChannel.info(`Getting Content for ${url}: ${type} > ${index}`);
+            this.loggerChannel.debug(`SRD Client: Retreiving SRD item content ${url}: ${type} > ${index}`);
             const response = await axios.post(`${this.apiUrl}/graphql`, {
                 query: GRAPHQL_MAP[type as keyof typeof GRAPHQL_MAP],
                 variables: { index: index, lang : language }
@@ -89,7 +89,7 @@ export class SrdClient {
             return content;
 
         } catch (err) {
-            this.loggerChannel.error(`Failed to fetch ${url}: ${err}`);
+            this.loggerChannel.error(`SRD Client: Unable to retreive SRD item. Failed to fetch ${url}: ${err}`);
             return "";
         }
     }
@@ -100,11 +100,11 @@ export class SrdClient {
         const language = config.get<string>('SRDLanguage') || "en";
 
         if (!type || !(type in SUGGESTIONS_MAP)) {
-            this.loggerChannel.error(`Unknown type: ${type}`);
+            this.loggerChannel.error(`SRD Client: Unable to list SRD items. Unknown type: ${type}`);
             return [];
         }
         try {
-            this.loggerChannel.info(`Getting List for ${element.resourceUri}`);
+            this.loggerChannel.debug(`SRD Client: Listing SRD items from ${element.resourceUri}`);
             const response = await axios.post(`${this.apiUrl}/graphql?lang=fr`, {
                 query: SUGGESTIONS_MAP[type as keyof typeof SUGGESTIONS_MAP],
                 variables: { limit: 500, lang: language }
@@ -115,7 +115,7 @@ export class SrdClient {
                 this.createNode(item.index, item.name, `api/2014/${type}/${item.index}`, vscode.TreeItemCollapsibleState.None)
             );
         } catch (err) {
-            this.loggerChannel.error(`Failed to fetch ${element.resourceUri}: ${err}`);
+            this.loggerChannel.error(`SRD Client: Unable to list SRD items. Failed to fetch ${element.resourceUri}: ${err}`);
             return [];
         }
     }

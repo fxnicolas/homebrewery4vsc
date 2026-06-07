@@ -49,6 +49,7 @@
         {
           "id": "homebrewery4vsc.srd-explorer",
           "name": "SRD 5e Reference",
+          "contextualTitle": "SRD 5e Reference",
           "type": "tree",
           "icon": "media/favicons/favicon.svg"
         }

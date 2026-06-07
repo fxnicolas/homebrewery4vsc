@@ -14,6 +14,7 @@ export module ErrorMessages {
     export const DEFAULT_THEME_FILE_NOT_FOUND = "Missing file in default theme ${themeCode}: ${themeFile}";
     export const THEME_FILE_ERROR = "Error reading Theme file: ${themeFile}";
     export const GENERIC_ERROR = "Error: ${error}";
+    export const NO_MARKDOWN_EDITOR = "Open a valid Homebrew markdown file to insert an SRD item content.";
 }
 
 export module InfoMessages {
