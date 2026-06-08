@@ -124,7 +124,7 @@ export class SrdClient {
             const tooltipFormat = TOOLTIP_MAP[type as keyof typeof TOOLTIP_MAP]
             const items: { index: string; name: string }[] = response.data.data[type];
             return items.map(item =>
-                this.createNode(item.index, item.name, `api/2014/${type}/${item.index}`, vscode.TreeItemCollapsibleState.None, undefined, tooltipFormat(item))
+                this.createNode(item.index, item.name, `api/2014/${type}/${item.index}`, vscode.TreeItemCollapsibleState.None, undefined, tooltipFormat(item, API_URL))
             );
         } catch (err) {
             this.loggerChannel.error(`SRD Client: Unable to list SRD items. Failed to fetch ${element.resourceUri}: ${err}`);
@@ -133,10 +133,10 @@ export class SrdClient {
     }
 
     private createNode(id: string, label: string, url: string, collapsible: vscode.TreeItemCollapsibleState, relativeIconPath?: string, tooltip?: string): vscode.TreeItem {
-        this.loggerChannel.warn(relativeIconPath ? relativeIconPath : "No Icon Specified");
         const treeItem = new vscode.TreeItem(label, collapsible);
         treeItem.resourceUri = vscode.Uri.parse(`${this.apiUrl}${url}`);
         treeItem.tooltip = new vscode.MarkdownString(tooltip);
+        treeItem.tooltip.supportHtml = true;
         treeItem.id = id;
         if (relativeIconPath) {
             treeItem.iconPath = {

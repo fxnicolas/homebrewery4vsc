@@ -39,7 +39,7 @@ const raceTooltipFormat = function (data) {
 	const output = dedent`
     ### ${data.name}
 
-	${data.traits.length ? data.traits.map((trait) => { return `***${trait.name}.*** ${trait.desc.join('\n')}\n` }).join('\n') : ''}
+	${data.traits.length ? data.traits.map((trait) => { return `**${trait.name}.** ${trait.desc.join('\n')}\n` }).join('\n') : ''}
 
   `
 	return output;

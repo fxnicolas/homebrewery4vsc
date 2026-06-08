@@ -145,6 +145,7 @@ const monsterSuggestionsQuery = `query Monsters($limit: Int!, $lang: String = "e
     alignment
     hit_points
     challenge_rating
+    image
 	}
   }`;
 
@@ -154,7 +155,7 @@ function toFraction(number) {
   return `1/${denominator}`;
 }
 
-const monsterTooltipFormat = function (data) {
+const monsterTooltipFormat = function (data, url) {
 
   const monsterDefaults = {
     name: 'Unnamed Monster',
@@ -173,6 +174,8 @@ const monsterTooltipFormat = function (data) {
     ### ${data.name}
     *${data.size} ${data.type}, ${data.alignment}*  
     **HP**: ${data.hit_points}, **CR**: ${toFraction(data.challenge_rating)}
+
+    ${data.image ? `<img src="${url}${data.image}" alt="${data.name}" width="250" />` : ''}
   `
   return output;
 }
@@ -274,7 +277,7 @@ const monsterFormat = function(responseData, url) {
 	${data.legendary_actions.map((legendary)=>{return `***${legendary.name}.*** ${legendary.desc}`}).join('\n:\n')}`
 	 : ''}
 	}}
-
+  :
 	${data.image ? `![image](${url}${data.image}){width:100%}` : ''}
 	${data.srdAttrib ? `\n:\n{{descriptive\n${data.srdAttrib}\n}}` : ''}
 	`;

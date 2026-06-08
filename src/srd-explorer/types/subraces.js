@@ -41,7 +41,7 @@ const subRaceTooltipFormat = function (data) {
   const output = dedent`
     ### ${data.name} (${data.race.name})
 
-    ${data.racial_traits.length ? data.racial_traits.map((trait) => { return `***${trait.name}.*** ${trait.desc.join('\n')}\n` }).join('\n') : ''}
+    ${data.racial_traits.length ? data.racial_traits.map((trait) => { return `**${trait.name}.** ${trait.desc.join('\n')}\n` }).join('\n') : ''}
 
   `
   return output;

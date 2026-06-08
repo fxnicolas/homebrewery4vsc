@@ -14,20 +14,23 @@ const magicItemSuggestionsQuery = `query MagicItems($limit: Int!, $lang: String 
     index
 	name
 	desc
+	image
   }
 }`;
 
-const magicItemTooltipFormat = function (data) {
+const magicItemTooltipFormat = function (data, url) {
 	const output = dedent`
     ### ${data.name}
 
 	${data.desc.map((line) => { return line; }).join('  \n')} 
 
+	${data.image ? `<img src="${url}${data.image}" alt="${data.name}" width="250" />` : ''}
+
   `
 	return output;
 }
 
-const magicItemFormat = function(responseData) {
+const magicItemFormat = function(responseData, url) {
 
 	if(!responseData?.data?.magicItem) return;
 	const data = responseData.data.magicItem;
@@ -52,7 +55,10 @@ const magicItemFormat = function(responseData) {
 		if(prevLine.slice(0, 1) == '|' && line.slice(0, 1) != '|' ) return `\n${line}\n`
 		return `${line}\n`;
 	}).join('\n')}
+	:
+	${data.image ? `![image](${url}${data.image}){width:100%}` : ''}
 	${data.srdAttrib ? `\n:\n{{descriptive\n${data.srdAttrib}\n}}` : ''}
+
 `
 	return output;
 
