@@ -3,14 +3,14 @@ import axios from 'axios';
 import * as path from 'path';
 import { getConfig } from '../utils';
 
-import { raceFormat, raceQuery, raceSuggestionsQuery } from './types/races';
-import { spellFormat, spellQuery, spellSuggestionsQuery } from './types/spells';
-import { magicItemFormat, magicItemQuery, magicItemSuggestionsQuery } from './types/magicItems';
-import { featFormat, featQuery, featSuggestionsQuery } from './types/feats';
-import { monsterFormat, monsterQuery, monsterSuggestionsQuery } from './types/monsters';
-import { subRaceFormat, subRaceQuery, subRaceSuggestionsQuery } from './types/subraces';
-import { classFormat, classQuery, classSuggestionsQuery } from './types/classes';
-import { subClassFormat, subClassQuery, subClassSuggestionsQuery } from './types/subclasses';
+import { raceTooltipFormat, raceFormat, raceQuery, raceSuggestionsQuery } from './types/races';
+import { spellTooltipFormat, spellFormat, spellQuery, spellSuggestionsQuery } from './types/spells';
+import { magicItemTooltipFormat, magicItemFormat, magicItemQuery, magicItemSuggestionsQuery } from './types/magicItems';
+import { featTooltipFormat, featFormat, featQuery, featSuggestionsQuery } from './types/feats';
+import { monsterTooltipFormat, monsterFormat, monsterQuery, monsterSuggestionsQuery } from './types/monsters';
+import { subRaceTooltipFormat, subRaceFormat, subRaceQuery, subRaceSuggestionsQuery } from './types/subraces';
+import { classTooltipFormat, classFormat, classQuery, classSuggestionsQuery } from './types/classes';
+import { subClassTooltipFormat, subClassFormat, subClassQuery, subClassSuggestionsQuery } from './types/subclasses';
 
 const API_URL = "https://www.dnd5eapi.co";
 
@@ -36,6 +36,17 @@ const OUTPUT_MAP = {
     'subclasses': subClassFormat
 }
 
+const TOOLTIP_MAP = {
+    'monsters': monsterTooltipFormat,
+    'spells': spellTooltipFormat,
+    'feats': featTooltipFormat,
+    'magicItems': magicItemTooltipFormat,
+    'races': raceTooltipFormat,
+    'subraces': subRaceTooltipFormat,
+    'classes': classTooltipFormat,
+    'subclasses': subClassTooltipFormat
+}
+
 const SUGGESTIONS_MAP = {
     'classes': classSuggestionsQuery,
     'feats': featSuggestionsQuery,
@@ -48,14 +59,14 @@ const SUGGESTIONS_MAP = {
 };
 
 const TYPES_MAP = {
-    'classes': "Classes",
-    'feats': "Feats",
-    'magicItems': "Magic Items",
-    'monsters': "Monsters",
     'races': "Races",
-    'spells': "Spells",
     'subraces': "Sub-Races",
-    'subclasses': "Sub-Classes"
+    'classes': "Classes",
+    'subclasses': "Sub-Classes",
+    'monsters': "Monsters",
+    'spells': "Spells",
+    'magicItems': "Magic Items",
+    // 'feats': "Feats",
 }
 
 export class SrdClient {
@@ -73,7 +84,7 @@ export class SrdClient {
         const index = path.basename(url.path); // 'c'
         const config = getConfig();
         const language = config.get<string>('SRDLanguage') || "en";
-        
+
         if (!type || !(type in GRAPHQL_MAP)) {
             this.loggerChannel.error(`SRD Client: Unable to retreive SRD item. Unknown type: ${type}.`);
             return "";
@@ -82,7 +93,7 @@ export class SrdClient {
             this.loggerChannel.debug(`SRD Client: Retreiving SRD item content ${url}: ${type} > ${index}`);
             const response = await axios.post(`${this.apiUrl}/graphql`, {
                 query: GRAPHQL_MAP[type as keyof typeof GRAPHQL_MAP],
-                variables: { index: index, lang : language }
+                variables: { index: index, lang: language }
             });
             const output = OUTPUT_MAP[type as keyof typeof OUTPUT_MAP](response.data, API_URL);
             const content = output ? output : "";
@@ -110,9 +121,10 @@ export class SrdClient {
                 variables: { limit: 500, lang: language }
             });
 
+            const tooltipFormat = TOOLTIP_MAP[type as keyof typeof TOOLTIP_MAP]
             const items: { index: string; name: string }[] = response.data.data[type];
             return items.map(item =>
-                this.createNode(item.index, item.name, `api/2014/${type}/${item.index}`, vscode.TreeItemCollapsibleState.None)
+                this.createNode(item.index, item.name, `api/2014/${type}/${item.index}`, vscode.TreeItemCollapsibleState.None, undefined, tooltipFormat(item))
             );
         } catch (err) {
             this.loggerChannel.error(`SRD Client: Unable to list SRD items. Failed to fetch ${element.resourceUri}: ${err}`);
@@ -120,15 +132,16 @@ export class SrdClient {
         }
     }
 
-    private createNode(id: string, label: string, url: string, collapsible: vscode.TreeItemCollapsibleState, relativeIconPath?: string): vscode.TreeItem {
+    private createNode(id: string, label: string, url: string, collapsible: vscode.TreeItemCollapsibleState, relativeIconPath?: string, tooltip?: string): vscode.TreeItem {
         this.loggerChannel.warn(relativeIconPath ? relativeIconPath : "No Icon Specified");
         const treeItem = new vscode.TreeItem(label, collapsible);
         treeItem.resourceUri = vscode.Uri.parse(`${this.apiUrl}${url}`);
+        treeItem.tooltip = new vscode.MarkdownString(tooltip);
         treeItem.id = id;
         if (relativeIconPath) {
             treeItem.iconPath = {
                 light: vscode.Uri.file(path.join(__dirname, relativeIconPath)),
-                dark:  vscode.Uri.file(path.join(__dirname, relativeIconPath.replace(".svg", "_dark.svg"))),
+                dark: vscode.Uri.file(path.join(__dirname, relativeIconPath.replace(".svg", "_dark.svg"))),
             };
         }
 
@@ -138,7 +151,6 @@ export class SrdClient {
                 title: 'Insert',
                 arguments: [`${this.apiUrl}${url}`]
             };
-            treeItem.tooltip = "Click to insert SRD Content";
         }
 
         return treeItem;
@@ -146,7 +158,7 @@ export class SrdClient {
 
     public async getSrdRootNodes(): Promise<vscode.TreeItem[]> {
         return Object.entries(TYPES_MAP).map(([key, label]) =>
-            this.createNode(key, label, `api/2014/${key}`, vscode.TreeItemCollapsibleState.Collapsed, `../media/icons/dnd-icons/${key}.svg`)
+            this.createNode(key, label, `api/2014/${key}`, vscode.TreeItemCollapsibleState.Collapsed, `../media/icons/dnd-icons/${key}.svg`, '**Expand** to see more...')
         );
     }
 

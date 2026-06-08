@@ -23,8 +23,45 @@ const spellSuggestionsQuery = `query Races ($lang: String = "en") {
 	spells (lang: $lang) {
 	  index
 	  name
+	  level
+	  school {
+        index
+        name
+      }
+	  desc
 	}
   }`;
+
+const spellTooltipFormat = function (data) {
+
+	const spellDefaults = {
+		name: 'Unnamed Spell',
+		desc: [],
+		level: 10,
+		school: { name: '' },
+
+	};
+
+	const numWithSuffix = function (n) {
+		const suffixMap = {
+			1: 'st',
+			2: 'nd',
+			3: 'rd'
+		};
+
+		return `${n}${suffixMap[n] || 'th'}`;
+	};
+
+	_.defaultsDeep(data, spellDefaults);
+
+	const output = dedent`
+    ### ${data.name}
+	*${data.level == 0 ? `${data.school.name} Cantrip` : `${numWithSuffix(data.level)}-level ${data.school.index}`}*
+
+	${data.desc.map((line) => { return line; }).join('  \n')} 
+  `
+	return output;
+}
 
 const spellFormat = function(responseData) {
 
@@ -78,4 +115,4 @@ const spellFormat = function(responseData) {
 
 }
 
-export { spellFormat, spellQuery, spellSuggestionsQuery }
+export { spellTooltipFormat, spellFormat, spellQuery, spellSuggestionsQuery }

@@ -125,58 +125,78 @@ const classQuery = `query Class ($index: String!, $lang: String = "en" ) {
 }`;
 
 const classSuggestionsQuery = `query Classes ($lang: String = "en") {
-	classes (lang: $lang) {
+	classes(lang: $lang) {
 	  index
     name
+    hit_die
+    class_levels {
+      level
+      features {
+          name
+        }
+    }
 	}
 }`;
 
 const classSpecificFeatData = {
-  "action_surges": {title: 'Action Surges'},
-  "arcane_recovery_levels": {title: 'Arcane Recovery Levels'},
-  "aura_range": {title: 'Aura Range', suffix: 'ft'},
-  "bardic_inspiration_die": {title: 'Bardic Inspiration Die', prefix: '1d'},
-  "brutal_critical_dice": {title: 'Brutal Critical Die', prefix: '1d'},
-  "channel_divinity_charges": {title: 'Channel Divinity Charges'},
-  "destroy_undead_cr": {title: 'Destroy Undead CR'},
-  "extra_attacks": {title: 'Extra Attacks'},
-  "favored_enemies": {title: 'Favored Enemies'},
-  "favored_terrain": {title: 'Favored Terrain'},
-  "indomitable_uses": {title: 'Indomitable Uses'},
-  "invocations_known": {title: 'Invocations Known'},
-  "ki_points": {title: 'Ki Points'},
-  "martial_arts": {title: 'Martial Arts'},
-  "metamagic_known": {title: 'Metamagic Known'},
-  "rage_count": {title: 'Rage Count'},
-  "rage_damage_bonus": {title: 'Rage Damage Bonus'},
-  "sneak_attack": {title: 'Sneak Attack'},
-  "song_of_rest_die": {title: 'Song of Rest Die', prefix: '1d'},
-  "sorcery_points": {title: 'Sorcery Points'},
-  "unarmored_movement": {title: 'Unarmored Movement', prefix: '+', suffix: 'ft'},
-  "wild_shape_max_cr": {title: 'Wild Shape Max CR'}
+  "action_surges": { title: 'Action Surges' },
+  "arcane_recovery_levels": { title: 'Arcane Recovery Levels' },
+  "aura_range": { title: 'Aura Range', suffix: 'ft' },
+  "bardic_inspiration_die": { title: 'Bardic Inspiration Die', prefix: '1d' },
+  "brutal_critical_dice": { title: 'Brutal Critical Die', prefix: '1d' },
+  "channel_divinity_charges": { title: 'Channel Divinity Charges' },
+  "destroy_undead_cr": { title: 'Destroy Undead CR' },
+  "extra_attacks": { title: 'Extra Attacks' },
+  "favored_enemies": { title: 'Favored Enemies' },
+  "favored_terrain": { title: 'Favored Terrain' },
+  "indomitable_uses": { title: 'Indomitable Uses' },
+  "invocations_known": { title: 'Invocations Known' },
+  "ki_points": { title: 'Ki Points' },
+  "martial_arts": { title: 'Martial Arts' },
+  "metamagic_known": { title: 'Metamagic Known' },
+  "rage_count": { title: 'Rage Count' },
+  "rage_damage_bonus": { title: 'Rage Damage Bonus' },
+  "sneak_attack": { title: 'Sneak Attack' },
+  "song_of_rest_die": { title: 'Song of Rest Die', prefix: '1d' },
+  "sorcery_points": { title: 'Sorcery Points' },
+  "unarmored_movement": { title: 'Unarmored Movement', prefix: '+', suffix: 'ft' },
+  "wild_shape_max_cr": { title: 'Wild Shape Max CR' }
 };
 
-const classFormat = function(responseData) {
+const classTooltipFormat = function (data) {
+  const output = dedent`
+    ### ${data.name}
 
-  if(!responseData?.data?.class) return;
-	const data = responseData.data.class;
-	if(responseData.data?.srdAttrib){ data.srdAttrib = responseData.data.srdAttrib};
+    **Hit Die**: ${data.hit_die}
 
-	const classDefaults = {
-	};
+    ${data.class_levels.map((level) => {
+    return dedent`* **Level ${level.level}**: ${level.features.map((feature) => { return feature.name }).join(',')}`}).join('  \n')}
+  `
+  return output;
+};
 
-	_.defaultsDeep(data, classDefaults);
 
-  const maxLevel = data.class_levels.filter((level)=>{return level.level == 20})[0];
+const classFormat = function (responseData) {
 
-  const isCaster = (data.class_levels.filter((level)=>{return level.level == 20 && level.spellcasting}).length);
+  if (!responseData?.data?.class) return;
+  const data = responseData.data.class;
+  if (responseData.data?.srdAttrib) { data.srdAttrib = responseData.data.srdAttrib };
+
+  const classDefaults = {
+  };
+
+  _.defaultsDeep(data, classDefaults);
+
+  const maxLevel = data.class_levels.filter((level) => { return level.level == 20 })[0];
+
+  const isCaster = (data.class_levels.filter((level) => { return level.level == 20 && level.spellcasting }).length);
   const isFullCaster = (maxLevel.spellcasting?.spell_slots_level_9);
   const hasCantrips = (maxLevel.spellcasting?.cantrips_known);
-  const classSpecificFeatures = Object.keys(maxLevel.class_specific).filter((classSpecificKey)=>{
-        return Object.keys(classSpecificFeatData).includes(classSpecificKey) && maxLevel.class_specific[classSpecificKey];
-      });
+  const classSpecificFeatures = Object.keys(maxLevel.class_specific).filter((classSpecificKey) => {
+    return Object.keys(classSpecificFeatData).includes(classSpecificKey) && maxLevel.class_specific[classSpecificKey];
+  });
 
-	const output = dedent`
+  const output = dedent`
 
 [class_name]: ${data.name}
 
@@ -197,99 +217,100 @@ As a $[class_name], you gain the following features:
 
 ### Proficiencies
 
-**Armor:** :: ${data.proficiencies.filter((prof)=>{return prof.type == 'Armor';}).map((prof)=>{return prof.name;}).join(', ') || 'None'}
-**Weapons:** :: ${data.proficiencies.filter((prof)=>{return prof.type == 'Weapons';}).map((prof)=>{return prof.name;}).join(', ') || 'None'}
-**Tools:** :: ${data.proficiencies.filter((prof)=>{return prof.type == 'ARTISANS_TOOLS';}).map((prof)=>{return prof.name;}).join(', ') || 'None'}
-**Saving Throws:** :: ${data.proficiencies.filter((prof)=>{return prof.type == 'Saving Throws';}).map((prof)=>{return prof.reference.full_name;}).join(', ') || 'None'}
-**Skills:** :: ${data.proficiency_choices.map((prof_choice)=>{return prof_choice.desc}).join(' ') || 'None'}
+**Armor:** :: ${data.proficiencies.filter((prof) => { return prof.type == 'Armor'; }).map((prof) => { return prof.name; }).join(', ') || 'None'}
+**Weapons:** :: ${data.proficiencies.filter((prof) => { return prof.type == 'Weapons'; }).map((prof) => { return prof.name; }).join(', ') || 'None'}
+**Tools:** :: ${data.proficiencies.filter((prof) => { return prof.type == 'ARTISANS_TOOLS'; }).map((prof) => { return prof.name; }).join(', ') || 'None'}
+**Saving Throws:** :: ${data.proficiencies.filter((prof) => { return prof.type == 'Saving Throws'; }).map((prof) => { return prof.reference.full_name; }).join(', ') || 'None'}
+**Skills:** :: ${data.proficiency_choices.map((prof_choice) => { return prof_choice.desc }).join(' ') || 'None'}
 
 ### Equipment
 
 You start with the following equipment, in addition to the equipment granted by your background:
 
-${data.starting_equipment_options.map((equip_option)=>{return `- ${equip_option.desc}`;}).join('  \n')}
-${data.starting_equipment.map((equip)=>{return `- ${equip.quantity}x ${equip.equipment.name}`}).join(', ')}
+${data.starting_equipment_options.map((equip_option) => { return `- ${equip_option.desc}`; }).join('  \n')}
+${data.starting_equipment.map((equip) => { return `- ${equip.quantity}x ${equip.equipment.name}` }).join(', ')}
 
 {{classTable,frame,wide
 ###### $[class_name]
 
-| Level | Proficiency Bonus | Features | ${classSpecificFeatures.map((csFeat)=>{return classSpecificFeatData[csFeat].title;}).join(' | ')} | ${isCaster ? `${hasCantrips ? 'Cantrips Known | ': '' }1 | 2 | 3 | 4 | 5 |${isFullCaster ? ' 6 | 7 | 8 | 9 |' : ''}` : '' }
-|:-----:|:-----------------:|:---------|:${classSpecificFeatures.map((csFeat)=>{return classSpecificFeatData[csFeat].title.replace(/./g, '-');}).join(':|:')}:|${isCaster ? `${hasCantrips ? ':-:|': '' }:-:|:-:|:-:|:-:|:-:|${isFullCaster ? ':-:|:-:|:-:|:-:|' : ''}` : '' }
+| Level | Proficiency Bonus | Features | ${classSpecificFeatures.map((csFeat) => { return classSpecificFeatData[csFeat].title; }).join(' | ')} | ${isCaster ? `${hasCantrips ? 'Cantrips Known | ' : ''}1 | 2 | 3 | 4 | 5 |${isFullCaster ? ' 6 | 7 | 8 | 9 |' : ''}` : ''}
+|:-----:|:-----------------:|:---------|:${classSpecificFeatures.map((csFeat) => { return classSpecificFeatData[csFeat].title.replace(/./g, '-'); }).join(':|:')}:|${isCaster ? `${hasCantrips ? ':-:|' : ''}:-:|:-:|:-:|:-:|:-:|${isFullCaster ? ':-:|:-:|:-:|:-:|' : ''}` : ''}
 ${data.class_levels
-    .filter((level)=>{
-      return !level.subclass;
-    })
-    .sort((a,b)=>{return a.level > b.level})
-    .map((level)=>{
-      const levelData = [];
-      levelData.push(level.level);
-      levelData.push(level.prof_bonus);
-      levelData.push(level.features.map((feature)=>{return feature.name;}).join(', '));
+      .filter((level) => {
+        return !level.subclass;
+      })
+      .sort((a, b) => { return a.level > b.level })
+      .map((level) => {
+        const levelData = [];
+        levelData.push(level.level);
+        levelData.push(level.prof_bonus);
+        levelData.push(level.features.map((feature) => { return feature.name; }).join(', '));
 
-      levelData.push(classSpecificFeatures.map((csFeat)=>{
-        const featInfo = typeof level.class_specific[csFeat] == 'object'
-          ?
-          // Monk Martial Arts or Rogue Sneak Attack
-          `${level.class_specific[csFeat].dice_count}d${level.class_specific[csFeat].dice_value}`
-          :
-          level.class_specific[csFeat];
+        levelData.push(classSpecificFeatures.map((csFeat) => {
+          const featInfo = typeof level.class_specific[csFeat] == 'object'
+            ?
+            // Monk Martial Arts or Rogue Sneak Attack
+            `${level.class_specific[csFeat].dice_count}d${level.class_specific[csFeat].dice_value}`
+            :
+            level.class_specific[csFeat];
 
-        return `${classSpecificFeatData[csFeat].prefix || ''}${featInfo}${classSpecificFeatData[csFeat].suffix || ''}`;
-      }).join(' | '));
+          return `${classSpecificFeatData[csFeat].prefix || ''}${featInfo}${classSpecificFeatData[csFeat].suffix || ''}`;
+        }).join(' | '));
 
-      if(isCaster){
-        if(hasCantrips){ levelData.push(level.spellcasting.cantrips_known || '-'); };
+        if (isCaster) {
+          if (hasCantrips) { levelData.push(level.spellcasting.cantrips_known || '-'); };
 
-        levelData.push(level.spellcasting.spell_slots_level_1 || '-');
-        levelData.push(level.spellcasting.spell_slots_level_2 || '-');
-        levelData.push(level.spellcasting.spell_slots_level_3 || '-');
-        levelData.push(level.spellcasting.spell_slots_level_4 || '-');
-        levelData.push(level.spellcasting.spell_slots_level_5 || '-');
+          levelData.push(level.spellcasting.spell_slots_level_1 || '-');
+          levelData.push(level.spellcasting.spell_slots_level_2 || '-');
+          levelData.push(level.spellcasting.spell_slots_level_3 || '-');
+          levelData.push(level.spellcasting.spell_slots_level_4 || '-');
+          levelData.push(level.spellcasting.spell_slots_level_5 || '-');
 
-        if(isFullCaster){
-          levelData.push(level.spellcasting.spell_slots_level_6 || '-');
-          levelData.push(level.spellcasting.spell_slots_level_7 || '-');
-          levelData.push(level.spellcasting.spell_slots_level_8 || '-');
-          levelData.push(level.spellcasting.spell_slots_level_9 || '-');
+          if (isFullCaster) {
+            levelData.push(level.spellcasting.spell_slots_level_6 || '-');
+            levelData.push(level.spellcasting.spell_slots_level_7 || '-');
+            levelData.push(level.spellcasting.spell_slots_level_8 || '-');
+            levelData.push(level.spellcasting.spell_slots_level_9 || '-');
+          }
         }
-      }
-      return `| ${levelData.join(' | ')} |`;
-    })
-    .join('  \n')}
+        return `| ${levelData.join(' | ')} |`;
+      })
+      .join('  \n')}
 }}
 
 \page
 
 ${_.uniqBy(
-    data.class_levels
-      .filter((level)=>{return !level.subclass;})                             // Eliminate subclass specific level
-      .sort((a,b)=>{return a.level > b.level;})                               // Ensure they are sorted 1 => 20
-      .map((level)=>{return level.features;})                                 // Extract only features
-      .flat()                                                                 // Flatten the array
-      .filter((feature)=>{return feature.name.slice(-7) !== 'feature';})      // Remove any features that end in 'feature'; these are improvements on an existing feature
-      .map((feature)=>{ return {
-        ...feature,
-        name: feature.name.replace(/(\(.*\))$/, '')                           // Eliminate any parts of feature names in parentheses
-      };
-    }),
-      (a)=>{return a.name;}                                                   // Eliminate duplicate names in feature array
-    )
-    .map((feature)=>{
-      return dedent`
+        data.class_levels
+          .filter((level) => { return !level.subclass; })                             // Eliminate subclass specific level
+          .sort((a, b) => { return a.level > b.level; })                               // Ensure they are sorted 1 => 20
+          .map((level) => { return level.features; })                                 // Extract only features
+          .flat()                                                                 // Flatten the array
+          .filter((feature) => { return feature.name.slice(-7) !== 'feature'; })      // Remove any features that end in 'feature'; these are improvements on an existing feature
+          .map((feature) => {
+            return {
+              ...feature,
+              name: feature.name.replace(/(\(.*\))$/, '')                           // Eliminate any parts of feature names in parentheses
+            };
+          }),
+        (a) => { return a.name; }                                                   // Eliminate duplicate names in feature array
+      )
+      .map((feature) => {
+        return dedent`
       ### ${feature.name}
       
       ${feature.desc.join('\n')}
       
       :
       `;
-    }).join('\n\n')
-}
+      }).join('\n\n')
+    }
 
 
 ${data.srdAttrib ? `\n:\n\\page\n\n{{descriptive,wide\n${data.srdAttrib}\n}}` : ''}
 `
-	return output;
+  return output;
 
 }
 
-export { classFormat, classQuery, classSuggestionsQuery }
+export { classTooltipFormat, classFormat, classQuery, classSuggestionsQuery }

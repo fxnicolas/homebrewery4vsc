@@ -13,8 +13,19 @@ const magicItemSuggestionsQuery = `query MagicItems($limit: Int!, $lang: String 
   magicItems(limit: $limit, lang: $lang) {
     index
 	name
+	desc
   }
 }`;
+
+const magicItemTooltipFormat = function (data) {
+	const output = dedent`
+    ### ${data.name}
+
+	${data.desc.map((line) => { return line; }).join('  \n')} 
+
+  `
+	return output;
+}
 
 const magicItemFormat = function(responseData) {
 
@@ -47,4 +58,4 @@ const magicItemFormat = function(responseData) {
 
 }
 
-export { magicItemFormat, magicItemQuery, magicItemSuggestionsQuery }
+export { magicItemTooltipFormat, magicItemFormat, magicItemQuery, magicItemSuggestionsQuery }

@@ -27,6 +27,13 @@ const featStructure = {
 	desc: []
 };
 
+const featTooltipFormat = function (data) {
+	const output = dedent`
+    **${data.name}**
+  `
+	return output;
+}
+
 const featFormat = function(responseData) {
 
 	if(!responseData?.data?.feat) return;
@@ -47,4 +54,4 @@ const featFormat = function(responseData) {
 }
 
 
-export { featFormat, featQuery, featSuggestionsQuery, featStructure }
+export { featTooltipFormat, featFormat, featQuery, featSuggestionsQuery, featStructure }

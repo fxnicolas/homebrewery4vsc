@@ -22,13 +22,30 @@ const subRaceQuery = `query Subrace($index: String!, $lang: String = "en") {
   }
 }`;
 
-const subRaceSuggestionsQuery = `query Races  ($lang: String = "en") {
-	subraces  (lang: $lang) {
+const subRaceSuggestionsQuery = `query Subraces($lang: String = "en") {
+	subraces(lang: $lang) {
       index
       name
+      race {
+        name 
+        }
+      racial_traits {
+        name
+        desc
+      }
     }
   }`;
 
+
+const subRaceTooltipFormat = function (data) {
+  const output = dedent`
+    ### ${data.name} (${data.race.name})
+
+    ${data.racial_traits.length ? data.racial_traits.map((trait) => { return `***${trait.name}.*** ${trait.desc.join('\n')}\n` }).join('\n') : ''}
+
+  `
+  return output;
+}
 
 const subRaceFormat = function(responseData) {
 
@@ -47,7 +64,7 @@ const subRaceFormat = function(responseData) {
 
   ${data.desc}\n\n
   ${data.racial_traits.map((trait)=>{
-    return `***${trait.name}***. ${trait.desc}`
+    return `**${trait.name}**. ${trait.desc}`
   }).join('\n\n')}
 
   ${data.srdAttrib ? `\n:\n{{descriptive\n${data.srdAttrib}\n}}` : ''}
@@ -56,4 +73,4 @@ const subRaceFormat = function(responseData) {
 
 }
 
-export { subRaceFormat, subRaceQuery, subRaceSuggestionsQuery }
+export { subRaceTooltipFormat, subRaceFormat, subRaceQuery, subRaceSuggestionsQuery }

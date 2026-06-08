@@ -28,8 +28,22 @@ const raceSuggestionsQuery = `query Races($lang: String = "en") {
 	races (lang: $lang) {
 	  index
 	  name
+	  traits {
+	  	name
+		desc
+		}
 	}
   }`;
+
+const raceTooltipFormat = function (data) {
+	const output = dedent`
+    ### ${data.name}
+
+	${data.traits.length ? data.traits.map((trait) => { return `***${trait.name}.*** ${trait.desc.join('\n')}\n` }).join('\n') : ''}
+
+  `
+	return output;
+}
 
 const raceFormat = function(responseData) {
 
@@ -61,4 +75,4 @@ const raceFormat = function(responseData) {
 
 }
 
-export { raceFormat, raceQuery, raceSuggestionsQuery }
+export { raceTooltipFormat, raceFormat, raceQuery, raceSuggestionsQuery }

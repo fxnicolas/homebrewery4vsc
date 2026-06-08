@@ -2,7 +2,7 @@ import dedent from 'dedent';
 import _ from 'lodash';
 
 
-const subClassQuery = `query SubClassQuery($index: String!, $lang: String = "en") {
+const subClassQuery = `query SubClass($index: String!, $lang: String = "en") {
   subclass(index: $index, lang: $lang) {
     name
     subclass_flavor
@@ -39,13 +39,40 @@ const subClassQuery = `query SubClassQuery($index: String!, $lang: String = "en"
   }
 }`;
 
-const subClassSuggestionsQuery = `query Races  ($lang: String = "en") {
-	subclasses (lang: $lang){
-      index
+const subClassSuggestionsQuery = `query SubClasses($lang: String = "en") {
+	subclasses(lang: $lang){
+    index
+    name
+    subclass_flavor
+    class {
       name
     }
-  }`;
+    desc
+    subclass_levels {
+      features {
+        name
+      }
+      level
+    }
+  }
+}`;
 
+
+const subClassTooltipFormat = function (data) {
+  const output = dedent`
+    ### ${data.name} (${data.class.name})  
+    *${data.subclass_flavor}*
+
+    ${data.desc}
+
+    ${data.subclass_levels.map((level) => {
+      return dedent`* **Level ${level.level}**: ${level.features.map((feature) => { return feature.name }).join(',')}`
+    }).join('  \n')}
+    `
+/*     ${data.subclass_levels.map((level) => {
+    return dedent`* **Level ${level.level}**: ${level.subClassures.map((feature) => { return feature.name }).join(',')}`}).join('  \n')} */
+  return output;
+}
 
 const subClassFormat = function(responseData) {
 
@@ -120,4 +147,4 @@ const subClassFormat = function(responseData) {
 
 }
 
-export { subClassFormat, subClassQuery, subClassSuggestionsQuery }
+export { subClassTooltipFormat, subClassFormat, subClassQuery, subClassSuggestionsQuery }

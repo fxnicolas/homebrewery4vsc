@@ -139,8 +139,43 @@ const monsterSuggestionsQuery = `query Monsters($limit: Int!, $lang: String = "e
 	monsters(limit: $limit, lang: $lang) {
 	  index
     name
+    size
+    type
+    subtype
+    alignment
+    hit_points
+    challenge_rating
 	}
   }`;
+
+function toFraction(number) {
+  if (number <= 0 || number >= 1) return number;
+  const denominator = Math.round(1 / number);
+  return `1/${denominator}`;
+}
+
+const monsterTooltipFormat = function (data) {
+
+  const monsterDefaults = {
+    name: 'Unnamed Monster',
+    size: 'Any size',
+    type: 'unknown type',
+    alignment: 'unaligned',
+    hit_points: 1,
+    hit_points_roll: '1d1 + 0',
+    challenge_rating: 0,
+    xp: 'None',
+  };
+
+  _.defaultsDeep(data, monsterDefaults);
+
+  const output = dedent`
+    ### ${data.name}
+    *${data.size} ${data.type}, ${data.alignment}*  
+    **HP**: ${data.hit_points}, **CR**: ${toFraction(data.challenge_rating)}
+  `
+  return output;
+}
 
 const monsterFormat = function(responseData, url) {
 
@@ -248,4 +283,4 @@ const monsterFormat = function(responseData, url) {
 
 };
 
-export { monsterFormat, monsterQuery, monsterSuggestionsQuery };
+export { monsterTooltipFormat, monsterFormat, monsterQuery, monsterSuggestionsQuery };
