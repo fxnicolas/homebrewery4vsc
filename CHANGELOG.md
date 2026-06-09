@@ -4,6 +4,14 @@ All notable changes to the "homebrewery4vsc" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.3.0]
+
+### Added
+
+* New **Homebrewery** view container added to the VSCode Activity Bar.
+* New **SRD 5e Reference** tree view in the Homebrewery view container lists (with tooltip) the races, sub-races, classes, sub-classes, monsters, spells and magic items from the *5e System Reference Document*, using the *D&D 5e SRD API*.
+* Clicking an item in the SRD 5e Reference tree view adds the Homebrewery content for that element to the currently open brew.
+
 ## [1.2.2]
 
 ### Fixed

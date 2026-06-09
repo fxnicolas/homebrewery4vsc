@@ -42,11 +42,13 @@ Font icons provided in Homebrewery are also available as snippets. These start w
 
 ### D&D 5e SRD Reference
 
-![Homebrewery for Visual Code Demo](./media/images/homebrewery4vsc-srd-view-demo.gif)
+A **Homebrewery** view container is added to the VS Code activity bar. 
 
-This treeview lists key elements of the *5e System Reference Document (SRD)*, such as classes, feats, magic items, monsters, spells, etc. This information is retrieved from the [D&D 5e SRD API](https://www.dnd5eapi.co/).
+This container hosts a **SRD 5e Reference** tree view listing key elements of the *5e System Reference Document (SRD)*, such as classes, feats, magic items, monsters, spells, etc. This information is retrieved from the [D&D 5e SRD API](https://www.dnd5eapi.co/).
 
 Clicking an item in the list adds its content to your brew.
+
+![Homebrewery for Visual Code Demo](./media/images/homebrewery4vsc-srd-view-demo.gif)
 
 **NOTE**: This API is <ins>partially</ins> localized in French and Portuguese (Brazil). Configure the language used to request information from this API using the `homebrewery4vsc.SRDLanguage` [setting](#extension-settings). This feature is experimental.
 
