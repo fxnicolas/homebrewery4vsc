@@ -63,18 +63,18 @@ const spellTooltipFormat = function (data) {
 	return output;
 }
 
-const spellFormat = function(responseData) {
+const spellFormat = function (responseData) {
 
 	const data = responseData.data.spell;
-	if(responseData.data?.srdAttrib){ data.srdAttrib = responseData.data.srdAttrib};
+	if (responseData.data?.srdAttrib) { data.srdAttrib = responseData.data.srdAttrib };
 
 	const spellDefaults = {
 		name: 'Unnamed Spell',
 		desc: [],
-		higher_level : [],
+		higher_level: [],
 		range: 'range',
 		components: [],
-		material : 'unknown material',
+		material: 'unknown material',
 		ritual: false,
 		duration: 'unknown',
 		concentration: false,
@@ -84,11 +84,11 @@ const spellFormat = function(responseData) {
 
 	};
 
-	const numWithSuffix = function(n) {
+	const numWithSuffix = function (n) {
 		const suffixMap = {
-			1 : 'st',
-			2 : 'nd',
-			3 : 'rd'
+			1: 'st',
+			2: 'nd',
+			3: 'rd'
 		};
 
 		return `${n}${suffixMap[n] || 'th'}`;
@@ -98,17 +98,18 @@ const spellFormat = function(responseData) {
 
 	const output = dedent`
 	#### ${data.name}
+	
 	*${data.level == 0 ? `${data.school.name} Cantrip` : `${numWithSuffix(data.level)}-level ${data.school.index}`}*  
 	**Casting Time:** ${data.casting_time}  
 	**Range:** ${data.range}  
-	**Components:** ${data.components.length ? data.components.map((component)=>{ return component; }).join(', ') : 'None'}  
+	**Components:** ${data.components.length ? data.components.map((component) => { return component; }).join(', ') : 'None'}  
 	**Duration:** ${data.duration}
 	:
-	${data.desc.map((line)=>{ return line;}).join('  \n')}  
-	${data.higher_level?.length ? 
-	`**At Higher Levels:** ${data.higher_level.map((upcast)=>{return upcast;}).join('  \n')}`
-	: ''
-	}
+	${data.desc.map((line) => { return line; }).join('  \n')}  
+	${data.higher_level?.length ?
+			`**At Higher Levels:** ${data.higher_level.map((upcast) => { return upcast; }).join('  \n')}`
+			: ''
+		}
 	${data.srdAttrib ? `\n:\n{{descriptive\n${data.srdAttrib}\n}}` : ''}
 `
 	return output;

@@ -48,7 +48,7 @@ This treeview lists key elements of the *5e System Reference Document (SRD)*, su
 
 Clicking an item in the list adds its content to your brew.
 
-**NOTE**: This API is <ins>partially</ins> localized in French and Portuguese (Brazil). Configure the language used to request information from this API using the `homebrewery4vsc.SRDLanguage` [setting](#extension-settings).
+**NOTE**: This API is <ins>partially</ins> localized in French and Portuguese (Brazil). Configure the language used to request information from this API using the `homebrewery4vsc.SRDLanguage` [setting](#extension-settings). This feature is experimental.
 
 ### Commands
 
@@ -160,7 +160,7 @@ This extension exposes the following settings:
 * `homebrewery4vsc.pageFormat`: Preview and HTML output page format (A4 or Letter).
 * `homebrewery4vsc.inlineLocalImages`: Inline local images in the HTML output. This creates standalone HTML files.
 * `homebrewery4vsc.hideBackground`: Hide the background image and color in the preview or the HTML output, mainly for printing.
-* `homebrewery4vsc.SRDLanguage`: Localization used in the SRD 5e Reference.
+* `homebrewery4vsc.SRDLanguage`: (Experimental) Localization used in the SRD 5e Reference.
 
 ## Credits
 
@@ -170,9 +170,9 @@ This extension uses the Themes, Icons and Markdown Renderer from [**The Homebrew
 The Homebrewery is copyright (c) 2016 Scott Tolksdorf.\
 **Many thanks to the contributors who keep this project alive!**
 
-[**Intrinsical's D&D 5e Icon Set**](https://github.com/intrinsical/tw-dnd/tree/main/icons) by David Kor Kian Wei is used for the *SRD 5e Reference View* under [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/?ref=chooser-v1).
+The *SRD 5e Reference View* uses [**Intrinsical's D&D 5e Icon Set**](https://github.com/intrinsical/tw-dnd/tree/main/icons) by David Kor Kian Wei under [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/?ref=chooser-v1).
 
-*SRD 5e Reference View* uses code from the [**APItoHB**](https://github.com/G-Ambatte/APItoHB/tree/main) from G.Ambatte.
+The *SRD 5e Reference View* uses code from the [**APItoHB**](https://github.com/G-Ambatte/APItoHB/tree/main) from G.Ambatte, under the MIT licence.
 
 ## FAQ
 

@@ -70,18 +70,16 @@ const TYPES_MAP = {
 }
 
 export class SrdClient {
-    public apiUrl: string | undefined;
     private loggerChannel: vscode.LogOutputChannel;
 
     constructor(loggerChannel: vscode.LogOutputChannel) {
-        this.apiUrl = "https://www.dnd5eapi.co";
         this.loggerChannel = loggerChannel;
 
     };
 
     public async getSrdNodeContent(url: vscode.Uri): Promise<string> {
         const type = path.basename(path.dirname(url.path));
-        const index = path.basename(url.path); // 'c'
+        const index = path.basename(url.path);
         const config = getConfig();
         const language = config.get<string>('SRDLanguage') || "en";
 
@@ -91,7 +89,7 @@ export class SrdClient {
         }
         try {
             this.loggerChannel.debug(`SRD Client: Retreiving SRD item content ${url}: ${type} > ${index}`);
-            const response = await axios.post(`${this.apiUrl}/graphql`, {
+            const response = await axios.post(`${API_URL}/graphql`, {
                 query: GRAPHQL_MAP[type as keyof typeof GRAPHQL_MAP],
                 variables: { index: index, lang: language }
             });
@@ -116,7 +114,7 @@ export class SrdClient {
         }
         try {
             this.loggerChannel.debug(`SRD Client: Listing SRD items from ${element.resourceUri}`);
-            const response = await axios.post(`${this.apiUrl}/graphql?lang=fr`, {
+            const response = await axios.post(`${API_URL}/graphql`, {
                 query: SUGGESTIONS_MAP[type as keyof typeof SUGGESTIONS_MAP],
                 variables: { limit: 500, lang: language }
             });
@@ -134,7 +132,7 @@ export class SrdClient {
 
     private createNode(id: string, label: string, url: string, collapsible: vscode.TreeItemCollapsibleState, relativeIconPath?: string, tooltip?: string): vscode.TreeItem {
         const treeItem = new vscode.TreeItem(label, collapsible);
-        treeItem.resourceUri = vscode.Uri.parse(`${this.apiUrl}${url}`);
+        treeItem.resourceUri = vscode.Uri.parse(`${API_URL}${url}`);
         treeItem.tooltip = new vscode.MarkdownString(tooltip);
         treeItem.tooltip.supportHtml = true;
         treeItem.id = id;
@@ -149,7 +147,7 @@ export class SrdClient {
             treeItem.command = {
                 command: 'homebrewery4vsc.insertSrdContent',
                 title: 'Insert',
-                arguments: [`${this.apiUrl}${url}`]
+                arguments: [`${API_URL}${url}`]
             };
         }
 

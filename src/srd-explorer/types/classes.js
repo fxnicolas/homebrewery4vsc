@@ -170,7 +170,8 @@ const classTooltipFormat = function (data) {
     **Hit Die**: ${data.hit_die}
 
     ${data.class_levels.map((level) => {
-    return dedent`* **Level ${level.level}**: ${level.features.map((feature) => { return feature.name }).join(',')}`}).join('  \n')}
+    return dedent`* **Level ${level.level}**: ${level.features.map((feature) => { return feature.name }).join(',')}`
+  }).join('  \n')}
   `
   return output;
 };

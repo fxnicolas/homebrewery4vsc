@@ -30,11 +30,11 @@ const magicItemTooltipFormat = function (data, url) {
 	return output;
 }
 
-const magicItemFormat = function(responseData, url) {
+const magicItemFormat = function (responseData, url) {
 
-	if(!responseData?.data?.magicItem) return;
+	if (!responseData?.data?.magicItem) return;
 	const data = responseData.data.magicItem;
-	if(responseData.data?.srdAttrib){ data.srdAttrib = responseData.data.srdAttrib};
+	if (responseData.data?.srdAttrib) { data.srdAttrib = responseData.data.srdAttrib };
 
 	const magicItemDefaults = {
 		name: 'Unnamed Magic Item',
@@ -45,14 +45,15 @@ const magicItemFormat = function(responseData, url) {
 
 	const output = dedent`
 	#### ${data.name}
-	${data.desc.map((line, index)=>{ 
+	
+	${data.desc.map((line, index) => {
 		const prevLine = index > 0 ? data.desc[index - 1] : ''
 		// const nextLine = index + 1 < data.desc.length ? data.desc[index + 1] : ''
 
-		if(index == 0) return `*${line}*\n\n:\n`;
-		if(line.match(/\(table\)/i)) return `###### ${line}\n`
-		if(line.slice(0, 1) == '|' && line.slice(-1) == '|') return line;
-		if(prevLine.slice(0, 1) == '|' && line.slice(0, 1) != '|' ) return `\n${line}\n`
+		if (index == 0) return `*${line}*\n\n:\n`;
+		if (line.match(/\(table\)/i)) return `###### ${line}\n`
+		if (line.slice(0, 1) == '|' && line.slice(-1) == '|') return line;
+		if (prevLine.slice(0, 1) == '|' && line.slice(0, 1) != '|') return `\n${line}\n`
 		return `${line}\n`;
 	}).join('\n')}
 	:

@@ -47,11 +47,11 @@ const subRaceTooltipFormat = function (data) {
   return output;
 }
 
-const subRaceFormat = function(responseData) {
+const subRaceFormat = function (responseData) {
 
-  if(!responseData?.data?.subrace) return;
+  if (!responseData?.data?.subrace) return;
   const data = responseData.data.subrace;
-  if(responseData.data?.srdAttrib){ data.srdAttrib = responseData.data.srdAttrib};
+  if (responseData.data?.srdAttrib) { data.srdAttrib = responseData.data.srdAttrib };
 
   const subRaceDefaults = {
   };
@@ -60,10 +60,10 @@ const subRaceFormat = function(responseData) {
 
   const output = dedent`
   #### ${data.name}
-  ${data.race.name ? `*${data.race.name} variant*\n:\n` : ''}
 
-  ${data.desc}\n\n
-  ${data.racial_traits.map((trait)=>{
+  ${data.race.name ? `*${data.race.name} variant*\n:\n` : ''}
+  ${data.desc}\n
+  ${data.racial_traits.map((trait) => {
     return `**${trait.name}**. ${trait.desc}`
   }).join('\n\n')}
 

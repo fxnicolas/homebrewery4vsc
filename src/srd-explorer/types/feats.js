@@ -34,19 +34,20 @@ const featTooltipFormat = function (data) {
 	return output;
 }
 
-const featFormat = function(responseData) {
+const featFormat = function (responseData) {
 
-	if(!responseData?.data?.feat) return;
+	if (!responseData?.data?.feat) return;
 	const data = responseData.data.feat;
-	if(responseData.data?.srdAttrib){ data.srdAttrib = responseData.data.srdAttrib};
+	if (responseData.data?.srdAttrib) { data.srdAttrib = responseData.data.srdAttrib };
 
 	_.defaultsDeep(data, featStructure);
 
 	const output = dedent`
 	### ${data.name}
-	${data.prerequisites.length ? `*Prerequisite: ${data.prerequisites.map((prereq)=>{return `${prereq.ability_score.full_name} ${prereq.minimum_score}`;}).join(', ')}*` : ''}  
+	
+	${data.prerequisites.length ? `*Prerequisite: ${data.prerequisites.map((prereq) => { return `${prereq.ability_score.full_name} ${prereq.minimum_score}`; }).join(', ')}*` : ''}  
 	:
-	${data.desc.map((line)=>{ return line;}).join('  \n')}
+	${data.desc.map((line) => { return line; }).join('  \n')}
 	${data.srdAttrib ? `\n:\n{{descriptive\n${data.srdAttrib}\n}}` : ''}
 `
 	return output;

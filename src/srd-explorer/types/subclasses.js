@@ -66,57 +66,62 @@ const subClassTooltipFormat = function (data) {
     ${data.desc}
 
     ${data.subclass_levels.map((level) => {
-      return dedent`* **Level ${level.level}**: ${level.features.map((feature) => { return feature.name }).join(',')}`
-    }).join('  \n')}
+    return dedent`* **Level ${level.level}**: ${level.features.map((feature) => { return feature.name }).join(',')}`
+  }).join('  \n')}
     `
-/*     ${data.subclass_levels.map((level) => {
-    return dedent`* **Level ${level.level}**: ${level.subClassures.map((feature) => { return feature.name }).join(',')}`}).join('  \n')} */
+  /*     ${data.subclass_levels.map((level) => {
+      return dedent`* **Level ${level.level}**: ${level.subClassures.map((feature) => { return feature.name }).join(',')}`}).join('  \n')} */
   return output;
 }
 
-const subClassFormat = function(responseData) {
+const subClassFormat = function (responseData) {
 
-  if(!responseData?.data?.subclass) return;
+  if (!responseData?.data?.subclass) return;
   const data = responseData.data.subclass;
-  if(responseData.data?.srdAttrib){ data.srdAttrib = responseData.data.srdAttrib};
+  if (responseData.data?.srdAttrib) { data.srdAttrib = responseData.data.srdAttrib };
 
   const subClassDefaults = {
   };
 
-  const numWithSuffix = function(n) {
-		const suffixMap = {
-			1 : 'st',
-			2 : 'nd',
-			3 : 'rd'
-		};
+  const numWithSuffix = function (n) {
+    const suffixMap = {
+      1: 'st',
+      2: 'nd',
+      3: 'rd'
+    };
 
-		return `${n}${suffixMap[n] || 'th'}`;
-	};
+    return `${n}${suffixMap[n] || 'th'}`;
+  };
 
   _.defaultsDeep(data, subClassDefaults);
 
   const output = dedent`
   ## ${data.name} ${data.class.name}
+  
   *${data.subclass_flavor}*
 
-  :
+:
 
   ${data.desc}
 
-  :
+:
 
   ${data.subclass_levels
-    .sort((a,b)=>{return a.level > b.level;})
-    .map((level)=>{return dedent`
+      .sort((a, b) => { return a.level > b.level; })
+      .map((level) => {
+        return dedent`
       {{
       ### Level ${level.level}
-      ${level.features.map((feature)=>{return dedent`
+      ${level.features.map((feature) => {
+          return dedent`
         #### ${feature.name}
         ${feature.desc.join('\n\n')}
-      `;}).join('\n\n')}
+      `;
+        }).join('\n\n')}
       }}
-    `;})
-    .join('\n:\n')}
+    `;
+      })
+      .join('\n:\n')}
 
   ${data.spells ? dedent`
     \page
@@ -124,7 +129,8 @@ const subClassFormat = function(responseData) {
     ## Spells
     :
 
-    ${data.spells.map((spell)=>{return dedent`
+    ${data.spells.map((spell) => {
+        return dedent`
       {{
       ### ${spell.spell.name}
       *${numWithSuffix(spell.spell.level)} level ${spell.spell.school.name}*
@@ -137,9 +143,10 @@ const subClassFormat = function(responseData) {
       ${spell.spell.desc.join('  \n')}
       ${spell.spell.higher_level ? `\n**At Higher Levels.** ${spell.spell.higher_level}` : ''}
       }}
-      `;}).join('\n\n:\n\n')}
+      `;
+      }).join('\n\n:\n\n')}
     `
-    : ''}
+      : ''}
 
   ${data.srdAttrib ? `\n:\n{{descriptive\n${data.srdAttrib}\n}}` : ''}
   `
