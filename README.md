@@ -214,3 +214,5 @@ VS Code recognize these files as markdown but as **Plain Text**. To have them as
 
 * [Homebrewery](https://github.com/naturalcrit/homebrewery)
 * [Dungeon and Markdown](https://marketplace.visualstudio.com/items?itemName=SpjakSoftware.dungeonsandmarkdown)
+* [DM Binder](https://marketplace.visualstudio.com/items?itemName=jpsnee.vscode-dmbinder)
+* [Homebrewery Markdown Preview](https://marketplace.visualstudio.com/items?itemName=officerhalf.homebrewery-vscode)
