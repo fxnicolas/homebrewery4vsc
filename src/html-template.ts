@@ -104,8 +104,7 @@ export const htmlTemplate = async (context: vscode.ExtensionContext, addPreviewS
     let template = TEMPLATE_HTML;
 
     // Select theme: The one set in file metadata or the default one.
-    const config = getConfig();
-    const currentTheme = theme || config.get<string>('theme') || "5ePHB";
+    const currentTheme = theme || getConfig().get<string>('theme') || "None";
 
     // Get the styles from the Theme
     const themeStyles = await getThemeStyles(context, currentTheme, true);

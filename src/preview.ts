@@ -222,7 +222,7 @@ export default class Preview {
             let currentMarkdownText = editor.document.getText();
 
             // Cache and retrieve metadata once
-            const theme = this.currentRenderer.getMetadata(currentMarkdownText)?.theme ?? "";
+            const theme = this.currentRenderer.getMetadata(currentMarkdownText)?.theme || getConfig().get<string>('theme') || "None"
             if (this.currentTheme !== theme) {
                 getThemeStyles(this.context, theme, false).then((themeStyles) => {
                     this.postMessage({
@@ -274,7 +274,7 @@ export default class Preview {
             let theme = this.currentRenderer.getMetadata(currentMarkdownText)?.theme;
 
             this.currentinlineStyles = css ? css : "";
-            this.currentTheme = theme ? theme : "";
+            this.currentTheme = theme || getConfig().get<string>('theme') || "None"
             this.currentRenderer.renderHTML(currentMarkdownText, true).then(currentHTMLContent => {
                 if (this.panel) {
                     this.panel.webview.html = currentHTMLContent;
