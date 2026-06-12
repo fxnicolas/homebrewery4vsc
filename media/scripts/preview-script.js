@@ -51,8 +51,10 @@ window.addEventListener('message', event => {
         // updateThemeStyles: Updates the script with id=inline_styles to apply inkine CSS while editing.
         case 'updateThemeStyles':
             const themeStyles = event.data.themeStyles;
+            el = document.getElementById('base_theme_styles');
+            el.textContent = themeStyles[0];
             el = document.getElementById('theme_styles');
-            el.textContent = themeStyles;
+            el.textContent = themeStyles[1];
             break;
     }
 });

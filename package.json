@@ -297,18 +297,21 @@
             "5ePHB",
             "5eDMG",
             "Journal",
+            "Blank",
             "None"
           ],
           "markdownEnumDescriptions": [
             "Use the 5e Player's Handbook theme",
             "Use the 5e Dungeon Master's Guide theme",
             "Use a Journal (Notebook) theme",
-            "Do not use a default theme"
+            "Use the Blank theme. Starting point for Templates.",
+            "Do not use any theme. Bare HTML."
           ],
           "enumItemLabels": [
             "Player's Handbook",
             "Dungeon Master's Guide",
             "Journal",
+            "Blank",
             "None"
           ],
           "default": "5ePHB",

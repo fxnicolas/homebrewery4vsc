@@ -36,16 +36,22 @@ export const DEFAULT_THEMES: Theme[] = [
         css: ["/homebrewery/Blank/style.css", "/homebrewery/Journal/style.css"]
     },
     {
+        code: "Blank",
+        label: "Blank",
+        description: '',
+        css: ["/homebrewery/Blank/style.css"]
+    },
+    {
         code: "None",
         label: "None",
         description: '',
-        css: ["/homebrewery/Blank/style.css"]
+        css: []
     }
 ];
 
-async function getThemeFromFile(context: vscode.ExtensionContext, themeFile: string, raiseErrors: boolean = false): Promise<string> {
+async function getThemeStylesFromFile(context: vscode.ExtensionContext, themeFile: string, raiseErrors: boolean = false): Promise<string[]> {
     const wsFolder = vscode.workspace.workspaceFolders?.[0];
-    let css = "";
+    let css_list:string[] = [];
     if (wsFolder) {
         const fullUri = vscode.Uri.joinPath(wsFolder.uri, themeFile);
         try {
@@ -62,7 +68,10 @@ async function getThemeFromFile(context: vscode.ExtensionContext, themeFile: str
                 // Get the styles of the Theme, from CSS Fenced Block. 
                 // Note that image inlining if forced
                 const themeCss = await renderer.getInlineStyles(themeFilePayload, fullUri, true);
-                css = `/* Base Theme Content for ${themeFileMetadata.theme} */\n${baseThemeCss}\n\n/* File Theme Content */\n${themeCss}`;
+                css_list = [
+                    `/* Base Theme Content for ${themeFileMetadata.theme} */\n${baseThemeCss}`,
+                    `/* File Theme Content for ${themeFile}*/\n${themeCss}`
+                ];
             }
         }
         catch (err: any) {
@@ -78,20 +87,19 @@ async function getThemeFromFile(context: vscode.ExtensionContext, themeFile: str
             }
         }
     }
-    return css;
+    return css_list;
 };
 
-export async function getThemeStyles(context: vscode.ExtensionContext, themeCodeOrFileName: string, raiseErrors: boolean = false): Promise<string> {
+export async function getThemeStyles(context: vscode.ExtensionContext, themeCodeOrFileName: string, raiseErrors: boolean = false): Promise<string[]> {
 
     const theme = DEFAULT_THEMES.find(t => t.code === themeCodeOrFileName);
-
     // Not a default theme. The code is a themeFile
     if (!theme) {
-        return await getThemeFromFile(context, themeCodeOrFileName, raiseErrors);
+        return await getThemeStylesFromFile(context, themeCodeOrFileName, raiseErrors);
     }
 
     // Default Theme. Each CSS file is read and appended to the CSS.
-    return theme.css
+    return [theme.css
         .map(cssPath => {
             try {
                 const fullPath = path.join(context.extensionPath, THEMES_FOLDER, cssPath);
@@ -103,5 +111,5 @@ export async function getThemeStyles(context: vscode.ExtensionContext, themeCode
                 return '';
             }
         })
-        .join('\n\n');
+        .join('\n\n'), ""];
 }

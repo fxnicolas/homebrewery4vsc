@@ -108,6 +108,7 @@ export const htmlTemplate = async (context: vscode.ExtensionContext, addPreviewS
     let cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/Blank/', 'style.css');
 
     let cssContent = await fs.promises.readFile(cssPath, 'utf8');
+    cssContent = "";
 
     template = template.replace('{{ base_styles }}', `<style id="base_styles">\n${cssContent}\n</style>`);
 
@@ -117,7 +118,10 @@ export const htmlTemplate = async (context: vscode.ExtensionContext, addPreviewS
 
     // Get the styles from the Theme
     const themeStyles = await getThemeStyles(context, currentTheme, true);
-    template = template.replace('{{ theme_styles }}', `<style id="theme_styles">\n/* Theme Styles*/\n${themeStyles}\n</style>`);
+    template = template.replace('{{ theme_styles }}', `
+        <style id="base_theme_styles">\n/* Base Theme Styles*/\n${themeStyles[0]}\n</style>\n
+        <style id="theme_styles">\n/* Theme Styles*/\n${themeStyles[1]}\n</style>\n
+        `);
 
     // Add Bundle styles
     cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/', 'bundle.css');
