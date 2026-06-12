@@ -54,3 +54,14 @@ export function formatString(template: string, values: Record<string, string>) {
 export function getConfig() {
     return vscode.workspace.getConfiguration(constants.EXTENSION_ID);
 }
+
+export function isWebUrl(url: string) {
+    let res: URL;
+    try {
+        res = new URL(url);
+    }
+    catch {
+        return false;
+    }
+    return res.protocol === "http:" || res.protocol === "https:";
+}

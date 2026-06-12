@@ -304,7 +304,7 @@ export default class Renderer {
         return pageHtml;
     }
 
-    private async postProcessCss(
+    public async postProcessCss(
         css: string,
         cssDocumentUri: vscode.Uri = this.documentUri,
         forceImageInlining: boolean = false

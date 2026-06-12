@@ -4,6 +4,12 @@ All notable changes to the "homebrewery4vsc" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.3.1]
+
+### Fixed
+
+* Local Images used Custom CSS files (for example, as background-image) are not inlined and do not appaer in preview and HTML output.
+
 ## [1.3.0]
 
 ### Added
