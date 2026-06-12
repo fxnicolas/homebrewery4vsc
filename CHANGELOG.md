@@ -9,6 +9,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 * Local Images used Custom CSS files (for example, as background-image) are not inlined and do not appaer in preview and HTML output.
+* CSS Imports in Theme Files are rejected by the browser, causing fonts not to load in certain themes.
+* Switching documents does not properly refresh theme when document has an unset theme (None).
 
 ## [1.3.0]
 

@@ -16,3 +16,5 @@ homebrewery/**
 .tmp/**
 DEVNOTES.md
 .github
+AGENTS.md
+.markdownlint.json
