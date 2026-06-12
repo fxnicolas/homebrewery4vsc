@@ -35,7 +35,6 @@ const TEMPLATE_HTML = `
                             all:unset;
                         }
                     </style>
-                    {{ base_styles }}
                     {{ theme_styles }}
                     {{ page_layout_styles }}
                     {{ background_handling_styles }}
@@ -104,14 +103,6 @@ function getPreviewScript(context: vscode.ExtensionContext): string {
 export const htmlTemplate = async (context: vscode.ExtensionContext, addPreviewScript: boolean, theme?: string): Promise<string> => {
     let template = TEMPLATE_HTML;
 
-    // Add Blank styles as default. 
-    let cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/Blank/', 'style.css');
-
-    let cssContent = await fs.promises.readFile(cssPath, 'utf8');
-    cssContent = "";
-
-    template = template.replace('{{ base_styles }}', `<style id="base_styles">\n${cssContent}\n</style>`);
-
     // Select theme: The one set in file metadata or the default one.
     const config = getConfig();
     const currentTheme = theme || config.get<string>('theme') || "5ePHB";
@@ -124,11 +115,11 @@ export const htmlTemplate = async (context: vscode.ExtensionContext, addPreviewS
         `);
 
     // Add Bundle styles
-    cssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/', 'bundle.css');
+    const bundleCssPath = path.join(context.extensionPath, THEMES_FOLDER, '/homebrewery/', 'bundle.css');
 
-    cssContent = await fs.promises.readFile(cssPath, 'utf8');
+    const bundleCssContent = await fs.promises.readFile(bundleCssPath, 'utf8');
 
-    template = template.replace('{{ bundle_styles }}', `<style id="bundle_styles">\n${cssContent}\n</style>`);
+    template = template.replace('{{ bundle_styles }}', `<style id="bundle_styles">\n${bundleCssContent}\n</style>`);
 
     // Page layout styles
     template = template.replace('{{ page_layout_styles }}', `<style  id="page_layout_styles">\n${getPageLayoutStyles()}\n</style>`);
