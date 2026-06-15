@@ -19,6 +19,7 @@ interface Metadata {
     title?: string;
     description?: string;
     tags?: string[];
+    language?:string;
     systems?: string[];
     renderer?: string;
     theme?: string;
@@ -539,6 +540,10 @@ export default class Renderer {
 
         // Insert metadata (if any)
         template = template.replace('{{ metadata }}', htmlMetaTags);
+
+        // Insert Language
+        const language = metadata?.language || getConfig().get<string>("defaultLanguage") || "en";
+        template = template.replace('{{ language }}', language);
 
         // Insert inlined CSSS
         template = template.replace('{{ inline_styles }}', `<style id="inline_styles">\n${inlineStyles}\n</style>`);

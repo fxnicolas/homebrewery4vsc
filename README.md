@@ -158,6 +158,7 @@ This extension exposes the following settings:
 * `homebrewery4vsc.highlightColumnAndPageBreaks`: Highlight entire lines containing page and column breaks, for better editor readability.
 * `homebrewery4vsc.scrollPreviewWithEditor`: Enable/disable preview scrolling with the editor.
 * `homebrewery4vsc.theme`: The theme (Player's Hanbook, Dungeon Master's Guide, etc) used in preview and the HTML output.
+* `homebrewery4vsc.defaultLanguage`: Default Brew language. This converts into the HTML `lang` property, which affects hyphenation and spellchecking. You can also specify a `language` metadata element at brew level.
 * `homebrewery4vsc.customStyleSheets`: List of style sheets (CSS files within the workspace or accessed with HTTP) added to all documents when rendering.
 * `homebrewery4vsc.pageFormat`: Preview and HTML output page format (A4 or Letter).
 * `homebrewery4vsc.inlineLocalImages`: Inline local images in the HTML output. This creates standalone HTML files.

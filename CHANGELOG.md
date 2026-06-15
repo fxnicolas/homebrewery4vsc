@@ -4,6 +4,12 @@ All notable changes to the "homebrewery4vsc" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.3.2]
+
+### Added
+
+* Add support for an optional `language` metadata key, with a fallback on the new **Default Language** property setting. The language converts into a `lang` property in the HTML output, which affects hyphenation of the brew content.
+
 ## [1.3.1]
 
 ### Fixed

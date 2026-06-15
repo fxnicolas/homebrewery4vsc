@@ -40,7 +40,7 @@ const TEMPLATE_HTML = `
                     {{ background_handling_styles }}
                     {{ custom_styles }}
                     {{ inline_styles }}
-                    <div class="pages" id="pagesContainer">
+                    <div class="pages" id="pagesContainer" lang="{{ language }}">
                         {{ body }}
                     </div>
                 </div>

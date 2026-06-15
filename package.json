@@ -317,6 +317,37 @@
           "default": "5ePHB",
           "description": "Default Theme to use for previews and HTML generated files. A theme specified in the document metadata overrides this value."
         },
+        "homebrewery4vsc.defaultLanguage": {
+          "type": "string",
+          "default": "en",
+          "markdownDescription": "Default Brew language.\nThis converts into the HTML `lang` property, which affects hyphenation and spellchecking.\nYou can also specify a `language` metadata element at brew level.",
+          "enum": [
+            "de",
+            "de-ch",
+            "en",
+            "es",
+            "fr",
+            "it",
+            "ja",
+            "ru",
+            "sv",
+            "zh-Hans",
+            "zh-Hant"
+          ],
+          "enumItemLabels": [
+            "Deutsch",
+            "Schweizer Hochdeutsch",
+            "English",
+            "Español",
+            "Français",
+            "Italiano",
+            "日本語",
+            "Pусский",
+            "Svenska",
+            "简体中文",
+            "繁體中文"
+          ]
+        },
         "homebrewery4vsc.pageFormat": {
           "type": "string",
           "enum": [

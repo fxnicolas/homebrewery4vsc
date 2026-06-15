@@ -42,19 +42,25 @@ window.addEventListener('message', event => {
             const html = event.data.html;
             document.getElementById("pagesContainer").innerHTML = html;
             break;
-        // updateInlineStyles: Updates the script with id=inline_styles to apply inkine CSS while editing.
+        // updateInlineStyles: Updates the script with id=inline_styles to apply inline CSS while editing.
         case 'updateInlineStyles':
             const inlineStyles = event.data.inlineStyles;
             el = document.getElementById('inline_styles');
             el.textContent = inlineStyles;
             break;
-        // updateThemeStyles: Updates the script with id=inline_styles to apply inkine CSS while editing.
+        // updateThemeStyles: Updates the script with id=base_theme_styles and id=theme_styles to apply theme CSS.
         case 'updateThemeStyles':
             const themeStyles = event.data.themeStyles;
             el = document.getElementById('base_theme_styles');
             el.textContent = themeStyles[0];
             el = document.getElementById('theme_styles');
             el.textContent = themeStyles[1];
+            break;
+        // updateLanguage: Update the lang property of the id=pageContainer element whtn the language metadata changes.
+        case 'updateLanguage':
+            const language = event.data.language;
+            el = document.getElementById('pagesContainer');
+            el.lang = language;
             break;
     }
 });

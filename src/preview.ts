@@ -22,6 +22,7 @@ export default class Preview {
     currentZoom: number = 100;
     context: vscode.ExtensionContext;
     currentTheme: string = "";
+    currentLanguage: string = "en";
     currentinlineStyles: string = "";
     private documentUri: vscode.Uri | undefined;
     private isDisposed: boolean = false;
@@ -147,7 +148,7 @@ export default class Preview {
                 // Register events for refresh
                 const onDidChangeTextDocumentListener = vscode.workspace.onDidChangeTextDocument(this.debouncedupdatePreview.bind(this));
                 this.context.subscriptions.push(onDidChangeTextDocumentListener);
-                const onDidChangeConfigurationListener =vscode.workspace.onDidChangeConfiguration(this.reloadPreview.bind(this));
+                const onDidChangeConfigurationListener = vscode.workspace.onDidChangeConfiguration(this.reloadPreview.bind(this));
                 this.context.subscriptions.push(onDidChangeConfigurationListener);
                 const onDidSaveTextDocumentListener = vscode.workspace.onDidSaveTextDocument(this.debouncedupdatePreview.bind(this));
                 this.context.subscriptions.push(onDidSaveTextDocumentListener);
@@ -221,8 +222,18 @@ export default class Preview {
             }
             let currentMarkdownText = editor.document.getText();
 
-            // Cache and retrieve metadata once
-            const theme = this.currentRenderer.getMetadata(currentMarkdownText)?.theme || getConfig().get<string>('theme') || "None"
+            // Update Language if changed.
+            const language = this.currentRenderer.getMetadata(currentMarkdownText)?.language || getConfig().get<string>('defaultLanguage') || "en";
+            if (this.currentLanguage !== language) {
+                this.postMessage({
+                    type: 'updateLanguage',
+                    language: language,
+                });
+                this.currentLanguage = language;
+            }
+
+            // Update theme if changed
+            const theme = this.currentRenderer.getMetadata(currentMarkdownText)?.theme || getConfig().get<string>('theme') || "None";
             if (this.currentTheme !== theme) {
                 getThemeStyles(this.context, theme, false).then((themeStyles) => {
                     this.postMessage({
@@ -272,9 +283,12 @@ export default class Preview {
             // Set the current CSS and Theme of the preview
             let css = await this.currentRenderer.getInlineStyles(currentMarkdownText);
             let theme = this.currentRenderer.getMetadata(currentMarkdownText)?.theme;
+            let language = this.currentRenderer.getMetadata(currentMarkdownText)?.language;
 
             this.currentinlineStyles = css ? css : "";
-            this.currentTheme = theme || getConfig().get<string>('theme') || "None"
+            this.currentTheme = theme || getConfig().get<string>('theme') || "None";
+            this.currentLanguage = language || getConfig().get<string>('defaultLanguage') || "en";
+
             this.currentRenderer.renderHTML(currentMarkdownText, true).then(currentHTMLContent => {
                 if (this.panel) {
                     this.panel.webview.html = currentHTMLContent;
