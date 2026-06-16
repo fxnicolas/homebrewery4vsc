@@ -47,7 +47,7 @@ export default class Preview {
         return fileName;
     }
 
-    private computePageNumber(visibleRanges: readonly vscode.Range[], document: vscode.TextDocument): number {
+    private editorCurrentPageNumber(visibleRanges: readonly vscode.Range[], document: vscode.TextDocument): number {
         if (visibleRanges.length === 0) {
             return 1;
         }
@@ -69,12 +69,13 @@ export default class Preview {
             }
         }
 
-        return pageDirectivesBefore + 1;
+        return this.currentRenderer?.isEmptyFirstPage(document.getText()) ? pageDirectivesBefore : pageDirectivesBefore + 1;
+
     }
 
     private syncPreview(textEditor: vscode.TextEditor, visibleRanges: readonly vscode.Range[]) {
         // Calculate the page based on the range provided
-        const currentPage = this.computePageNumber(visibleRanges, textEditor.document);
+        const currentPage = this.editorCurrentPageNumber(visibleRanges, textEditor.document);
 
         // Only post a message if the page actually changed
         if (currentPage !== this.lastSentPage) {
@@ -302,7 +303,7 @@ export default class Preview {
             if (this.isMarkdownEditor(editor, true) && getConfig().get('scrollPreviewWithEditor')) {
                 this.postMessage({
                     type: 'scroll',
-                    page: this.computePageNumber(editor.visibleRanges, editor.document),
+                    page: this.editorCurrentPageNumber(editor.visibleRanges, editor.document),
                     mode: 'instant'
                 });
             }
@@ -315,24 +316,9 @@ export default class Preview {
                 continue;
             }
 
-            const doc = editor.document;
-            let targetLine = 0; // Default to the very top (Page 1)
+            const markdownText = editor.document.getText();
 
-            if (targetPage > 1) {
-                let pagesFound = 1;
-                for (let i = 0; i < doc.lineCount; i++) {
-                    const lineText = doc.lineAt(i).text.trim();
-
-                    if (PAGE_REGEX.test(lineText)) {
-                        pagesFound++;
-                        if (pagesFound === targetPage) {
-                            // We found the delimiter. The content starts on the NEXT line.
-                            targetLine = Math.min(i + 1, doc.lineCount - 1);
-                            break;
-                        }
-                    }
-                }
-            }
+            const targetLine: number = this.currentRenderer ? this.currentRenderer?.ComputeLinePositionForPage(markdownText, targetPage) : 0;
 
             const pos = new vscode.Position(targetLine, 0);
             const selection = new vscode.Selection(pos, pos);

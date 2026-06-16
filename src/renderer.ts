@@ -22,7 +22,7 @@ interface Metadata {
     title?: string;
     description?: string;
     tags?: string[];
-    language?:string;
+    language?: string;
     systems?: string[];
     renderer?: string;
     theme?: string;
@@ -464,28 +464,92 @@ export default class Renderer {
     }
 
     /**
+     * Determines whether the first page of a Homebrewery markdown document is empty.
+     *
+     * A "first page" is considered empty if, after stripping out the CSS and
+     * metadata fenced blocks, there is no content before the first `\page`
+     * directive (or no content at all).
+     *
+     * @param markdownText - The raw markdown source of the brew.
+     * @returns `true` if the first page has no renderable content before the
+     * first `\page` marker (or the document is empty/whitespace only);
+     * `false` otherwise.
+     */
+    public isEmptyFirstPage(markdownText: string): boolean {
+        // Remove CSS and Metadata fenced blocks
+        const cleanedText = markdownText
+            .replace(CSS_REGEX, '')
+            .replace(METADATA_REGEX, '')
+            .trim();
+        // Split text in lines
+        const lines = cleanedText.split(/\r\n|\r|\n/);
+        // Find first non empty line
+        const firstContentLine = lines.find((line) => line.trim().length > 0);
+        // Return true if the first non-empty line is a page break.
+        return firstContentLine === undefined || PAGE_REGEX.test(firstContentLine.trim());
+    }
+
+    public ComputeLinePositionForPage(markdownText: string, targetPagePosition: number): number {
+        let targetLine = 0;
+        let pagesCount = 1;
+
+
+        // Entire do number of lines
+        let rawLinesNb = markdownText.split(/\r\n|\r|\n/).length;
+        
+        // Remove markdown and CSS fenced blocks
+        const cleanMarkdownText = markdownText
+            .replace(CSS_REGEX, '')
+            .replace(METADATA_REGEX, '')
+        
+        const markdownLines = cleanMarkdownText.split(/\r\n|\r|\n/);
+
+        const fencedBlocksLinesNb = rawLinesNb - markdownLines.length;
+        let startPageCount = false;
+
+        for (let i = 0; i < markdownLines.length; i++) {
+            const lineText = markdownLines[i];
+            if (startPageCount && PAGE_REGEX.test(lineText)) {
+                // Count instances of the page regexp, only if a non-empty line preceeds.
+                pagesCount++;
+                if (pagesCount === targetPagePosition) {
+                    // We found the delimiter. The content starts on the NEXT line.
+                    targetLine = Math.min(i + fencedBlocksLinesNb, rawLinesNb - 1);
+                    break;
+                }
+            }
+
+            // First non-empty line triggers page count.
+            if (lineText.trim() !== "") {
+                startPageCount = true;
+            };
+        }
+        return targetLine;
+    }
+
+    /**
      * Renders one page of markdown as HTML
      *  Each page has an ID and key with its number.
      */
     private async renderPage(pageText: string, index: number) {
         let styles = {
-			// ...(!displayOptions.pageShadows ? { boxShadow: 'none' } : {})
-			// Add more conditions as needed
-		};
-		let classes    = 'page';
-		let attributes = {};
+            // ...(!displayOptions.pageShadows ? { boxShadow: 'none' } : {})
+            // Add more conditions as needed
+        };
+        let classes = 'page';
+        let attributes = {};
 
         // EXtracting tags injected on the page element. 
-        if(pageText.startsWith('\\page')) {
+        if (pageText.startsWith('\\page')) {
             const firstLine = pageText.split('\n', 1)[0];
             const firstToken = Markdown.marked.lexer(firstLine)[0];
             const firstLineTokens = 'tokens' in firstToken ? firstToken.tokens : undefined;
             type TokenWithInjectedTags = Token & { injectedTags?: { styles: Record<string, string>; classes: string; attributes: any } };
             const injectedTags = (firstLineTokens as TokenWithInjectedTags[])?.find((obj) => obj.injectedTags !== undefined)?.injectedTags;
             // const injectedTags = firstLineTokens?.find((obj)=>obj.injectedTags !== undefined)?.injectedTags;
-            if(injectedTags) {
-                styles     = { ...styles, ...injectedTags.styles };
-                classes    = [classes, injectedTags.classes].join(' ').trim();
+            if (injectedTags) {
+                styles = { ...styles, ...injectedTags.styles };
+                classes = [classes, injectedTags.classes].join(' ').trim();
                 attributes = injectedTags.attributes;
             }
             pageText = pageText.includes('\n') ? pageText.substring(pageText.indexOf('\n') + 1) : ''; // Remove the \page line
@@ -499,7 +563,7 @@ export default class Renderer {
         // Page Attributes
         const attributeString = attributes ? Object.entries(attributes)
             .map(([key, value]) => `${key}="${value}"`)
-            .join(' '): '';
+            .join(' ') : '';
 
         // Page Text
         pageText = this.preProcessPageText(pageText);
