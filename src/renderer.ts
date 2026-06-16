@@ -8,6 +8,9 @@ import * as fs from 'fs/promises';
 import { parse } from 'node-html-parser';
 import { getConfig } from './utils';
 import { SnippetsBlock } from './snippets-completions.js';
+import { PAGE_REGEX, COLUMN_REGEX } from './utils';
+import _ from 'lodash';
+import { Token, TokensList } from 'marked';
 
 // @ts-ignore
 declare module './markdown';
@@ -465,10 +468,46 @@ export default class Renderer {
      *  Each page has an ID and key with its number.
      */
     private async renderPage(pageText: string, index: number) {
+        let styles = {
+			// ...(!displayOptions.pageShadows ? { boxShadow: 'none' } : {})
+			// Add more conditions as needed
+		};
+		let classes    = 'page';
+		let attributes = {};
+
+        // EXtracting tags injected on the page element. 
+        if(pageText.startsWith('\\page')) {
+            const firstLine = pageText.split('\n', 1)[0];
+            const firstToken = Markdown.marked.lexer(firstLine)[0];
+            const firstLineTokens = 'tokens' in firstToken ? firstToken.tokens : undefined;
+            type TokenWithInjectedTags = Token & { injectedTags?: { styles: Record<string, string>; classes: string; attributes: any } };
+            const injectedTags = (firstLineTokens as TokenWithInjectedTags[])?.find((obj) => obj.injectedTags !== undefined)?.injectedTags;
+            // const injectedTags = firstLineTokens?.find((obj)=>obj.injectedTags !== undefined)?.injectedTags;
+            if(injectedTags) {
+                styles     = { ...styles, ...injectedTags.styles };
+                classes    = [classes, injectedTags.classes].join(' ').trim();
+                attributes = injectedTags.attributes;
+            }
+            pageText = pageText.includes('\n') ? pageText.substring(pageText.indexOf('\n') + 1) : ''; // Remove the \page line
+        }
+
+        // Page Styles
+        const styleString = styles ? Object.entries(styles)
+            .map(([key, value]) => `${_.kebabCase(key)}:${value}`)
+            .join(';') : '';
+
+        // Page Attributes
+        const attributeString = attributes ? Object.entries(attributes)
+            .map(([key, value]) => `${key}="${value}"`)
+            .join(' '): '';
+
+        // Page Text
         pageText = this.preProcessPageText(pageText);
         pageText += `\n\n&nbsp;\n\\column\n&nbsp;`;
+
+        // <div class="${classes}" id="p${index + 1}" key="${index}" >
         let pageBody = `
-        <div class="page phb" id="p${index + 1}" key="${index}" >
+        <div class="${classes}" style="${styleString}" ${attributeString} id="p${index + 1}" key="${index}" >
             <div class="columnWrapper">${Markdown.render(pageText)}</div>
         </div>`;
         pageBody = await this.postProcessPageHtml(pageBody);
@@ -486,7 +525,7 @@ export default class Renderer {
      * @function renderHTML
      * @param {string} markdownText 
      * The source text to render. It may include optional metadata headers, inlined CSS blocks, 
-     * and page split markers (`\page`).
+     * and page split markers.
      *
      * @param {vscode.ExtensionContext} context 
      * The VS Code extension context, used to resolve resources (e.g., templates, scripts, or assets) 
@@ -511,7 +550,7 @@ export default class Renderer {
      * The function pipeline:
      * 1. **Extract metadata**: Parses metadata from the input text to derive HTML `<head>` tags and the theme.
      * 2. **Extract inline CSS**: Separates custom CSS blocks for injection into the final document.
-     * 3. **Preprocess text**: Cleans and normalizes Markdown-like syntax, splitting into pages at `\page` markers.
+     * 3. **Preprocess text**: Cleans and normalizes Markdown-like syntax, splitting into pages at page markers.
      * 4. **Render individual pages**: Converts each page segment into HTML using `renderPage()`.
      * 5. **Build HTML template**: Loads and injects metadata, styles, and body content into the base template 
      *    from `htmlTemplate()`.
@@ -560,7 +599,7 @@ export default class Renderer {
         let body = this.getBody(markdownText);
 
         // Split the boby into pages after proprocessing.
-        const pages = this.preProcessText(body).split(/^\\page$/gm);
+        const pages = this.preProcessText(body).split(new RegExp(PAGE_REGEX.source, 'gm'));
 
         // All pages rendering start simultaneously
         const renderPromises = pages.map((pageContent, i) => this.renderPage(pageContent, i));

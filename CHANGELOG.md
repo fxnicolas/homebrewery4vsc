@@ -9,6 +9,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Added
 
 * Add support for an optional `language` metadata key, with a fallback on the new **Default Language** property setting. The language converts into a `lang` property in the HTML output, which affects hyphenation of the brew content.
+* Add: Support for page-level classes, styles, and attributes For example: `\page{grayscale,font-weight:800,CustomAttribute=FOO}`.
 
 ## [1.3.1]
 

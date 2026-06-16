@@ -1,7 +1,7 @@
 'use strict';
 import * as vscode from 'vscode';
 import { getConfig } from './utils';
-
+import { PAGE_REGEX, COLUMN_REGEX } from './utils';
 export class DecorationManager {
 
     private pageDecoration: vscode.TextEditorDecorationType;
@@ -73,8 +73,8 @@ export class DecorationManager {
             const pageRanges: vscode.Range[] = [];
             const columnRanges: vscode.Range[] = [];
 
-            const pageRegex = /^\s*\\page\b/;
-            const columnRegex = /^\s*\\column\b/;
+            const pageRegex = PAGE_REGEX;
+            const columnRegex = COLUMN_REGEX;
 
             const lineCount = editor.document.lineCount;
 

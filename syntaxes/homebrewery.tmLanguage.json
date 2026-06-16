@@ -27,7 +27,7 @@
   ],
   "repository": {
     "page": {
-      "match": "^\\s*\\\\page\\b.*$",
+      "match": "^\\\\page(\\s*\\{.*\\})?$",
       "name": "keyword.control.homebrewery.page"
     },
     "column": {

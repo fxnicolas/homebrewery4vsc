@@ -65,3 +65,7 @@ export function isWebUrl(url: string) {
     }
     return res.protocol === "http:" || res.protocol === "https:";
 }
+
+// export const PAGE_REGEX = /^\\page(?:\s*)?(?:\{.*\})?$/
+export const PAGE_REGEX = /^(?=\\page(?:break)?(?: *{[^\n{}]*})?$)/m;
+export const COLUMN_REGEX = /^\s*\\column\b/;

@@ -6,6 +6,8 @@ import Renderer from './renderer';
 import * as constants from './constants';
 import { getConfig } from "./utils";
 import { getThemeStyles } from './theme';
+import { PAGE_REGEX, COLUMN_REGEX } from './utils';
+
 
 // const output = vscode.window.createOutputChannel(EXTENSION_ID);
 // output.appendLine('Extension ready!');
@@ -57,12 +59,12 @@ export default class Preview {
         const markdownText = document.getText();
         const lines = markdownText.split(/\r\n|\r|\n/);
 
-        // Count `\page` directives that appear before that middle line
+        // Count page directives that appear before that middle line
         let pageDirectivesBefore = 0;
         const limit = Math.min(middleLine, lines.length);
 
         for (let i = 0; i < limit; i++) {
-            if (/^\\page\b/.test(lines[i].trim())) {
+            if (PAGE_REGEX.test(lines[i].trim())) {
                 pageDirectivesBefore++;
             }
         }
@@ -321,7 +323,7 @@ export default class Preview {
                 for (let i = 0; i < doc.lineCount; i++) {
                     const lineText = doc.lineAt(i).text.trim();
 
-                    if (/^\\page\b/.test(lineText)) {
+                    if (PAGE_REGEX.test(lineText)) {
                         pagesFound++;
                         if (pagesFound === targetPage) {
                             // We found the delimiter. The content starts on the NEXT line.
