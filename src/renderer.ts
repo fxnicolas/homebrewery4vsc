@@ -71,7 +71,7 @@ export default class Renderer {
     }
 
     private readonly TRANSCLUSION_REGEX =
-        /!\[([^\]]*)\]\(([^)]+\.(?:md|txt))\)(?:\{HEADING_OFFSET=(\d+)\})?/gi;
+        /^!\[([^\]]*)\]\(([^)]+\.(?:md|txt))\)(?:\{HEADING_OFFSET=(\d+)\})?/gim;
 
     private async processTransclusions(
         markdownText: string,
