@@ -29,12 +29,21 @@ interface Metadata {
     snippets?: SnippetsBlock[];
 }
 
+interface TranscludeMatch {
+    fullMatch: string;
+    fileTitle: string;
+    relativeFilePath: string;
+    headingOffset: number;
+}
+
 
 export default class Renderer {
     public context: vscode.ExtensionContext;
     public documentUri: vscode.Uri;
     private isVscPreview: boolean = true;
     private panel: vscode.WebviewPanel | undefined;
+    private loggerChannel = vscode.window.createOutputChannel('Homebrewery for VS Code', { log: true });
+
 
     constructor(documentUri: vscode.Uri, context: vscode.ExtensionContext, panel: vscode.WebviewPanel | undefined = undefined) {
         this.documentUri = documentUri;
@@ -52,10 +61,120 @@ export default class Renderer {
      * 1. **Inject Footnotes**: Dynamically replace {footnote H1...H6} with the H1...H6 text.
      *
      */
-    private preProcessText(markdownText: string) {
+    private async preProcessText(markdownText: string) {
         // This function is used to preprocess the markdown text before rendering. It can be used to add any custom syntax or transformations that we want to support in our markdown files. For example, we can use it to inject footnotes, handle custom directives, etc.
+        // if (!this.isVscPreview) { 
+        markdownText = await this.processTransclusions(markdownText, this.documentUri.fsPath);
+        // }
         markdownText = this.injectFootnotes(markdownText);
         return markdownText;
+    }
+
+    private readonly TRANSCLUSION_REGEX =
+        /!\[([^\]]*)\]\(([^)]+\.(?:md|txt))\)(?:\{HEADING_OFFSET=(\d+)\})?/gi;
+
+    private async processTransclusions(
+        markdownText: string,
+        filePath: string,
+        visited: Set<string> = new Set(),
+        headingsOffset: number = 0
+    ): Promise<string> {
+        const scanRegex = new RegExp(this.TRANSCLUSION_REGEX.source, this.TRANSCLUSION_REGEX.flags);
+        const transclusionsFound: TranscludeMatch[] = [];
+
+        let scanResult: RegExpExecArray | null;
+        while ((scanResult = scanRegex.exec(markdownText)) !== null) {
+            transclusionsFound.push({
+                fullMatch: scanResult[0],
+                fileTitle: scanResult[1],
+                relativeFilePath: scanResult[2].trim(),
+                headingOffset: scanResult[3] ? parseInt(scanResult[3], 10) + headingsOffset : headingsOffset
+            });
+        }
+
+        if (transclusionsFound.length === 0) {
+            return markdownText;
+        }
+
+        // Pass 1 (async): resolve each transclusion's replacement content
+        const replacements = await Promise.all(
+            transclusionsFound.map(transclusionMatch => this.resolveTransclusion(transclusionMatch, filePath, visited))
+        );
+
+        // Pass 2 (sync): re-scan the same text and splice in results positionally
+        const substRegex = new RegExp(this.TRANSCLUSION_REGEX.source, this.TRANSCLUSION_REGEX.flags);
+        let result = '';
+        let lastIndex = 0;
+        let i = 0;
+        let sm: RegExpExecArray | null;
+        while ((sm = substRegex.exec(markdownText)) !== null) {
+            result += markdownText.slice(lastIndex, sm.index);
+            result += replacements[i++];
+            lastIndex = sm.index + sm[0].length;
+        }
+        result += markdownText.slice(lastIndex);
+
+        return result;
+    }
+
+    private async resolveTransclusion(
+        transclusionMatch: TranscludeMatch,
+        parentFilePath: string,
+        visitedFiles: Set<string>
+    ): Promise<string> {
+        this.loggerChannel.trace(`Transcluding ${transclusionMatch.relativeFilePath} into ${parentFilePath}`);
+
+        const parentFileFolder = path.dirname(parentFilePath);
+        const absoluteFilePath = path.resolve(parentFileFolder, transclusionMatch.relativeFilePath);
+
+        if (visitedFiles.has(absoluteFilePath)) {
+            this.loggerChannel.error(`Transclusion cycle detected into "${parentFilePath}": ${transclusionMatch.relativeFilePath}`);
+            return `Cycle detected into "${parentFilePath}" while inserting ${transclusionMatch.relativeFilePath}. This file is referred twice, with a circular dependency (A->B...->A)`;
+        }
+
+        let fileContents: string;
+        try {
+            fileContents = await fs.readFile(absoluteFilePath, 'utf-8');
+        } catch (err) {
+            this.loggerChannel.error(`Failed to transclude "${transclusionMatch.relativeFilePath}" into "${parentFilePath}": ${(err as Error).message}.`);
+            return `Unable to read file "${transclusionMatch.relativeFilePath}" to insert into "${parentFilePath}".`;
+        }
+
+        const body = this.getBody(fileContents);
+        const offsetBody = transclusionMatch.headingOffset > 0
+            ? this.applyHeadingOffset(body, transclusionMatch.headingOffset)
+            : body;
+
+        // Recurse — nested transclusions resolve relative to *their own* file's directory
+        const childVisited = new Set(visitedFiles);
+        childVisited.add(absoluteFilePath);
+
+        return this.processTransclusions(offsetBody, absoluteFilePath, childVisited, transclusionMatch.headingOffset);
+    }
+
+    /**
+     * Shifts every ATX heading (# ... ######) down by `offset` levels, clamped at 6.
+     * Skips content inside fenced code blocks so ```# comment``` isn't touched.
+     */
+    private applyHeadingOffset(markdown: string, offset: number): string {
+        const lines = markdown.split('\n');
+        let inFence = false;
+
+        return lines
+            .map(line => {
+                if (/^\s*(```|~~~)/.test(line)) {
+                    inFence = !inFence;
+                    return line;
+                }
+                if (inFence) return line;
+
+                const headingMatch = line.match(/^(#{1,6})(\s+.*)$/);
+                if (!headingMatch) return line;
+
+                const newLevel = Math.min(headingMatch[1].length + offset, 6);
+                return '#'.repeat(newLevel) + headingMatch[2];
+            })
+            .join('\n');
     }
 
     /**
@@ -496,12 +615,12 @@ export default class Renderer {
 
         // Entire do number of lines
         let rawLinesNb = markdownText.split(/\r\n|\r|\n/).length;
-        
+
         // Remove markdown and CSS fenced blocks
         const cleanMarkdownText = markdownText
             .replace(CSS_REGEX, '')
             .replace(METADATA_REGEX, '')
-        
+
         const markdownLines = cleanMarkdownText.split(/\r\n|\r|\n/);
 
         const fencedBlocksLinesNb = rawLinesNb - markdownLines.length;
@@ -662,8 +781,11 @@ export default class Renderer {
         // Get the body content (no CSS, not metadata)
         let body = this.getBody(markdownText);
 
+        // Preprocess Text
+        const preProcessedText = await this.preProcessText(body);
+
         // Split the boby into pages after proprocessing.
-        const pages = this.preProcessText(body).split(new RegExp(PAGE_REGEX.source, 'gm'));
+        const pages = preProcessedText.split(new RegExp(PAGE_REGEX.source, 'gm'));
 
         // All pages rendering start simultaneously
         const renderPromises = pages.map((pageContent, i) => this.renderPage(pageContent, i));
