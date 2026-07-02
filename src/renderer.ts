@@ -17,6 +17,8 @@ declare module './markdown';
 
 const CSS_REGEX = /```css\s*([\s\S]*?)\s*```/;
 const METADATA_REGEX = /```metadata\s*([\s\S]*?)\s*```/;
+const TRANSCLUSION_REGEX = /^!\[([^\]]*)\]\(([^)]+\.(?:md|txt))\)(?:\{HEADING_OFFSET=(\d+)\})?/gim;
+
 
 interface Metadata {
     title?: string;
@@ -70,16 +72,14 @@ export default class Renderer {
         return markdownText;
     }
 
-    private readonly TRANSCLUSION_REGEX =
-        /^!\[([^\]]*)\]\(([^)]+\.(?:md|txt))\)(?:\{HEADING_OFFSET=(\d+)\})?/gim;
-
     private async processTransclusions(
         markdownText: string,
-        filePath: string,
+        filePath: string,               // absolute path of the file markdownText came from
+        rootFilePath: string = filePath, // stays constant across the whole recursion
         visited: Set<string> = new Set(),
         headingsOffset: number = 0
     ): Promise<string> {
-        const scanRegex = new RegExp(this.TRANSCLUSION_REGEX.source, this.TRANSCLUSION_REGEX.flags);
+        const scanRegex = new RegExp(TRANSCLUSION_REGEX.source, TRANSCLUSION_REGEX.flags);
         const transclusionsFound: TranscludeMatch[] = [];
 
         let scanResult: RegExpExecArray | null;
@@ -96,13 +96,11 @@ export default class Renderer {
             return markdownText;
         }
 
-        // Pass 1 (async): resolve each transclusion's replacement content
         const replacements = await Promise.all(
-            transclusionsFound.map(transclusionMatch => this.resolveTransclusion(transclusionMatch, filePath, visited))
+            transclusionsFound.map(transclusionMatch => this.resolveTransclusion(transclusionMatch, filePath, rootFilePath, visited))
         );
 
-        // Pass 2 (sync): re-scan the same text and splice in results positionally
-        const substRegex = new RegExp(this.TRANSCLUSION_REGEX.source, this.TRANSCLUSION_REGEX.flags);
+        const substRegex = new RegExp(TRANSCLUSION_REGEX.source, TRANSCLUSION_REGEX.flags);
         let result = '';
         let lastIndex = 0;
         let i = 0;
@@ -120,10 +118,10 @@ export default class Renderer {
     private async resolveTransclusion(
         transclusionMatch: TranscludeMatch,
         parentFilePath: string,
+        rootFilePath: string,
         visitedFiles: Set<string>
     ): Promise<string> {
         this.loggerChannel.trace(`Transcluding ${transclusionMatch.relativeFilePath} into ${parentFilePath}`);
-
         const parentFileFolder = path.dirname(parentFilePath);
         const absoluteFilePath = path.resolve(parentFileFolder, transclusionMatch.relativeFilePath);
 
@@ -141,15 +139,19 @@ export default class Renderer {
         }
 
         const body = this.getBody(fileContents);
-        const offsetBody = transclusionMatch.headingOffset > 0
-            ? this.applyHeadingOffset(body, transclusionMatch.headingOffset)
-            : body;
 
-        // Recurse — nested transclusions resolve relative to *their own* file's directory
+        // Fix this file's own images in one shot, directly relative to the root document
+        const bodyWithFixedImages = this.recomputeLocalPath(body, absoluteFilePath, rootFilePath);
+
+        const offsetBody = transclusionMatch.headingOffset > 0
+            ? this.applyHeadingOffset(bodyWithFixedImages, transclusionMatch.headingOffset)
+            : bodyWithFixedImages;
+
         const childVisited = new Set(visitedFiles);
         childVisited.add(absoluteFilePath);
 
-        return this.processTransclusions(offsetBody, absoluteFilePath, childVisited, transclusionMatch.headingOffset);
+        // Recurse: currentFilePath becomes this file, but rootFilePath is unchanged
+        return this.processTransclusions(offsetBody, absoluteFilePath, rootFilePath, childVisited, transclusionMatch.headingOffset);
     }
 
     /**
@@ -175,6 +177,43 @@ export default class Renderer {
                 return '#'.repeat(newLevel) + headingMatch[2];
             })
             .join('\n');
+    }
+
+    private recomputeLocalPath(markdown: string, currentFileAbsPath: string, rootFilePath: string): string {
+        const currentDir = path.dirname(currentFileAbsPath);
+        const rootDir = path.dirname(rootFilePath);
+
+        const imageRegex = /(!\[[^\]]*\]\()([^)\s]+)((?:\s+"[^"]*")?\))/g;
+
+        return markdown.replace(imageRegex, (match, prefix, url, suffix) => {
+            if (this.isRemoteOrAbsolute(url) || this.isTransclusion(url)) {
+                return match;
+            }
+
+            // Resolve the image relative to the file it's literally written in
+            const imageAbsPath = path.resolve(currentDir, decodeURIComponent(url));
+
+            // Recompute directly relative to the ROOT document, not the immediate parent
+            let newRelativePath = path.relative(rootDir, imageAbsPath);
+            newRelativePath = newRelativePath.split(path.sep).join('/');
+
+            if (!newRelativePath.startsWith('.') && !newRelativePath.startsWith('/')) {
+                newRelativePath = './' + newRelativePath;
+            }
+
+            return `${prefix}${encodeURI(newRelativePath)}${suffix}`;
+        });
+    }
+
+    private isRemoteOrAbsolute(url: string): boolean {
+        return /^(https?:)?\/\//i.test(url)   // http://, https://, protocol-relative //
+            || /^data:/i.test(url)             // data URIs
+            || /^[a-zA-Z]:[\\/]/.test(url)     // Windows absolute (C:\ or C:/)
+            || url.startsWith('/');            // POSIX absolute
+    }
+
+    private isTransclusion(url: string): boolean {
+        return /\.(md|txt)$/i.test(url);
     }
 
     /**
