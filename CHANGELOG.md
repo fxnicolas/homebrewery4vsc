@@ -4,6 +4,16 @@ All notable changes to the "homebrewery4vsc" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.4.0]
+
+### Added
+
+* Transclusion syntax `![<alias>](<relative file path>){HEADING_OFFSET=<n>}` to include local `.md` or `.txt` files, with optional heading-level offsetting.
+* Reference syntax `[<alias>](<relative file path>)` to link local `.md` or `.txt` files. Clicking a reference in the preview opens the linked source file, and the HTML output resolves references to their corresponding `.html` output files.
+* Preview toolbar button to enable/disable scroll synchronization.
+* Preview toolbar button to expand/collapse transcluded content.
+* Synchronized scrolling now tracks pages using a new `root-id` attribute, so page numbers stay accurate against the root document even when transclusion is in use.
+
 ## [1.3.2]
 
 ### Added
