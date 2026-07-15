@@ -151,10 +151,30 @@
           "light": "./media/icons/zoom-reset.svg",
           "dark": "./media/icons/zoom-reset_dark.svg"
         }
+      },
+      {
+        "command": "homebrewery4vsc.synchronizedScrollOn",
+        "title": "Homebrewery: Enable Synchronized Scroll",
+        "icon": "$(sync)"
+      },
+      {
+        "command": "homebrewery4vsc.synchronizedScrollOff",
+        "title": "Homebrewery: Disable Synchronized Scroll",
+        "icon": "$(sync-ignored)"
       }
     ],
     "menus": {
       "commandPalette": [
+        {
+          "command": "homebrewery4vsc.synchronizedScrollOn",
+          "when": "activeWebviewPanelId == HomebrewPreview && !homebrewery.synchronizedScroll",
+          "group": "navigation"
+        },
+        {
+          "command": "homebrewery4vsc.synchronizedScrollOff",
+          "when": "activeWebviewPanelId == HomebrewPreview && homebrewery.synchronizedScroll",
+          "group": "navigation"
+        },
         {
           "command": "homebrewery4vsc.previewLayoutSimpleSpread",
           "when": "activeWebviewPanelId == HomebrewPreview && homebrewery.currentLayoutSpread == 'flow'",
@@ -202,6 +222,16 @@
         }
       ],
       "editor/title": [
+        {
+          "command": "homebrewery4vsc.synchronizedScrollOn",
+          "when": "activeWebviewPanelId == HomebrewPreview && !homebrewery.synchronizedScroll",
+          "group": "navigation"
+        },
+        {
+          "command": "homebrewery4vsc.synchronizedScrollOff",
+          "when": "activeWebviewPanelId == HomebrewPreview && homebrewery.synchronizedScroll",
+          "group": "navigation"
+        },
         {
           "command": "homebrewery4vsc.sidePreview",
           "when": "editorLangId == markdown",
@@ -360,7 +390,7 @@
         "homebrewery4vsc.scrollPreviewWithEditor": {
           "type": "boolean",
           "default": true,
-          "description": "Scroll preview window when you scroll Editor"
+          "description": "By default, keep the preview scrolled to match the corresponding position in the editor."
         },
         "homebrewery4vsc.enableFontIconCompletions": {
           "type": "boolean",

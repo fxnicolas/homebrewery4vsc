@@ -65,6 +65,7 @@ From the preview:
 * **Homebrewery: Change Layout to ...** switches the layout to single page, two pages and flow.
 * **Homebrewery: Change Zoom In/Out Preview** zooms the preview.
 * **Homebrewery: Reset Preview Zoom** resets the zoom.
+* **Homebrewery: Enable/Disable Synchronized Scroll** enables or disables the preview synchronization with the editor.
 
 ### Preview and HTML Output
 
@@ -156,7 +157,7 @@ This extension exposes the following settings:
 
 * `homebrewery4vsc.enableFontIconCompletions`: Enable/disable the font icon completion snippers.
 * `homebrewery4vsc.highlightColumnAndPageBreaks`: Highlight entire lines containing page and column breaks, for better editor readability.
-* `homebrewery4vsc.scrollPreviewWithEditor`: Enable/disable preview scrolling with the editor.
+* `homebrewery4vsc.scrollPreviewWithEditor`: By default, keep the preview scrolled to match the corresponding position in the editor.
 * `homebrewery4vsc.theme`: The theme (Player's Hanbook, Dungeon Master's Guide, etc) used in preview and the HTML output.
 * `homebrewery4vsc.defaultLanguage`: Default Brew language. This converts into the HTML `lang` property, which affects hyphenation and spellchecking. You can also specify a `language` metadata element at brew level.
 * `homebrewery4vsc.customStyleSheets`: List of style sheets (CSS files within the workspace or accessed with HTTP) added to all documents when rendering.

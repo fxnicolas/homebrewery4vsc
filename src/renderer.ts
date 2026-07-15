@@ -65,9 +65,9 @@ export default class Renderer {
      */
     private async preProcessText(markdownText: string) {
         // This function is used to preprocess the markdown text before rendering. It can be used to add any custom syntax or transformations that we want to support in our markdown files. For example, we can use it to inject footnotes, handle custom directives, etc.
-        // if (!this.isVscPreview) { 
+        if (!this.isVscPreview) { 
         markdownText = await this.processTransclusions(markdownText, this.documentUri.fsPath);
-        // }
+        }
         markdownText = this.injectFootnotes(markdownText);
         return markdownText;
     }

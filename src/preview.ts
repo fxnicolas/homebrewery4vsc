@@ -22,6 +22,7 @@ export default class Preview {
     panel: vscode.WebviewPanel | undefined;
     currentLayoutSpread: LayoutSpread = LayoutSpread.Simple;
     currentZoom: number = 100;
+    synchronizedScroll: boolean = true;
     context: vscode.ExtensionContext;
     currentTheme: string = "";
     currentLanguage: string = "en";
@@ -97,7 +98,7 @@ export default class Preview {
         return result;
     }
 
-    private initializeLayout() {
+    private initializeLayoutAndScroll() {
         // Setting the Page layout
         this.currentLayoutSpread = LayoutSpread.Simple;
         vscode.commands.executeCommand(
@@ -112,6 +113,12 @@ export default class Preview {
             'homebrewery.currentZoom',
             this.currentZoom
         );
+        this.synchronizedScroll = getConfig().get('scrollPreviewWithEditor') || true;
+        vscode.commands.executeCommand(
+            'setContext',
+            'homebrewery.synchronizedScroll',
+            this.synchronizedScroll
+        );
     }
 
 
@@ -125,7 +132,7 @@ export default class Preview {
                 this.panel.reveal();
             } else {
                 // Create and show a new webview
-                this.initializeLayout();
+                this.initializeLayoutAndScroll();
                 this.panel = vscode.window.createWebviewPanel(
                     'HomebrewPreview',
                     '[Preview] ' + this.getEditorFileName(editor),
@@ -160,7 +167,7 @@ export default class Preview {
 
                 // Synchronize Editor Scrolling -> Preview
                 const onDidChangeTextEditorVisibleRangesListener = vscode.window.onDidChangeTextEditorVisibleRanges(({ textEditor, visibleRanges }) => {
-                    if (this.isMarkdownEditor(textEditor) && getConfig().get('scrollPreviewWithEditor')) {
+                    if (this.isMarkdownEditor(textEditor) && this.synchronizedScroll ) {
                         // Pass the visible ranges (the lines physically on screen)
                         this.syncPreview(textEditor, visibleRanges);
                     }
@@ -169,7 +176,7 @@ export default class Preview {
 
                 // Synchronize Editor Click and Cursor Move -> Preview
                 const onDidChangeTextEditorSelectionListener = vscode.window.onDidChangeTextEditorSelection(({ textEditor, selections }) => {
-                    if (this.isMarkdownEditor(textEditor) && getConfig().get('scrollPreviewWithEditor')) {
+                    if (this.isMarkdownEditor(textEditor) && this.synchronizedScroll) {
                         // Create a fake range based on where the cursor (selection) is
                         const cursorRange = new vscode.Range(selections[0].active, selections[0].active);
 
@@ -300,7 +307,7 @@ export default class Preview {
             this.updateZoomLevel();
 
             // FIXME: Only scroll if active text editor is changed
-            if (this.isMarkdownEditor(editor, true) && getConfig().get('scrollPreviewWithEditor')) {
+            if (this.isMarkdownEditor(editor, true) && this.synchronizedScroll) {
                 this.postMessage({
                     type: 'scroll',
                     page: this.editorCurrentPageNumber(editor.visibleRanges, editor.document),
@@ -359,6 +366,16 @@ export default class Preview {
             this.currentLayoutSpread
         );
     }
+
+    public toggleSynchronizedScroll() {
+        this.synchronizedScroll = !this.synchronizedScroll
+        vscode.commands.executeCommand(
+            'setContext',
+            'homebrewery.synchronizedScroll',
+            this.synchronizedScroll
+        );
+    }
+    
 
     private updateZoomLevel() {
         this.postMessage({

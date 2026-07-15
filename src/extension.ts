@@ -30,6 +30,8 @@ export function activate(context: vscode.ExtensionContext) {
 	let previewZoomIn = vscode.commands.registerCommand('homebrewery4vsc.previewZoomOut', () => { preview.previewZoomOut(); });
 	let previewZoomOut = vscode.commands.registerCommand('homebrewery4vsc.previewZoomIn', () => { preview.previewZoomIn(); });
 	let previewZoomReset = vscode.commands.registerCommand('homebrewery4vsc.previewZoomReset', () => { preview.previewZoomReset(); });
+	let synchronizedScrollOn = vscode.commands.registerCommand('homebrewery4vsc.synchronizedScrollOn', () => { preview.toggleSynchronizedScroll(); });
+	let synchronizedScrollOff = vscode.commands.registerCommand('homebrewery4vsc.synchronizedScrollOff', () => { preview.toggleSynchronizedScroll(); });
 
 	// push to subscriptions list so that they are disposed automatically
 	context.subscriptions.push(disposableSidePreview);
@@ -41,6 +43,8 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(previewZoomIn);
 	context.subscriptions.push(previewZoomOut);
 	context.subscriptions.push(previewZoomReset);
+	context.subscriptions.push(synchronizedScrollOn);
+	context.subscriptions.push(synchronizedScrollOff);
 
 	/**********************************/
 	/* Icon fonts completion provider */
