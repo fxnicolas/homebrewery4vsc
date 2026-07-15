@@ -18,6 +18,7 @@ declare module './markdown';
 const CSS_REGEX = /```css\s*([\s\S]*?)\s*```/;
 const METADATA_REGEX = /```metadata\s*([\s\S]*?)\s*```/;
 const TRANSCLUSION_REGEX = /^!\[([^\]]*)\]\(([^)]+\.(?:md|txt))\)(?:\{HEADING_OFFSET=(\d+)\})?/gim;
+const REFERENCE_REGEX = /\[([^\]]*)\]\(([^)]+\.(?:md|txt))\)/gim;
 
 
 interface Metadata {
@@ -60,7 +61,10 @@ export default class Renderer {
      * 
      * @remarks
      * Pipeline:
-     * 1. **Inject Footnotes**: Dynamically replace {footnote H1...H6} with the H1...H6 text.
+     * 1. **Add RootPage IDs**: Add speciifc root page IDs (page numbers for root document pages)
+     * 2. **Transclusion**: Add to the markdown content the markdown/text documents using the transclusion syntax.
+     * 3. **Prepare References**: Transform .md and .txt references to html counterparts.
+     * 4. **Inject Footnotes**: Dynamically replace {footnote H1...H6} with the H1...H6 text.
      *
      */
     private async preProcessText(markdownText: string) {
@@ -68,19 +72,31 @@ export default class Renderer {
 
         markdownText = await this.addRootPagesIds(markdownText);
 
-        // FIXME: Tranclusion in preview should eventually happen only when a setting is defined.
-        // if (!this.isVscPreview) { 
-            markdownText = await this.processTransclusions(markdownText, this.documentUri.fsPath);
-        // }
+        // FIXME: Tranclusion in preview should happen only when a setting is defined.
+        markdownText = await this.processTransclusions(markdownText, this.documentUri.fsPath);
+
+        if (!this.isVscPreview) {
+            // Transform .md and .txt references to html counterparts.
+            markdownText = this.prepareReferences(markdownText);
+        }
+
         markdownText = this.injectFootnotes(markdownText);
         return markdownText;
     }
+
+    private prepareReferences(markdownText: string): string {
+        return markdownText.replace(REFERENCE_REGEX, (match, alias, path) => {
+            const newPath = path.replace(/\.(md|txt)$/i, '.html');
+            return `[${alias}](${newPath})`;
+        });
+    }
+
 
     private async addRootPageId(pageText: string, index: number) {
         // Adds a root-id attribute on the page elements of the root document.
         // root-id is the page number in the root document, to support correct scrolling with transclusion.
 
-        const rootPageId = index+1;
+        const rootPageId = index + 1;
         if (pageText.startsWith('\\page{')) {
             pageText = pageText.replace('\\page{', `\\page{root-id=${rootPageId},`)
         } else if (pageText.startsWith('\\page')) {

@@ -167,7 +167,7 @@ export default class Preview {
 
                 // Synchronize Editor Scrolling -> Preview
                 const onDidChangeTextEditorVisibleRangesListener = vscode.window.onDidChangeTextEditorVisibleRanges(({ textEditor, visibleRanges }) => {
-                    if (this.isMarkdownEditor(textEditor) && this.synchronizedScroll ) {
+                    if (this.isMarkdownEditor(textEditor) && this.synchronizedScroll) {
                         // Pass the visible ranges (the lines physically on screen)
                         this.syncPreview(textEditor, visibleRanges);
                     }
@@ -192,6 +192,9 @@ export default class Preview {
                     // Clicking in the webview sends a message { "goToPage", targetPage }
                     if (message.type === 'goToPage') {
                         this.scrollEditorToPage(message.page);
+                    }
+                    if (message.type === 'openDocument') {
+                        this.openDocument(message.url);
                     }
                 });
                 this.context.subscriptions.push(onDidReceiveMessageListener);
@@ -317,6 +320,38 @@ export default class Preview {
         }
     }
 
+    private async openDocument(webviewUrl: string): Promise<void> {
+        const parsed = new URL(webviewUrl);
+        // parsed.pathname is the original filesystem path that was passed to asWebviewUri,
+        // e.g. "/tests/parts/part1.md" or "/tests/images/cover.webp"
+        const relativePath = decodeURIComponent(parsed.pathname);
+
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+        if (!workspaceFolder) {
+            vscode.window.showErrorMessage('No workspace folder found to resolve the file.');
+            return;
+        }
+
+        const fileUri = vscode.Uri.joinPath(workspaceFolder.uri, relativePath);
+        try {
+            // Look for the column of preview's editor
+            let targetColumn = vscode.ViewColumn.Active;
+            for (const editor of vscode.window.visibleTextEditors) {
+                if (this.isPreviewOf(editor.document.uri)) {
+                    targetColumn = editor?.viewColumn ?? vscode.ViewColumn.Active;
+                }
+            }
+            // Open referenced file with whichever editor VS Code deems appropriate
+            // (text editor, image preview, etc.)
+            await vscode.commands.executeCommand('vscode.open', fileUri, {
+                viewColumn: targetColumn,
+                preview: false
+            });
+        } catch (err) {
+            vscode.window.showErrorMessage(`Could not open file: ${relativePath}`);
+        }
+    }
+
     private scrollEditorToPage(targetPage: number) {
         for (const editor of vscode.window.visibleTextEditors) {
             if (!this.isPreviewOf(editor.document.uri)) {
@@ -375,7 +410,7 @@ export default class Preview {
             this.synchronizedScroll
         );
     }
-    
+
 
     private updateZoomLevel() {
         this.postMessage({

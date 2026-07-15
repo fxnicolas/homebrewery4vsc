@@ -70,33 +70,49 @@ const vscode = acquireVsCodeApi();
 
 // Detect a click and send the corresponding root-id number to VS Code. The markdown editor scrolls to that page.
 document.addEventListener('click', (event) => {
-    // Find the closest ancestor with class "page"
-    let pageElement = event.target;
-    while (pageElement && pageElement !== document.body && !pageElement.classList?.contains('page')) {
-        pageElement = pageElement.parentElement;
-    }
-    if (!pageElement || pageElement === document.body) return;
 
-    // If it doesn't have root-page, look backwards through preceding siblings
-    if (!pageElement.hasAttribute('root-id')) {
-        let sibling = pageElement.previousElementSibling;
-        while (sibling) {
-            if (sibling.classList.contains('page') && sibling.hasAttribute('root-id')) {
-                pageElement = sibling;
-                break;
-            }
-            sibling = sibling.previousElementSibling;
+    let clickedElement = event.target;    
+    // Find the closest ancestor <a> element, if any
+    const linkElement = clickedElement.closest('a');
+    // Send a message to open linked element if any
+    if (linkElement && linkElement.href?.startsWith('vscode-webview://')) {
+        event.preventDefault();
+        const url = linkElement.href;
+        // do something with the URL, e.g.:
+        console.debug("Hombrewery: Opening Document " + url);
+        vscode.postMessage({
+            type: 'openDocument',
+            url: url
+        });
+    } else {
+        // Find the closest ancestor with class "page"
+        let pageElement = event.target;
+        while (pageElement && pageElement !== document.body && !pageElement.classList?.contains('page')) {
+            pageElement = pageElement.parentElement;
         }
-    }
-
-    if (pageElement.hasAttribute('root-id')) {
-        const pageNumber = parseInt(pageElement.getAttribute('root-id'), 10);
-        if (!isNaN(pageNumber)) {
-            console.debug("Hombrewery: Scrolling Editor to page " + pageNumber);
-            vscode.postMessage({
-                type: 'goToPage',
-                page: pageNumber
-            });
+        if (!pageElement || pageElement === document.body) return;
+        
+        // If it doesn't have root-page, look backwards through preceding siblings
+        if (!pageElement.hasAttribute('root-id')) {
+            let sibling = pageElement.previousElementSibling;
+            while (sibling) {
+                if (sibling.classList.contains('page') && sibling.hasAttribute('root-id')) {
+                    pageElement = sibling;
+                    break;
+                }
+                sibling = sibling.previousElementSibling;
+            }
+        }
+        // Get the root-id an send a message to jump the editor to that page.
+        if (pageElement.hasAttribute('root-id')) {
+            const pageNumber = parseInt(pageElement.getAttribute('root-id'), 10);
+            if (!isNaN(pageNumber)) {
+                console.debug("Hombrewery: Scrolling Editor to page " + pageNumber);
+                vscode.postMessage({
+                    type: 'goToPage',
+                    page: pageNumber
+                });
+            }
         }
     }
 });
