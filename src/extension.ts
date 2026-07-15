@@ -32,6 +32,8 @@ export function activate(context: vscode.ExtensionContext) {
 	let previewZoomReset = vscode.commands.registerCommand('homebrewery4vsc.previewZoomReset', () => { preview.previewZoomReset(); });
 	let synchronizedScrollOn = vscode.commands.registerCommand('homebrewery4vsc.synchronizedScrollOn', () => { preview.toggleSynchronizedScroll(); });
 	let synchronizedScrollOff = vscode.commands.registerCommand('homebrewery4vsc.synchronizedScrollOff', () => { preview.toggleSynchronizedScroll(); });
+	let collapseTransclusionsOn = vscode.commands.registerCommand('homebrewery4vsc.collapseTransclusionsOn', () => { preview.toggleTranclusionsCollapse(); });
+	let collapseTransclusionsOff = vscode.commands.registerCommand('homebrewery4vsc.collapseTransclusionsOff', () => { preview.toggleTranclusionsCollapse(); });
 
 	// push to subscriptions list so that they are disposed automatically
 	context.subscriptions.push(disposableSidePreview);
@@ -45,6 +47,8 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(previewZoomReset);
 	context.subscriptions.push(synchronizedScrollOn);
 	context.subscriptions.push(synchronizedScrollOff);
+	context.subscriptions.push(collapseTransclusionsOn);
+	context.subscriptions.push(collapseTransclusionsOff);
 
 	/**********************************/
 	/* Icon fonts completion provider */
@@ -107,10 +111,10 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 
 	// Update snippets when text changes
-	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(e => {reloadSnippets(e.document);}));
+	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(e => { reloadSnippets(e.document); }));
 
 	// Update when switching editor
-	context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(e => {reloadSnippets(e?.document);}));
+	context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(e => { reloadSnippets(e?.document); }));
 
 	// Initial load
 	reloadSnippets(vscode.window.activeTextEditor?.document);

@@ -38,6 +38,7 @@ const TEMPLATE_HTML = `
                     {{ theme_styles }}
                     {{ page_layout_styles }}
                     {{ background_handling_styles }}
+                    {{ preview-styles }}
                     {{ custom_styles }}
                     {{ inline_styles }}
                     <div class="pages" id="pagesContainer" lang="{{ language }}">
@@ -93,6 +94,13 @@ function getPageLayoutStyles(): string {
     return pageLayoutStyles;
 }
 
+function getPreviewStyles(context: vscode.ExtensionContext): string {
+    const previewStylesFile = path.join(context.extensionPath, 'media', "styles", 'preview-styles.css');
+    const previewStyles = fs.readFileSync(previewStylesFile, { encoding: 'utf8' });
+    return previewStyles;
+
+}
+
 function getPreviewScript(context: vscode.ExtensionContext): string {
     const previewScriptFile = path.join(context.extensionPath, 'media', "scripts", 'preview-script.js');
     const previewScript = fs.readFileSync(previewScriptFile, { encoding: 'utf8' });
@@ -100,7 +108,7 @@ function getPreviewScript(context: vscode.ExtensionContext): string {
 
 }
 
-export const htmlTemplate = async (context: vscode.ExtensionContext, addPreviewScript: boolean, theme?: string): Promise<string> => {
+export const htmlTemplate = async (context: vscode.ExtensionContext, addPreviewAssets: boolean, theme?: string): Promise<string> => {
     let template = TEMPLATE_HTML;
 
     // Select theme: The one set in file metadata or the default one.
@@ -126,13 +134,16 @@ export const htmlTemplate = async (context: vscode.ExtensionContext, addPreviewS
     // Background styles
     template = template.replace('{{ background_handling_styles }}', `<style id="background_handling_styles">\n${getBackgroundHandlingStyles()}\n</style>`);
 
+    // Preview styles
+    template = template.replace('{{ preview-styles }}', addPreviewAssets ? `<style id="preview_styles">\n${getPreviewStyles(context)}\n</style>` : '');
+
     // Custom styles (now async)
     const customStyles = await getCustomStyles(context);
 
     template = template.replace('{{ custom_styles }}', `<style id="custom_styles">\n${customStyles}\n</style>`);
 
     // Scroll events
-    template = template.replace('{{ preview-script }}', addPreviewScript ? `${getPreviewScript(context)}` : '');
+    template = template.replace('{{ preview-script }}', addPreviewAssets ? `${getPreviewScript(context)}` : '');
 
     return template;
 };

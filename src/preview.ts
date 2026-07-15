@@ -23,6 +23,7 @@ export default class Preview {
     currentLayoutSpread: LayoutSpread = LayoutSpread.Simple;
     currentZoom: number = 100;
     synchronizedScroll: boolean = true;
+    collapseTransclusions: boolean = false;
     context: vscode.ExtensionContext;
     currentTheme: string = "";
     currentLanguage: string = "en";
@@ -119,6 +120,12 @@ export default class Preview {
             'homebrewery.synchronizedScroll',
             this.synchronizedScroll
         );
+        this.collapseTransclusions = getConfig().get('CollapseIncludes') || false;
+        vscode.commands.executeCommand(
+            'setContext',
+            'homebrewery.collapseTransclusions',
+            this.collapseTransclusions
+        );
     }
 
 
@@ -158,7 +165,7 @@ export default class Preview {
                 // Register events for refresh
                 const onDidChangeTextDocumentListener = vscode.workspace.onDidChangeTextDocument(this.debouncedupdatePreview.bind(this));
                 this.context.subscriptions.push(onDidChangeTextDocumentListener);
-                const onDidChangeConfigurationListener = vscode.workspace.onDidChangeConfiguration(this.reloadPreview.bind(this));
+                const onDidChangeConfigurationListener = vscode.workspace.onDidChangeConfiguration(() => { this.reloadPreview(); });
                 this.context.subscriptions.push(onDidChangeConfigurationListener);
                 const onDidSaveTextDocumentListener = vscode.workspace.onDidSaveTextDocument(this.debouncedupdatePreview.bind(this));
                 this.context.subscriptions.push(onDidSaveTextDocumentListener);
@@ -225,12 +232,14 @@ export default class Preview {
         }
     }
 
-    async updatePreview() {
-        const editor = vscode.window.activeTextEditor;
+    async updatePreview(workingEditor: vscode.TextEditor | undefined = undefined) {
+        const editor = workingEditor
+            || vscode.window.visibleTextEditors.find(e => this.isPreviewOf(e.document.uri))
+            || vscode.window.activeTextEditor;
         if (editor && this.isMarkdownEditor(editor, true) && this.panel) {
             // Create renderer once per document if not exists or document URI changed
             if (!this.currentRenderer || this.documentUri !== editor.document.uri) {
-                this.currentRenderer = new Renderer(editor.document.uri, this.context, this.panel);
+                this.currentRenderer = new Renderer(editor.document.uri, this.context, this.panel, this.collapseTransclusions);
                 this.documentUri = editor.document.uri;
             }
             let currentMarkdownText = editor.document.getText();
@@ -277,8 +286,10 @@ export default class Preview {
         }
     };
 
-    async reloadPreview() {
-        const editor = vscode.window.activeTextEditor;
+    async reloadPreview(workingEditor: vscode.TextEditor | undefined = undefined) {
+        const editor = workingEditor
+            || vscode.window.visibleTextEditors.find(e => this.isPreviewOf(e.document.uri))
+            || vscode.window.activeTextEditor;
         if (!editor) {
             // FIXME: Switching text causes no Active Text Editor (SUPPRESSED)
             // vscode.window.showWarningMessage(constants.ErrorMessages.NO_ACTIVE_EDITOR);
@@ -287,7 +298,7 @@ export default class Preview {
         if (editor && this.isMarkdownEditor(editor, true) && this.panel) {
             // Create renderer once per document if not exists or document URI changed
             if (!this.currentRenderer || this.documentUri !== editor.document.uri) {
-                this.currentRenderer = new Renderer(editor.document.uri, this.context, this.panel);
+                this.currentRenderer = new Renderer(editor.document.uri, this.context, this.panel, this.collapseTransclusions);
             }
             let currentMarkdownText = editor.document.getText();
             this.panel.title = `[Preview] ${this.getEditorFileName(editor)}`;
@@ -411,6 +422,18 @@ export default class Preview {
         );
     }
 
+    public toggleTranclusionsCollapse() {
+        this.collapseTransclusions = !this.collapseTransclusions
+        vscode.commands.executeCommand(
+            'setContext',
+            'homebrewery.collapseTransclusions',
+            this.collapseTransclusions
+        );
+        if (this.currentRenderer) {
+            this.currentRenderer.isCollapseTransclusions = this.collapseTransclusions;
+            this.reloadPreview();
+        }
+    }
 
     private updateZoomLevel() {
         this.postMessage({

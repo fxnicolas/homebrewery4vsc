@@ -161,10 +161,30 @@
         "command": "homebrewery4vsc.synchronizedScrollOff",
         "title": "Homebrewery: Disable Synchronized Scroll",
         "icon": "$(sync-ignored)"
+      },
+      {
+        "command": "homebrewery4vsc.collapseTransclusionsOn",
+        "title": "Homebrewery: Collapse Includes",
+        "icon": "$(fold)"
+      },
+      {
+        "command": "homebrewery4vsc.collapseTransclusionsOff",
+        "title": "Homebrewery: Expand Includes",
+        "icon": "$(unfold)"
       }
     ],
     "menus": {
       "commandPalette": [
+        {
+          "command": "homebrewery4vsc.collapseTransclusionsOn",
+          "when": "activeWebviewPanelId == HomebrewPreview && !homebrewery.collapseTransclusions",
+          "group": "navigation"
+        },
+        {
+          "command": "homebrewery4vsc.collapseTransclusionsOff",
+          "when": "activeWebviewPanelId == HomebrewPreview && homebrewery.collapseTransclusions",
+          "group": "navigation"
+        },
         {
           "command": "homebrewery4vsc.synchronizedScrollOn",
           "when": "activeWebviewPanelId == HomebrewPreview && !homebrewery.synchronizedScroll",
@@ -223,14 +243,24 @@
       ],
       "editor/title": [
         {
+          "command": "homebrewery4vsc.collapseTransclusionsOn",
+          "when": "activeWebviewPanelId == HomebrewPreview && !homebrewery.collapseTransclusions",
+          "group": "navigation@6"
+        },
+        {
+          "command": "homebrewery4vsc.collapseTransclusionsOff",
+          "when": "activeWebviewPanelId == HomebrewPreview && homebrewery.collapseTransclusions",
+          "group": "navigation@6"
+        },
+        {
           "command": "homebrewery4vsc.synchronizedScrollOn",
           "when": "activeWebviewPanelId == HomebrewPreview && !homebrewery.synchronizedScroll",
-          "group": "navigation"
+          "group": "navigation@5"
         },
         {
           "command": "homebrewery4vsc.synchronizedScrollOff",
           "when": "activeWebviewPanelId == HomebrewPreview && homebrewery.synchronizedScroll",
-          "group": "navigation"
+          "group": "navigation@5"
         },
         {
           "command": "homebrewery4vsc.sidePreview",
@@ -391,6 +421,11 @@
           "type": "boolean",
           "default": true,
           "description": "By default, keep the preview scrolled to match the corresponding position in the editor."
+        },
+        "homebrewery4vsc.CollapseIncludes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "By default, collapse files included using the `![alias](url){HEADING_OFFSET=n}` syntax."
         },
         "homebrewery4vsc.enableFontIconCompletions": {
           "type": "boolean",

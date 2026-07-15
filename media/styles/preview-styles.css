@@ -1,0 +1,14 @@
+/* Styles used for the Preview */
+
+a.hb-transclusion {
+    display: block;
+    border: 1px dashed;
+    padding: 5px;
+    margin: 5px;
+
+}
+
+a.hb-transclusion::before {
+    content: "Included: ";
+    font-weight: 800;
+}

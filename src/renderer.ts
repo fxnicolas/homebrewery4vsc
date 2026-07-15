@@ -43,15 +43,17 @@ interface TranscludeMatch {
 export default class Renderer {
     public context: vscode.ExtensionContext;
     public documentUri: vscode.Uri;
+    public isCollapseTransclusions: boolean = false;
     private isVscPreview: boolean = true;
     private panel: vscode.WebviewPanel | undefined;
     private loggerChannel = vscode.window.createOutputChannel('Homebrewery for VS Code', { log: true });
 
 
-    constructor(documentUri: vscode.Uri, context: vscode.ExtensionContext, panel: vscode.WebviewPanel | undefined = undefined) {
+    constructor(documentUri: vscode.Uri, context: vscode.ExtensionContext, panel: vscode.WebviewPanel | undefined = undefined, collapseTransclusion: boolean = false) {
         this.documentUri = documentUri;
         this.context = context;
         this.panel = panel;
+        this.isCollapseTransclusions = collapseTransclusion;
     };
 
     /**
@@ -62,7 +64,7 @@ export default class Renderer {
      * @remarks
      * Pipeline:
      * 1. **Add RootPage IDs**: Add speciifc root page IDs (page numbers for root document pages)
-     * 2. **Transclusion**: Add to the markdown content the markdown/text documents using the transclusion syntax.
+     * 2. **Transclusion**: Add to the markdown content the markdown/text documents using the transclusion syntax, or show them as styles links.
      * 3. **Prepare References**: Transform .md and .txt references to html counterparts.
      * 4. **Inject Footnotes**: Dynamically replace {footnote H1...H6} with the H1...H6 text.
      *
@@ -72,8 +74,11 @@ export default class Renderer {
 
         markdownText = await this.addRootPagesIds(markdownText);
 
-        // FIXME: Tranclusion in preview should happen only when a setting is defined.
-        markdownText = await this.processTransclusions(markdownText, this.documentUri.fsPath);
+        if (this.isVscPreview && this.isCollapseTransclusions) {
+            markdownText = this.collapseTransclusions(markdownText);
+        } else {
+            markdownText = await this.processTransclusions(markdownText, this.documentUri.fsPath);
+        }
 
         if (!this.isVscPreview) {
             // Transform .md and .txt references to html counterparts.
@@ -83,6 +88,14 @@ export default class Renderer {
         markdownText = this.injectFootnotes(markdownText);
         return markdownText;
     }
+
+    private collapseTransclusions(markdownText: string): string {
+            return markdownText.replace(TRANSCLUSION_REGEX, (match, alias, url, offset) => {
+            const offsetPart = offset !== undefined ? ` (Headings Offset ${offset})` : '';
+            return `[${alias}${offsetPart}](${url}){hb-transclusion}`;
+        });
+    }
+
 
     private prepareReferences(markdownText: string): string {
         return markdownText.replace(REFERENCE_REGEX, (match, alias, path) => {
