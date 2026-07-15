@@ -65,11 +65,45 @@ export default class Renderer {
      */
     private async preProcessText(markdownText: string) {
         // This function is used to preprocess the markdown text before rendering. It can be used to add any custom syntax or transformations that we want to support in our markdown files. For example, we can use it to inject footnotes, handle custom directives, etc.
-        if (!this.isVscPreview) { 
-        markdownText = await this.processTransclusions(markdownText, this.documentUri.fsPath);
-        }
+
+        markdownText = await this.addRootPagesIds(markdownText);
+
+        // FIXME: Tranclusion in preview should eventually happen only when a setting is defined.
+        // if (!this.isVscPreview) { 
+            markdownText = await this.processTransclusions(markdownText, this.documentUri.fsPath);
+        // }
         markdownText = this.injectFootnotes(markdownText);
         return markdownText;
+    }
+
+    private async addRootPageId(pageText: string, index: number) {
+        // Adds a root-id attribute on the page elements of the root document.
+        // root-id is the page number in the root document, to support correct scrolling with transclusion.
+
+        const rootPageId = index+1;
+        if (pageText.startsWith('\\page{')) {
+            pageText = pageText.replace('\\page{', `\\page{root-id=${rootPageId},`)
+        } else if (pageText.startsWith('\\page')) {
+            pageText = pageText.replace('\\page', `\\page{root-id=${rootPageId}}`)
+        } else {
+            pageText = `\\page{root-id=${rootPageId}} \n\n ${pageText}`
+        }
+        return pageText;
+    }
+
+    private async addRootPagesIds(markdownText: string) {
+        // Adds to all pages of the root document a "root-id" attribute to enable scrolling,
+        // including with transclusion.
+        const pages = markdownText.split(new RegExp(PAGE_REGEX.source, 'gm'));
+
+        // All pages rendering start simultaneously
+        const renderPromises = pages.map((pageContent, i) => this.addRootPageId(pageContent, i));
+
+        // Wait for ALL promises to settle
+        const anchoredPages = await Promise.all(renderPromises);
+
+        // Join all pages
+        return anchoredPages.join("");
     }
 
     private async processTransclusions(
@@ -714,9 +748,12 @@ export default class Renderer {
         }
 
         // Page Styles
-        const styleString = styles ? Object.entries(styles)
+        let styleString = styles ? Object.entries(styles)
             .map(([key, value]) => `${_.kebabCase(key)}:${value}`)
             .join(';') : '';
+        if (styleString.length > 0) {
+            styleString = `style="${styleString}"`;
+        }
 
         // Page Attributes
         const attributeString = attributes ? Object.entries(attributes)
@@ -729,7 +766,7 @@ export default class Renderer {
 
         // <div class="${classes}" id="p${index + 1}" key="${index}" >
         let pageBody = `
-        <div class="${classes}" style="${styleString}" ${attributeString} id="p${index + 1}" key="${index}" >
+        <div class="${classes}" ${styleString} ${attributeString} id="p${index + 1}" key="${index}" >
             <div class="columnWrapper">${Markdown.render(pageText)}</div>
         </div>`;
         pageBody = await this.postProcessPageHtml(pageBody);

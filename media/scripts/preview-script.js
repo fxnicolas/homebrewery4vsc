@@ -10,12 +10,12 @@ window.addEventListener('message', event => {
     type = event.data.type;
 
     switch (type) {
-        // scroll: Jumps to the corresponding page in the preview.
+        // scroll: Jumps to the page with the corresponding root-id in the preview.
         case 'scroll':
             const page = event.data.page;
             const mode = event.data.mode;
-            anchor = "p" + page;
-            el = document.getElementById(anchor);
+            console.debug("Hombrewery: Scrolling preview to page " + page);
+            el = document.querySelector('[root-id="' + page + '"]');
             if (el) {
                 el.scrollIntoView({
                     behavior: mode,
@@ -68,22 +68,35 @@ window.addEventListener('message', event => {
 
 const vscode = acquireVsCodeApi();
 
-// Detect a click and send the corresponding page number to VS Code. The markdown editor scrolls to that page.
+// Detect a click and send the corresponding root-id number to VS Code. The markdown editor scrolls to that page.
 document.addEventListener('click', (event) => {
-    let el = event.target;
-    while (el && el !== document.body) {
-        if (el.classList?.contains('page')) {
-            const id = el.id; // e.g. "page-12"
-            const match = id.match(/\d+/);
-            if (match) {
-                const pageNumber = parseInt(match[0], 10);
-                vscode.postMessage({
-                    type: 'goToPage',
-                    page: pageNumber
-                });
+    // Find the closest ancestor with class "page"
+    let pageElement = event.target;
+    while (pageElement && pageElement !== document.body && !pageElement.classList?.contains('page')) {
+        pageElement = pageElement.parentElement;
+    }
+    if (!pageElement || pageElement === document.body) return;
+
+    // If it doesn't have root-page, look backwards through preceding siblings
+    if (!pageElement.hasAttribute('root-id')) {
+        let sibling = pageElement.previousElementSibling;
+        while (sibling) {
+            if (sibling.classList.contains('page') && sibling.hasAttribute('root-id')) {
+                pageElement = sibling;
+                break;
             }
-            break;
+            sibling = sibling.previousElementSibling;
         }
-        el = el.parentElement;
+    }
+
+    if (pageElement.hasAttribute('root-id')) {
+        const pageNumber = parseInt(pageElement.getAttribute('root-id'), 10);
+        if (!isNaN(pageNumber)) {
+            console.debug("Hombrewery: Scrolling Editor to page " + pageNumber);
+            vscode.postMessage({
+                type: 'goToPage',
+                page: pageNumber
+            });
+        }
     }
 });
