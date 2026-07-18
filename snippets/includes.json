@@ -1,0 +1,12 @@
+{
+    "Insert Include": {
+        "prefix": "Homebrewery Include File",
+                "body": "![alias](./included file.md){HEADING_OFFSET=1}",
+        "description": "Include (embed) another brew."
+    },
+    "Insert Page Break": {
+        "prefix": "Homebrewery Link to File",
+        "body": "[text](./included file.md)",
+        "description": "Link to another brew."
+    }
+}

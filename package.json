@@ -500,6 +500,10 @@
       {
         "language": "markdown",
         "path": "./snippets/text.json"
+      },
+      {
+        "language": "markdown",
+        "path": "./snippets/includes.json"
       }
     ]
   },
