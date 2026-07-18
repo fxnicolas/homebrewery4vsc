@@ -291,7 +291,7 @@ export default class Preview {
             || vscode.window.visibleTextEditors.find(e => this.isPreviewOf(e.document.uri))
             || vscode.window.activeTextEditor;
         if (!editor) {
-            // HACK: Switching text causes no Active Text Editor (SUPPRESSED)
+            // CHECK: Switching text causes no Active Text Editor (SUPPRESSED)
             // vscode.window.showWarningMessage(constants.ErrorMessages.NO_ACTIVE_EDITOR);
             return;
         }

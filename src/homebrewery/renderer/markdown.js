@@ -412,7 +412,6 @@ const voidTags = new Set([
 
 const processStyleTags = (string)=>{
 	//split tags up. quotes can only occur right after : or =.
-	//TODO: can we simplify to just split on commas?
 	const tags = string.match(/(?:[^, ":=]+|[:=](?:"[^"]*"|))+/g);
 
 	const id         = _.remove(tags, (tag)=>tag.startsWith('#')).map((tag)=>tag.slice(1))[0]        || null;
