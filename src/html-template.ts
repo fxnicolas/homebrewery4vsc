@@ -11,8 +11,8 @@ import { getThemeStyles} from './theme';
 import { getCustomStyles } from './custom-styles';
 import { isWebUrl} from './utils';
 
-// FIXME: Add Content Security Policy (CSP) to the HTML Template.
-// FIXME: Inline the fonts linked in TEMPLATE_HTML
+// WIP: Add Content Security Policy (CSP) to the HTML Template.
+// WIP: Inline the fonts linked in TEMPLATE_HTML
 const TEMPLATE_HTML = `
 <!DOCTYPE html>
 <html>

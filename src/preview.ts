@@ -291,7 +291,7 @@ export default class Preview {
             || vscode.window.visibleTextEditors.find(e => this.isPreviewOf(e.document.uri))
             || vscode.window.activeTextEditor;
         if (!editor) {
-            // FIXME: Switching text causes no Active Text Editor (SUPPRESSED)
+            // HACK: Switching text causes no Active Text Editor (SUPPRESSED)
             // vscode.window.showWarningMessage(constants.ErrorMessages.NO_ACTIVE_EDITOR);
             return;
         }
@@ -320,7 +320,7 @@ export default class Preview {
             });
             this.updateZoomLevel();
 
-            // FIXME: Only scroll if active text editor is changed
+            // CHECK: Only scroll if active text editor is changed
             if (this.isMarkdownEditor(editor, true) && this.synchronizedScroll) {
                 this.postMessage({
                     type: 'scroll',
