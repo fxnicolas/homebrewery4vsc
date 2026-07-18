@@ -184,12 +184,12 @@ export default class Renderer {
         rootFilePath: string,
         visitedFiles: Set<string>
     ): Promise<string> {
-        this.loggerChannel.trace(`Transcluding ${transclusionMatch.relativeFilePath} into ${parentFilePath}`);
+        this.loggerChannel.trace(`Including ${transclusionMatch.relativeFilePath} into ${parentFilePath}`);
         const parentFileFolder = path.dirname(parentFilePath);
         const absoluteFilePath = path.resolve(parentFileFolder, transclusionMatch.relativeFilePath);
 
         if (visitedFiles.has(absoluteFilePath)) {
-            this.loggerChannel.error(`Transclusion cycle detected into "${parentFilePath}": ${transclusionMatch.relativeFilePath}`);
+            this.loggerChannel.error(`Inclusion cycle detected into "${parentFilePath}": ${transclusionMatch.relativeFilePath}`);
             return `Cycle detected into "${parentFilePath}" while inserting ${transclusionMatch.relativeFilePath}. This file is referred twice, with a circular dependency (A->B...->A)`;
         }
 
@@ -197,7 +197,7 @@ export default class Renderer {
         try {
             fileContents = await fs.readFile(absoluteFilePath, 'utf-8');
         } catch (err) {
-            this.loggerChannel.error(`Failed to transclude "${transclusionMatch.relativeFilePath}" into "${parentFilePath}": ${(err as Error).message}.`);
+            this.loggerChannel.error(`Failed to include "${transclusionMatch.relativeFilePath}" into "${parentFilePath}": ${(err as Error).message}.`);
             return `Unable to read file "${transclusionMatch.relativeFilePath}" to insert into "${parentFilePath}".`;
         }
 

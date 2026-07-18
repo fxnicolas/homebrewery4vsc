@@ -19,7 +19,7 @@ This extension provides the following features:
 
 * **Extended Markdown editor** to generate beautiful documents in the style of the Dungeons & Dragons books and resources.
 * Snippets for the **Homebrewery syntax**.
-* Support for **File References and Transclusion**.
+* Support for **File References and Includes**.
 * **Live Preview** with synchronized scrolling.
 * **Generate HTML** for PDF printing.
 * **SRD 5e Reference View** listing classes, feats, magic items, monsters, spells, etc available in the *5e System Reference Document*.
@@ -49,7 +49,7 @@ References and includes make it easier to work with complex, multi-file brews.
 
 Use the `[alias](url)` syntax to create a hyperlink to another brew. This is rendered as a standard link in the generated output, so you can link between chapters, sections, or even build entire multi-page websites out of your brews.
 
-#### Transclusions (Includes)
+#### Includes
 
 Use the `![alias](url){HEADING_OFFSET=n}` syntax to embed the content of another brew directly into the current one at render time.
 
@@ -76,11 +76,11 @@ Lorem ipsum...
 
 > [!NOTE]
 >
-> * Only **local files** with an `.md` or `.txt` extension are supported for both links and transclusions.
-> * The transclusion syntax is only recognized when it appears **at the beginning of a line**.
-> * Transclusions are **recursive** — an included file can itself include further files, at any depth.
-> * `HEADING_OFFSET` applies cumulatively across recursive transclusions, so nested includes are offset by the sum of all levels above them.
-> * Metadata and CSS blocks are ignored in transcluded files — only those in the main file are applied to the final output.
+> * Only **local files** with an `.md` or `.txt` extension are supported for both links and includes.
+> * The Include syntax is only recognized when it appears **at the beginning of a line**.
+> * Includes are **recursive** — an included file can itself include further files, at any depth.
+> * `HEADING_OFFSET` applies cumulatively across recursive includes, so nested includes are offset by the sum of all levels above them.
+> * Metadata and CSS blocks are ignored in included files — only those in the main file are applied to the final output.
 
 ### D&D 5e SRD Reference
 
@@ -201,7 +201,7 @@ This extension exposes the following settings:
 * `homebrewery4vsc.enableFontIconCompletions`: Enable/disable the font icon completion snippers.
 * `homebrewery4vsc.highlightColumnAndPageBreaks`: Highlight entire lines containing page and column breaks, for better editor readability.
 * `homebrewery4vsc.scrollPreviewWithEditor`: By default, keep the preview scrolled to match the corresponding position in the editor.
-* `homebrewery4vsc.collapseIncludes`**`: By default, collapse/expand files included using the transclusion syntax.
+* `homebrewery4vsc.collapseIncludes`**`: By default, collapse/expand files embedded using the include syntax.
 * `homebrewery4vsc.theme`: The theme (Player's Hanbook, Dungeon Master's Guide, etc) used in preview and the HTML output.
 * `homebrewery4vsc.defaultLanguage`: Default Brew language. This converts into the HTML `lang` property, which affects hyphenation and spellchecking. You can also specify a `language` metadata element at brew level.
 * `homebrewery4vsc.customStyleSheets`: List of style sheets (CSS files within the workspace or accessed with HTTP) added to all documents when rendering.
