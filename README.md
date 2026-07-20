@@ -19,9 +19,10 @@ This extension provides the following features:
 
 * **Extended Markdown editor** to generate beautiful documents in the style of the Dungeons & Dragons books and resources.
 * Snippets for the **Homebrewery syntax**.
-* Support for **File References and Includes**.
 * **Live Preview** with synchronized scrolling.
 * **Generate HTML** for PDF printing.
+* Support for **File References and Includes**.
+* **Interactive Components** to manage and save game sessions in your brews.
 * **SRD 5e Reference View** listing classes, feats, magic items, monsters, spells, etc available in the *5e System Reference Document*.
 
 ### Editor
@@ -119,6 +120,8 @@ Insert a single markdown table inside an `{{hb-random-table }}` block to make it
 }}
 ```
 
+![Homebrewery for Visual Code Demo - Random Table](./media/images/homebrewery4vsc-random-table.gif)
+
 You can style the highlighted row in a random table using the `.hb-row-selected` class.
 
 #### Rollable Dice Formula
@@ -159,6 +162,8 @@ The example below illustrates how to build a simple encounter tracker using thes
 * **Notes**: {{hb-notes,hb-save Game notes }}
 ```
 
+![Homebrewery for Visual Code Demo - Interactive Components](./media/images/homebrewery4vsc-interactive-components.gif)
+
 #### Rollable Dice
 
 Add the `hb-rollable` class to dice from the icon fonts. Clicking the dice rolls it on screen.
@@ -176,6 +181,8 @@ Click a die to roll!
 :df_d20_20:{hb-rollable,large}
 :df_d100_100:{hb-rollable,large}
 ```
+
+![Homebrewery for Visual Code Demo](./media/images/homebrewery4vsc-dice-roller.gif)
 
 ### D&D 5e SRD Reference
 
