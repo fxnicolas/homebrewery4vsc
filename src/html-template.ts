@@ -7,9 +7,8 @@ import * as constants from './constants';
 import { formatString } from './utils';
 const THEMES_FOLDER = './media/themes/';
 import { getConfig } from './utils';
-import { getThemeStyles} from './theme';
+import { getThemeStyles } from './theme';
 import { getCustomStyles } from './custom-styles';
-import { isWebUrl} from './utils';
 
 // ADD: Add Content Security Policy (CSP) to the HTML Template.
 // ADD: Inline the fonts linked in TEMPLATE_HTML
@@ -39,6 +38,7 @@ const TEMPLATE_HTML = `
                     {{ page_layout_styles }}
                     {{ background_handling_styles }}
                     {{ preview-styles }}
+                    {{ interactive-styles }}
                     {{ custom_styles }}
                     {{ inline_styles }}
                     <div class="pages" id="pagesContainer" lang="{{ language }}">
@@ -48,6 +48,7 @@ const TEMPLATE_HTML = `
             </div>
         </div>
     {{ preview-script }}
+    {{ interactive-script }}
     </body>
 </html>`;
 
@@ -108,8 +109,33 @@ function getPreviewScript(context: vscode.ExtensionContext): string {
 
 }
 
+function getInteractiveScript(context: vscode.ExtensionContext): string {
+    const config = getConfig();
+    if (config.get<boolean>('enableInteractiveComponents') || false) {
+        const interactiveScriptFile = path.join(context.extensionPath, 'media', "scripts", 'interactive-script.js');
+        const interactiveScript = fs.readFileSync(interactiveScriptFile, { encoding: 'utf8' });
+        return `<script>\n${interactiveScript}\n</script>`;
+    } else {
+        return "";
+    }
+}
+
+
+function getInteractiveStyles(context: vscode.ExtensionContext): string {
+    const config = getConfig();
+    if (config.get<boolean>('enableInteractiveComponents') || false) {
+        const interactiveStylesFile = path.join(context.extensionPath, 'media', "styles", 'interactive-styles.css');
+        const interactiveStyles = fs.readFileSync(interactiveStylesFile, { encoding: 'utf8' });
+        return `<style>\n${interactiveStyles}\n</style>`;
+    } else {
+        return "";
+    }
+}
+
 export const htmlTemplate = async (context: vscode.ExtensionContext, addPreviewAssets: boolean, theme?: string): Promise<string> => {
     let template = TEMPLATE_HTML;
+    const config = getConfig();
+
 
     // Select theme: The one set in file metadata or the default one.
     const currentTheme = theme || getConfig().get<string>('theme') || "None";
@@ -136,6 +162,10 @@ export const htmlTemplate = async (context: vscode.ExtensionContext, addPreviewA
 
     // Preview styles
     template = template.replace('{{ preview-styles }}', addPreviewAssets ? `<style id="preview_styles">\n${getPreviewStyles(context)}\n</style>` : '');
+
+    // Interactive Components
+    template = template.replace('{{ interactive-script }}', getInteractiveScript(context));
+    template = template.replace('{{ interactive-styles }}', getInteractiveStyles(context));
 
     // Custom styles (now async)
     const customStyles = await getCustomStyles(context);

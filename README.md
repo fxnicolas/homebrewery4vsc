@@ -81,6 +81,92 @@ Lorem ipsum...
 > * Includes are **recursive** — an included file can itself include further files, at any depth.
 > * `HEADING_OFFSET` applies cumulatively across recursive includes, so nested includes are offset by the sum of all levels above them.
 > * Metadata and CSS blocks are ignored in included files — only those in the main file are applied to the final output.
+> Includes and References are only supported in Hombrewery for VS Code, and not in Naturacrit's Homebrewery.
+
+### Interactive Components
+
+Use interactive components in your brews to create combat trackers, counters, rollable dice formulas, random tables, and more.
+
+A brew containing interactive components, when exported to HTML, becomes a self-contained tool you can use to run and save your session state.
+
+You can enable or disable interactive components entirely using the **Enable Interactive Components** setting.
+
+#### Random Table
+
+Insert a single markdown table inside an `{{hb-random-table }}` block to make it random. Click the table to randomly select a row.
+
+```markdown
+### Random Event Table
+
+{{hb-random-table
+
+|  d4   | Event   |
+| :---: | :------ |
+|   1   | Event 1 |
+|   2   | Event 2 |
+|   3   | Event 3 |
+|   4   | Event 4 |
+
+}}
+```
+
+You can style the highlighted row in a random table using the `.hb-row-selected` class.
+
+#### Rollable Dice Formula
+
+Use the `hb-roll` block class to create a *Rollable Dice Formula* visible in the brew (for example, *1d10+3*). Click the formula to roll the dice, and right-click to reset it back to the formula.
+
+For example: `{{hb-roll 1d10+1d4+5}}` for a damage roll, or `{{hb-roll +5}}` for a d20+5 roll.
+
+#### Counter
+
+Use the `hb-counter` block to create a counter for hit points and more. For example: `{{hb-counter 120}}`. Click the counter to decrease its value, and right-click to increase it.
+
+#### Condition
+
+Use `{{hb-condition None}}` to create a status Condition component. Click the element to rotate through the SRD conditions.
+
+#### Notes
+
+Use `{{hb-notes Original notes text }}` to create an editable text note.
+
+#### Save
+
+Add the `hb-save` class to a counter, condition, or note to persist its value in the session state.
+\
+A toolbar automatically appears on the upper-right corner of the brew to load and save this state.
+
+The example below illustrates how to build a simple encounter tracker using these components.
+
+```markdown
+### Simple Encounter Tracker
+
+#### Small Blue Dragon
+
+* **Initiative**: {{hb-roll +3}}
+* **Hit Points**: {{hb-counter,hb-save 120}}
+* **Attack**: Breath {{hb-roll +1}}, Damage {{hb-roll 1d10+1d4+5}} Piercing
+* **Condition**: {{hb-condition,hb-save None}}
+* **Notes**: {{hb-notes,hb-save Game notes }}
+```
+
+#### Rollable Dice
+
+Add the `hb-rollable` class to dice from the icon fonts. Clicking the dice rolls it on screen.
+
+```markdown
+#### Sample interactive dice roller
+
+Click a die to roll!
+
+:df_d4_4:{hb-rollable,large}
+:df_d6_6:{hb-rollable,large}
+:df_d8_8:{hb-rollable,large}
+:df_d10_10:{hb-rollable,large}
+:df_d12_12:{hb-rollable,large}
+:df_d20_20:{hb-rollable,large}
+:df_d100_100:{hb-rollable,large}
+```
 
 ### D&D 5e SRD Reference
 
@@ -199,6 +285,7 @@ You can also set in the `homebrewery4vsc.customStyleSheets` setting a list of cs
 This extension exposes the following settings:
 
 * `homebrewery4vsc.enableFontIconCompletions`: Enable/disable the font icon completion snippers.
+* `homebrewery4vsc.enableInteractiveComponents`: Enable/disable interactive components (counters, rollable formulas, etc).
 * `homebrewery4vsc.highlightColumnAndPageBreaks`: Highlight entire lines containing page and column breaks, for better editor readability.
 * `homebrewery4vsc.scrollPreviewWithEditor`: By default, keep the preview scrolled to match the corresponding position in the editor.
 * `homebrewery4vsc.collapseIncludes`**`: By default, collapse/expand files embedded using the include syntax.

@@ -41,6 +41,10 @@ window.addEventListener('message', event => {
         case 'updateBody':
             const html = event.data.html;
             document.getElementById("pagesContainer").innerHTML = html;
+            try {
+                //HACK: Refreshing interactive components even when disabled. Unable to capture function exists in VS Code.
+                refreshInteractiveComponents();
+            } catch (error) {}
             break;
         // updateInlineStyles: Updates the script with id=inline_styles to apply inline CSS while editing.
         case 'updateInlineStyles':

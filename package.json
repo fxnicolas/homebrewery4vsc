@@ -432,6 +432,11 @@
           "default": true,
           "description": "Enable font icons completion snippets. Disabling this removes them from the completion dropdown."
         },
+        "homebrewery4vsc.enableInteractiveComponents": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable interactive components: rollable dice formulas, counters, conditions, notes, random tables and saved sessions."
+        },
         "homebrewery4vsc.highlightColumnAndPageBreaks": {
           "type": "boolean",
           "default": true,

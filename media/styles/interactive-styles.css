@@ -1,0 +1,173 @@
+/* Interactive Brews - Styles */
+
+@keyframes diceShake {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+
+    25% {
+        transform: rotate(90deg) scale(0.9);
+    }
+
+    50% {
+        transform: rotate(180deg) scale(0.8);
+    }
+
+    75% {
+        transform: rotate(270deg) scale(0.9);
+    }
+
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
+
+i.df.hb-rollable.large {
+    font-size: 50px;
+}
+
+i.df.hb-rollable {
+    cursor: pointer;
+    display: inline-block; /* Required for the animation to work */
+}
+
+i.df.hb-rollable.hb-rolling {
+    cursor: wait;
+    animation: diceShake 500ms ease infinite;
+    filter: brightness(.8) drop-shadow(0 0 6px currentColor);
+}
+
+.hb-counter {
+    cursor: pointer;
+}
+
+.hb-notes {
+    contentEditable: true;
+}
+
+.hb-counter:hover,
+.hb-roll:hover,
+.hb-condition:hover {
+    cursor: pointer;
+    font-weight: bold;
+    user-select: none;
+
+}
+
+[tooltip] {
+    position: relative;
+}
+
+[tooltip]:after {
+    content: attr(tooltip);
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    background-color: #000000BB;
+    color: white;
+    /* font-size: 0.85em; */
+    font-weight: normal;
+    text-align: left;
+    line-height: 1.5;
+    border: 1px solid black;
+    border-radius: 6px;
+    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.4);
+    padding: 8px 12px;
+    width: 220px;
+    max-width: 220px;
+    white-space: normal;
+    word-wrap: break-word;
+    opacity: 0;
+    z-index: 100;
+    transition: opacity 0.75s ease-in-out;
+    -webkit-transition: opacity 0.75s ease-in-out;
+    pointer-events: none;
+}
+
+[tooltip]:hover:after {
+    opacity: 1;
+}
+
+td {
+    vertical-align: top;
+}
+
+/* hb-toolbar */
+
+.hb-toolbar {
+    position: fixed;
+    top: 32px;
+    right: 32px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    width: unset !important;
+    background-color: #1e1e1e;
+    border: 1px solid #444;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    padding: 8px 12px;
+}
+
+.hb-toolbar button,
+.hb-toolbar select {
+    background-color: #2d2d2d;
+    color: #d4d4d4;
+    /* border: 1px solid #555; */
+    border-radius: 4px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 0.85em;
+    transition: background-color 0.2s ease;
+}
+
+.hb-toolbar button:hover,
+.hb-toolbar select:hover {
+    background-color: #3e3e3e;
+}
+
+.hb-toolbar button:active {
+    background-color: #505050;
+}
+
+.hb-toolbar .separator {
+    width: 1px;
+    height: 24px;
+    background-color: #555;
+}
+
+.hb-status {
+    position: fixed;
+    top: 80px;
+    right: 32px;
+    z-index: 1001;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    width: unset !important;
+    background-color: #2d2d2d;
+    border: 1px solid #555;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    padding: 8px 12px;
+    color: #d4d4d4;
+    font-size: 0.85em;
+    ;
+}
+
+
+/* Randome Table */
+.hb-row-selected {
+    background-color: rgba(0, 0, 0, 0.6) !important;
+    color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.hb-row-selected td {
+    position: relative;
+}
