@@ -8,9 +8,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Added
 
-* Include syntax `![<alias>](<relative file path>){HEADING_OFFSET=<n>}` to embed local `.md` or `.txt` brew files into the current brew, with optional heading-level offsetting.
-* Reference syntax `[<alias>](<relative file path>)` to link local `.md` or `.txt` brews. Clicking a reference in the preview opens the linked source file, and the HTML output resolves references to their corresponding `.html` output files.
-* Snippets for Include and Reference syntaxes.
+* **File Include** syntax `![<alias>](<relative file path>){HEADING_OFFSET=<n>}` to embed local `.md` or `.txt` brew files into the current brew, with optional heading-level offsetting.
+* **File Reference** syntax `[<alias>](<relative file path>)` to link local `.md` or `.txt` brews. Clicking a reference in the preview opens the linked source file, and the HTML output resolves references to their corresponding `.html` output files.
+* **Interactive Components** to manage and save game sessions in your brews.
+* Snippets for Interactive Components, Include and Reference syntaxes.
 * Preview toolbar button to enable/disable scroll synchronization.
 * Preview toolbar button to expand/collapse included brews.
 * Synchronized scrolling now tracks pages using a new `root-id` attribute, so page numbers stay accurate against the root document even when files are included.
