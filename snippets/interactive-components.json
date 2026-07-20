@@ -1,0 +1,36 @@
+{
+    "Insert Random Table": {
+        "prefix": "Homebrewery Random Table",
+        "body": [
+            "{{hb-random-table",
+            "|  d4   | Event   |",
+            "| :---: | :------ |",
+            "|   1   | Event 1 |",
+            "|   2   | Event 2 |",
+            "|   3   | Event 3 |",
+            "|   4   | Event 4 |",
+            "}}"
+        ],
+        "description": "Random event table."
+    },
+    "Insert Rollable Dice Formula": {
+        "prefix": "Homebrewery Rollable Dice Formula",
+        "body": "{{hb-roll 1d10+1d4+5}}",
+        "description": "Rollable dice formula."
+    },
+    "Insert Counter": {
+        "prefix": "Homebrewery Interactive Counter",
+        "body": "{{hb-counter,hb-save 120}}",
+        "description": "Interactive Counter."
+    },
+    "Insert Condition Status": {
+        "prefix": "Homebrewery Condition Status",
+        "body": "{{hb-condition,hb-save None}}",
+        "description": "Condition Status."
+    },
+    "Insert Interactive Note": {
+        "prefix": "Homebrewery Interactive Note",
+        "body": "{{hb-notes,hb-save Original notes text }}",
+        "description": "Interactive Note."
+    }
+}

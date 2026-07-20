@@ -509,6 +509,10 @@
       {
         "language": "markdown",
         "path": "./snippets/includes.json"
+      },
+      {
+        "language": "markdown",
+        "path": "./snippets/interactive-components.json"
       }
     ]
   },

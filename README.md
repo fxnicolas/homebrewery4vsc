@@ -81,7 +81,10 @@ Lorem ipsum...
 > * Includes are **recursive** — an included file can itself include further files, at any depth.
 > * `HEADING_OFFSET` applies cumulatively across recursive includes, so nested includes are offset by the sum of all levels above them.
 > * Metadata and CSS blocks are ignored in included files — only those in the main file are applied to the final output.
-> Includes and References are only supported in Hombrewery for VS Code, and not in Naturacrit's Homebrewery.
+
+> [!IMPORTANT]
+>
+> Includes and References are only supported in Hombrewery for VS Code, and not in NaturaCrit's Homebrewery.
 
 ### Interactive Components
 
@@ -90,6 +93,12 @@ Use interactive components in your brews to create combat trackers, counters, ro
 A brew containing interactive components, when exported to HTML, becomes a self-contained tool you can use to run and save your session state.
 
 You can enable or disable interactive components entirely using the **Enable Interactive Components** setting.
+
+> [!IMPORTANT]
+>
+> Interactive Components only work with Homebrewery for VS Code, and not in NaturalCrit's Homebrewery.
+> \
+> They are functional in the preview, in the HTML output, but not after prining to PDF.
 
 #### Random Table
 
