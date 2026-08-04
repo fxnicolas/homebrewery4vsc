@@ -39,8 +39,9 @@ Snippets provide access to the extended Markdown syntax implemented by Homebrewe
 
 Homebrewery snippets start with `Homebrewery`.
 
-Font icons provided in Homebrewery are also available as snippets. These start with `Font Icon`.\
-**NOTE**: As these snippets can clutter the completion dropdown, you can disable them with the `homebrewery4vsc.enableFontIconCompletions` [setting](#extension-settings).
+Font icons provided in Homebrewery are also available as snippets. These start with `Font Icon`.
+
+**NOTE**: As Font icon snippets can clutter the completion dropdown, you can disable them with the `homebrewery4vsc.enableFontIconCompletions` [setting](#extension-settings).
 
 ### File References and Includes
 
@@ -75,17 +76,15 @@ Lorem ipsum...
 Lorem ipsum...
 ```
 
-> [!NOTE]
->
-> * Only **local files** with an `.md` or `.txt` extension are supported for both links and includes.
-> * The Include syntax is only recognized when it appears **at the beginning of a line**.
-> * Includes are **recursive** — an included file can itself include further files, at any depth.
-> * `HEADING_OFFSET` applies cumulatively across recursive includes, so nested includes are offset by the sum of all levels above them.
-> * Metadata and CSS blocks are ignored in included files — only those in the main file are applied to the final output.
+Note that:
 
-> [!IMPORTANT]
->
-> Includes and References are only supported in Hombrewery for VS Code, and not in NaturaCrit's Homebrewery.
+* Only **local files** with an `.md` or `.txt` extension are supported for both links and includes.
+* The Include syntax is only recognized when it appears **at the beginning of a line**.
+* Includes are **recursive** — an included file can itself include further files, at any depth.
+* `HEADING_OFFSET` applies cumulatively across recursive includes, so nested includes are offset by the sum of all levels above them.
+* Metadata and CSS blocks are ignored in included files — only those in the main file are applied to the final output.
+
+**⚠️ IMPORTANT:** Includes and References are only supported in Hombrewery for VS Code, and not in NaturaCrit's Homebrewery.
 
 ### Interactive Components
 
@@ -95,11 +94,8 @@ A brew containing interactive components, when exported to HTML, becomes a self-
 
 You can enable or disable interactive components entirely using the **Enable Interactive Components** setting.
 
-> [!IMPORTANT]
->
-> Interactive Components only work with Homebrewery for VS Code, and not in NaturalCrit's Homebrewery.
-> \
-> They are functional in the preview, in the HTML output, but not after prining to PDF.
+**⚠️ IMPORTANT:** Interactive Components only work with Homebrewery for VS Code, and not in NaturalCrit's Homebrewery.
+They are functional in the preview, in the HTML output, but not after prining to PDF.
 
 #### Random Table
 
@@ -288,7 +284,7 @@ The content of the `HB-StrahdStyle.txt`file. It uses the `5ePHB` base theme, and
 
 ```
 
-**TIP**: A large set of awesome templates (designed by **@KaiburrKathHound**) are available from [The Homebrewery](https://homebrewery.naturalcrit.com/user/KaiburrKathHound?sort=created&dir=asc)
+**💡 TIP**: A large set of awesome templates (designed by **@KaiburrKathHound**) are available from [The Homebrewery](https://homebrewery.naturalcrit.com/user/KaiburrKathHound?sort=created&dir=asc)
 
 ### CSS
 
