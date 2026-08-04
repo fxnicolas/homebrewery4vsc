@@ -115,7 +115,7 @@ export default class Renderer {
         } else if (pageText.startsWith('\\page')) {
             pageText = pageText.replace('\\page', `\\page{root-id=${rootPageId}}`)
         } else {
-            pageText = `\\page{root-id=${rootPageId}} \n\n ${pageText}`
+            pageText = `\\page{root-id=${rootPageId}}\n\n${pageText}`
         }
         return pageText;
     }

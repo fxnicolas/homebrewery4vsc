@@ -10,6 +10,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 * Extraneous blank page at the end of PDF document
 * Generated HTML files saved as a PDF incorrectly display Interactive Toolbar on each page.
+* Transclusions not detected at the beginning of brew file
 
 ## [1.4.0]
 
