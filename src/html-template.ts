@@ -30,8 +30,14 @@ const TEMPLATE_HTML = `
                 <div class="brewRenderer">
                      <style>
                         /* Prevents VS Code dark theme bleed in Preview */
-                        html, body, blockquote,img {
+                        html, body, blockquote, img {
                             all:unset;
+                        }
+                        /* Prevents extraneous print blank page at end of document */
+                        @media print {
+                            .page {
+                                margin-bottom:0px;
+                            }
                         }
                     </style>
                     {{ theme_styles }}
