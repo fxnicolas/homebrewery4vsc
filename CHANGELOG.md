@@ -4,6 +4,13 @@ All notable changes to the "homebrewery4vsc" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.4.1]
+
+### Fixed
+
+* Extraneous blank page at the end of PDF document
+* Generated HTML files saved as a PDF incorrectly display Interactive Toolbar on each page.
+
 ## [1.4.0]
 
 ### Added
