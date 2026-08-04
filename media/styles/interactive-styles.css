@@ -159,8 +159,13 @@ td {
     ;
 }
 
+@media print {
+    .hb-toolbar {
+        display: none !important;
+    }
+}
 
-/* Randome Table */
+/* Random Table */
 .hb-row-selected {
     background-color: rgba(0, 0, 0, 0.6) !important;
     color: white;
